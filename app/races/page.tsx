@@ -6,7 +6,7 @@ import { addDays, dayInWeek, diffDays, formatDay, todayLocal, weekdayOf } from "
 import { sampleRaces } from "@/lib/mock";
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
-import type { Race, RacePriority } from "@/lib/types";
+import type { Race, RacePriority, Weekday } from "@/lib/types";
 
 export default function RacesPage() {
   const hydrated = useHydrated();
@@ -14,14 +14,14 @@ export default function RacesPage() {
   return <Races />;
 }
 
-/** New races default to the next Thursday. */
-function nextThursday(today: string) {
-  const thu = dayInWeek(today, "thu");
-  return thu < today ? addDays(thu, 7) : thu;
+/** New races default to the next meet day from onboarding (Thursday unless you said otherwise). */
+function nextMeetDay(today: string, day: Weekday) {
+  const d = dayInWeek(today, day);
+  return d < today ? addDays(d, 7) : d;
 }
 
 function Races() {
-  const { races } = useStore();
+  const { races, profile } = useStore();
   const today = todayLocal();
   const [editing, setEditing] = useState<Race | null>(null);
   const upcoming = races.filter((r) => r.date >= today);
@@ -67,7 +67,7 @@ function Races() {
         <Button
           variant="primary"
           className="mt-4 w-full"
-          onClick={() => setEditing({ id: newId(), date: nextThursday(today), name: "", distance: "5K", priority: "B" })}
+          onClick={() => setEditing({ id: newId(), date: nextMeetDay(today, profile?.raceDay ?? "thu"), name: "", distance: "5K", priority: "B" })}
         >
           Add race
         </Button>

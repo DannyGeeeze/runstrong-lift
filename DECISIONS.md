@@ -56,3 +56,18 @@ These are choices I made where the brief left room. Each one says where it lives
 33. **Units are miles and min/mi.**
 34. **Demo data** turns on automatically when Strava keys aren't set, and there's a toggle in Settings once they are.
 35. **Mark complete** saves the exercises you ticked, or all of them if you ticked none. Block picks come from the whole session.
+
+## Onboarding and runner profile (`lib/profile.ts`, `app/welcome`)
+
+36. **First launch opens onboarding** (`/welcome`). It asks 10 short questions: name, event, weekly miles, lifting experience, equipment, goals (up to 2), trouble spots, week layout, season and goal race, and whether you're coming back from a break. Settings → **Redo setup** runs it again with your answers pre-filled.
+37. **What the answers change:**
+    - **Equipment:** exercises you can't do with your gear are skipped. "Home" means dumbbells, kettlebells, bands, a box or bench, sliders and a med ball. "Just me" means bodyweight, a band, a box or bench, and a foam roller. Where an exercise lists several items, you need all of them; where it lists alternatives ("or"), any one will do.
+    - **Experience "new":** high-intensity exercises and Nordics are skipped.
+    - **Trouble spots:** matching exercises go to the front of their slot. Matching is done by exercise name and id.
+    - **Goals "kick" or "economy":** Full sessions always get A2, so 2 plyos, still capped at 6 moves.
+    - **Goal "healthy":** the easy-day touch-up is labeled "Recommended" on Today.
+    - **20-minute sessions:** "Short on time" starts switched on.
+    - Answers also fill in phase, tune-up day, workout days and return week in Settings. A goal race is added as an A race.
+38. **Every profile filter relaxes rather than leaving a slot empty.** First it drops the experience filter, then the equipment filter. The coach's Short template uses its own picks when they fit, and otherwise the nearest Full option for that slot.
+39. **The profile only changes which exercises fill a slot.** The coach's timing rules (48h, weekly caps, phase tables) are never changed by onboarding answers.
+40. **Rep text cleanup:** where a library entry repeats its set count inside reps (e.g. "2-3 x 20-45 s hold"), the count is dropped from reps, since `sets` already holds it.

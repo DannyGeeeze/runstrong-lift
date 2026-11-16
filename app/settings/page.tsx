@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPOT_OPTIONS } from "@/lib/profile";
 import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { formatDay, todayLocal } from "@/lib/dates";
 import { blockEnds, PHASE_LABEL, suggestPhase } from "@/lib/rules";
@@ -27,7 +29,7 @@ export default function SettingsPage() {
 }
 
 function SettingsView() {
-  const { settings, races, block } = useStore();
+  const { settings, races, block, profile } = useStore();
   const { status, reload } = useRuns(settings.mockMode);
   const today = todayLocal();
   const suggestion = suggestPhase(races, today);
@@ -69,6 +71,30 @@ function SettingsView() {
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+
+      <SectionTitle right={<Link href="/welcome" className="text-xs font-semibold text-accent">Redo setup</Link>}>
+        Your profile
+      </SectionTitle>
+      <Card>
+        {profile ? (
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+            <dt className="text-muted">Event</dt>
+            <dd>{EVENT_OPTIONS.find((o) => o.value === profile.event)?.label} · {profile.weeklyMiles} mi/wk</dd>
+            <dt className="text-muted">Lifting</dt>
+            <dd>{EXPERIENCE_OPTIONS.find((o) => o.value === profile.experience)?.label}</dd>
+            <dt className="text-muted">Gear</dt>
+            <dd>{EQUIPMENT_OPTIONS.find((o) => o.value === profile.equipment)?.label}</dd>
+            <dt className="text-muted">Goals</dt>
+            <dd>{GOAL_OPTIONS.filter((g) => profile.goals.includes(g.value)).map((g) => g.label).join(", ") || "None"}</dd>
+            <dt className="text-muted">Focus</dt>
+            <dd>{SPOT_OPTIONS.filter((s) => profile.troubleSpots.includes(s.value)).map((s) => s.label).join(", ") || "Nothing cranky"}</dd>
+            <dt className="text-muted">Sessions</dt>
+            <dd>{profile.sessionMinutes} min</dd>
+          </dl>
+        ) : (
+          <Link href="/welcome" className="text-sm font-semibold text-accent">Set up your profile</Link>
+        )}
+      </Card>
 
       <SectionTitle>Season phase</SectionTitle>
       <Card className="space-y-3">

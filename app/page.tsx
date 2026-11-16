@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { RunRow } from "@/components/RunList";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
@@ -36,17 +37,23 @@ const LOGGED_LABEL: Record<string, string> = {
 
 export default function TodayPage() {
   const hydrated = useHydrated();
-  if (!hydrated) return <p className="pt-10 text-center text-muted">Loading…</p>;
+  const { profile } = useStore();
+  const router = useRouter();
+  // First visit: onboarding before anything else.
+  useEffect(() => {
+    if (hydrated && !profile) router.replace("/welcome");
+  }, [hydrated, profile, router]);
+  if (!hydrated || !profile) return <p className="pt-10 text-center text-muted">Loading…</p>;
   return <Today />;
 }
 
 function Today() {
   const data = useStore();
-  const { settings, races, history, overrides, block } = data;
+  const { settings, races, history, overrides, block, profile } = data;
   const runsState = useRuns(settings.mockMode);
   const { runs, source, status, loading, error } = runsState;
   const today = todayLocal();
-  const [shortOnTime, setShortOnTime] = useState(false);
+  const [shortOnTime, setShortOnTime] = useState(profile?.sessionMinutes === 20);
   const [mode, setMode] = useState<"today" | "catchup">("today");
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
@@ -63,16 +70,17 @@ function Today() {
       settings,
       history,
       block,
+      profile,
       shortOnTime,
       extraHardDays: futureHardOverrides(today, overrides),
     }),
-    [today, day.type, settings, races, history, block, shortOnTime, overrides],
+    [today, day.type, settings, races, history, block, profile, shortOnTime, overrides],
   );
 
   const preview = decideSession(ctx);
   const todayIsLift = !["touch-up", "none"].includes(preview.session);
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
-  const sig = JSON.stringify([today, day.type, settings, races, shortOnTime, mode]);
+  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, mode]);
   const current = state?.sig === sig ? state : null;
   const loggedToday = history.filter((h) => h.date === today);
 
@@ -108,7 +116,7 @@ function Today() {
       <header className="flex items-end justify-between gap-3">
         <div>
           <p className="text-sm text-muted">{formatDay(today)}</p>
-          <h1 className="text-2xl font-bold tracking-tight">RunStrong Lift</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{profile?.name ? `Hey, ${profile.name}` : "RunStrong Lift"}</h1>
         </div>
         {nextRace && (
           <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line">
@@ -225,6 +233,9 @@ function Today() {
 
         {!current && (
           <>
+            {preview.session === "touch-up" && mode === "today" && profile?.goals.includes("healthy") && (
+              <Notice tone="good">Recommended: you said staying healthy is a goal, and touch-ups are how that happens.</Notice>
+            )}
             <p className="text-sm text-muted">
               Plan: <span className="font-medium text-ink">{(mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview).why}</span>
             </p>
