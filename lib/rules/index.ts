@@ -1,6 +1,7 @@
 // Rules engine entry point: decide the session, fill it with exercises, dose it.
 
 import { isPlyo, isoKind } from "../exercises";
+import type { Profile } from "../profile";
 import type { BlockPicks, LiftLog, Settings } from "../types";
 import { decideSession, weekCounts, type Decision, type RuleContext } from "./rules";
 import { currentBlock } from "./select";
@@ -30,6 +31,8 @@ export interface Workout {
 export interface GenerateInput extends RuleContext {
   settings: RuleContext["settings"] & Pick<Settings, "enablePower" | "enableMobility">;
   block: BlockPicks | null;
+  /** Onboarding answers. Optional: without it, nothing is filtered. */
+  profile?: Profile | null;
   /** 0 = first generate; Regenerate increments it. */
   attempt?: number;
   /** Use a precomputed decision (e.g. a catch-up) instead of deciding from ctx. */
@@ -60,6 +63,7 @@ export function generateWorkout(input: GenerateInput): Workout {
     enablePower: input.settings.enablePower,
     enableMobility: input.settings.enableMobility,
     plyoTypesThisWeek: plyoTypes,
+    profile: input.profile,
   });
 
   // Full sessions are ~45 min max: trim a set from the accessory slots until it fits.

@@ -1,6 +1,7 @@
 // The ONE storage module. Everything the app persists goes through here, so swapping
 // localStorage for a database later means rewriting only this file.
 
+import type { Profile } from "./profile";
 import type { BlockPicks, LiftLog, Race, RunType, Settings } from "./types";
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -22,12 +23,14 @@ export interface AppData {
   block: BlockPicks | null;
   /** Manual run-type overrides keyed by date. */
   overrides: Record<string, RunType>;
+  /** Onboarding answers; null until onboarding is finished. */
+  profile: Profile | null;
 }
 
 const KEY = "runstrong-lift:v1";
 
 function empty(): AppData {
-  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], block: null, overrides: {} };
+  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], block: null, overrides: {}, profile: null };
 }
 
 function read(): AppData {
@@ -59,6 +62,7 @@ function normalize(input: Partial<AppData>): AppData {
     history: Array.isArray(input.history) ? input.history : [],
     block: input.block ?? null,
     overrides: input.overrides ?? {},
+    profile: input.profile ?? null,
   };
 }
 
@@ -83,6 +87,10 @@ export const storage = {
 
   deleteLift(id: string) {
     update((d) => ({ ...d, history: d.history.filter((h) => h.id !== id) }));
+  },
+
+  saveProfile(profile: Profile | null) {
+    update((d) => ({ ...d, profile }));
   },
 
   saveBlock(block: BlockPicks | null) {

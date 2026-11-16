@@ -30,6 +30,7 @@ import {
   restFor,
   videoFor,
 } from "../exercises";
+import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsPlyoEmphasis, type Profile } from "../profile";
 import type { BlockPicks, Exercise, Phase, Slot } from "../types";
 import type { Decision } from "./rules";
 import { pick } from "./select";
@@ -64,6 +65,8 @@ export interface BuildOptions {
   enableMobility: boolean;
   /** Plyo categories already done in the last 7 days. */
   plyoTypesThisWeek: string[];
+  /** Onboarding answers: equipment, experience, trouble spots, goals. */
+  profile?: Profile | null;
   pool?: Exercise[];
 }
 
@@ -88,7 +91,8 @@ function baseDose(e: Exercise, key: string, slot: Slot = e.slot): Prescription {
     slot,
     exercise: e,
     sets: e.sets ?? 3,
-    reps: e.reps ?? "6-8",
+    // Some entries repeat the set count in reps ("2-3 x 20-45 s hold"); sets already says it.
+    reps: e.sets && e.reps ? e.reps.replace(/^\d+(-\d+)?\s*x\s*/, "") : e.reps ?? "6-8",
     rest: restFor(e),
     cue: cueFor(e),
     videoUrl: videoFor(e),
@@ -141,10 +145,24 @@ function choose(ctx: Ctx, key: string, candidates: Exercise[], prefer?: (e: Exer
   return pick(candidates, { key, date: ctx.date, attempt: ctx.attempt, used: ctx.used, block: ctx.block, prefer });
 }
 
+/** Candidates for a slot, narrowed to the runner's equipment and experience (see profile.ts). */
 function bySlot(ctx: Ctx, slot: Slot, session: string) {
-  return ctx.pool.filter(
-    (e) => e.slot === slot && e.session_types.includes(session) && allowedInPhase(e, ctx.phase),
+  return fitProfile(
+    ctx.pool.filter((e) => e.slot === slot && e.session_types.includes(session) && allowedInPhase(e, ctx.phase)),
+    ctx.profile,
   );
+}
+
+/** Prefer exercises for the runner's trouble spots, if they named any. */
+function preferFocus(ctx: Ctx): ((e: Exercise) => boolean) | undefined {
+  const spots = ctx.profile?.troubleSpots ?? [];
+  return spots.length ? (e) => matchesFocus(e, spots) : undefined;
+}
+
+function both(a?: (e: Exercise) => boolean, b?: (e: Exercise) => boolean) {
+  if (!a) return b;
+  if (!b) return a;
+  return (e: Exercise) => a(e) && b(e);
 }
 
 function missingPlyoTypes(ctx: Ctx): string[] {
@@ -163,7 +181,8 @@ function buildFull(ctx: Ctx, d: Decision): Prescription[] {
   const slots: Slot[] = [];
   if (d.plyos) {
     slots.push("A1");
-    if (offSeason || lateralDue) slots.push("A2");
+    // Goals "faster kick" / "run more efficiently" → always 2 plyos.
+    if (offSeason || lateralDue || wantsPlyoEmphasis(ctx.profile)) slots.push("A2");
   }
   if (d.strength) {
     if (ctx.enablePower) slots.push("POWER");
@@ -184,7 +203,7 @@ function buildFull(ctx: Ctx, d: Decision): Prescription[] {
   const out: Prescription[] = [];
   for (const slot of slots) {
     const key = `full:${slot}`;
-    const e = choose(ctx, key, bySlot(ctx, slot, "full"), isPlyo({ slot } as Exercise) ? preferMissing(ctx) : undefined);
+    const e = choose(ctx, key, bySlot(ctx, slot, "full"), isPlyo({ slot } as Exercise) ? preferMissing(ctx) : preferFocus(ctx));
     if (!e) continue;
     let p = baseDose(e, key);
     if (slot === "B1") p = { ...p, sets: 3, reps: "3-5", note: "@ RPE 7: leave 3 reps in the tank." };
@@ -198,9 +217,14 @@ function buildFull(ctx: Ctx, d: Decision): Prescription[] {
 
 function buildShort(ctx: Ctx, d: Decision): Prescription[] {
   const out: Prescription[] = [];
+  // The coach's Short template picks first; if none suit this runner's gear or
+  // experience, use the closest Full option for the slot instead.
   const firstOf = (slot: Slot) => {
-    const short = bySlot(ctx, slot, "short");
-    return short.length ? short : bySlot(ctx, slot, "full");
+    const short = ctx.pool.filter((e) => e.slot === slot && e.session_types.includes("short"));
+    const fits = ctx.profile
+      ? short.filter((e) => hasEquipment(e, ctx.profile!.equipment) && suitsExperience(e, ctx.profile!.experience))
+      : short;
+    return fits.length ? fits : bySlot(ctx, slot, "full");
   };
   if (d.plyos) {
     const dj = choose(ctx, "short:A1", firstOf("A1"));
@@ -233,7 +257,7 @@ function pickIsos(
   count: number,
   kinds: ("overcoming" | "yielding" | "hold")[],
 ): Exercise[] {
-  const isos = ctx.pool.filter((e) => {
+  const isos = fitProfile(ctx.pool.filter((e) => {
     const k = isoKind(e);
     return (
       !!k &&
@@ -242,8 +266,8 @@ function pickIsos(
       e.slot !== "UPPER" &&
       allowedInPhase(e, ctx.phase)
     );
-  });
-  const preferKind = (e: Exercise) => isoKind(e) === kinds[0];
+  }), ctx.profile);
+  const preferKind = both((e: Exercise) => isoKind(e) === kinds[0], preferFocus(ctx))!;
   const chosen: Exercise[] = [];
   const first = choose(ctx, `${session}:iso1`, isos.filter(isCalfAnkle), preferKind);
   if (first) chosen.push(first);
@@ -299,7 +323,7 @@ function buildTouchUp(ctx: Ctx): Prescription[] {
   ];
   const out: Prescription[] = [];
   for (const [key, slot] of plan) {
-    const e = choose(ctx, key, pool(slot));
+    const e = choose(ctx, key, pool(slot), preferFocus(ctx));
     if (!e) continue;
     let p = { ...baseDose(e, key), sets: Math.min(e.sets ?? 2, 2) };
     if (isoKind(e) === "overcoming") p = overcomingDose(p);
