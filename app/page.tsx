@@ -1,69 +1,248 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Link from "next/link";
+import { useMemo, useState } from "react";
+import { RunRow } from "@/components/RunList";
+import { WorkoutCard } from "@/components/WorkoutCard";
+import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
+import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
+import { dayType, futureHardOverrides, RUN_TYPE_LABEL } from "@/lib/day";
+import {
+  addToBlock,
+  decideCatchUp,
+  decideSession,
+  generateWorkout,
+  PHASE_LABEL,
+  toLiftLog,
+  type GenerateInput,
+  type Workout,
+} from "@/lib/rules";
+import { newId, storage } from "@/lib/storage";
+import { useHydrated, useStore } from "@/lib/useStore";
+import { useRuns } from "@/lib/useRuns";
+import type { RunType } from "@/lib/types";
+
+const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
+
+export default function TodayPage() {
+  const hydrated = useHydrated();
+  if (!hydrated) return <p className="pt-10 text-center text-muted">Loading…</p>;
+  return <Today />;
+}
+
+function Today() {
+  const data = useStore();
+  const { settings, races, history, overrides, block } = data;
+  const runsState = useRuns(settings.mockMode);
+  const { runs, source, status, loading, error } = runsState;
+  const today = todayLocal();
+  const [shortOnTime, setShortOnTime] = useState(false);
+  const [mode, setMode] = useState<"today" | "catchup">("today");
+  const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
+  const [saved, setSaved] = useState<string | null>(null);
+
+  const day = dayType(today, runs, overrides, races);
+  const yesterday = dayType(addDays(today, -1), runs, overrides, races);
+
+  const ctx: GenerateInput = useMemo(
+    () => ({
+      today,
+      dayType: day.type,
+      phase: settings.phase,
+      races,
+      settings,
+      history,
+      block,
+      shortOnTime,
+      extraHardDays: futureHardOverrides(today, overrides),
+    }),
+    [today, day.type, settings, races, history, block, shortOnTime, overrides],
+  );
+
+  const preview = decideSession(ctx);
+  const todayIsLift = !["touch-up", "none"].includes(preview.session);
+  const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
+  const sig = JSON.stringify([today, day.type, settings, races, shortOnTime, mode]);
+  const current = state?.sig === sig ? state : null;
+  const loggedToday = history.filter((h) => h.date === today);
+
+  const nextRace = races.find((r) => r.date >= today);
+
+  function generate(attempt = 0) {
+    const decision = mode === "catchup" && catchUp && "session" in catchUp ? catchUp : undefined;
+    const workout = generateWorkout({ ...ctx, attempt, decision });
+    setState({ sig, workout, done: new Set() });
+    setSaved(null);
+  }
+
+  function toggleDone(id: string) {
+    if (!current) return;
+    const done = new Set(current.done);
+    if (done.has(id)) done.delete(id);
+    else done.add(id);
+    setState({ ...current, done });
+  }
+
+  function complete() {
+    if (!current) return;
+    const w = current.workout;
+    const doneIds = current.done.size > 0 ? [...current.done] : undefined;
+    storage.addLift(toLiftLog(w, newId(), doneIds));
+    storage.saveBlock(addToBlock(block, today, w.items.map((i) => ({ key: i.key, exerciseId: i.exercise.id }))));
+    setSaved(w.title);
+    setState(null);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <header className="flex items-end justify-between gap-3">
+        <div>
+          <p className="text-sm text-muted">{formatDay(today)}</p>
+          <h1 className="text-2xl font-bold tracking-tight">RunStrong Lift</h1>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        {nextRace && (
+          <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line">
+            <span className="block font-semibold">{nextRace.name}</span>
+            <span className="text-muted">
+              {diffDays(today, nextRace.date) === 0 ? "today" : `in ${diffDays(today, nextRace.date)} days`} · {nextRace.priority}
+            </span>
+          </Link>
+        )}
+      </header>
+
+      {source === "mock" && (
+        <div className="mt-4">
+          <Notice>
+            Demo data: these runs are made up.{" "}
+            {status?.configured ? (
+              <Link className="font-semibold text-accent" href="/settings">Turn off in Settings</Link>
+            ) : (
+              <>Set up Strava (see SETUP.md) to use your real runs.</>
+            )}
+          </Notice>
         </div>
-      </main>
+      )}
+      {status?.configured && !status.connected && !settings.mockMode && (
+        <Card className="mt-4 space-y-3">
+          <p className="text-sm">Connect Strava so the app can see today&apos;s run.</p>
+          <div className="flex gap-2">
+            <a href="/api/strava/login" className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink">
+              Connect Strava
+            </a>
+            <Button onClick={() => storage.saveSettings({ ...settings, mockMode: true })}>Try demo data</Button>
+          </div>
+        </Card>
+      )}
+      {error && (
+        <div className="mt-4">
+          <Notice tone="warn">{error}</Notice>
+        </div>
+      )}
+
+      <SectionTitle right={<Link href="/settings" className="text-xs font-medium text-accent">{PHASE_LABEL[settings.phase]}</Link>}>
+        Today&apos;s run
+      </SectionTitle>
+      <Card>
+        {loading ? (
+          <p className="text-sm text-muted">Loading runs…</p>
+        ) : day.runs.length ? (
+          <div className="divide-y divide-line">
+            {day.runs.map((r) => (
+              <RunRow key={r.id} run={r} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted">No run logged today yet. Pick the day type below.</p>
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {TYPES.map((t) => (
+            <Chip
+              key={t}
+              active={day.type === t}
+              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
+            >
+              {RUN_TYPE_LABEL[t]}
+            </Chip>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          {day.source === "override"
+            ? "You set this. Tap it again to go back to auto."
+            : day.source === "race-schedule"
+              ? "Race on your schedule today."
+              : day.source === "strava"
+                ? "Detected from Strava's workout type."
+                : "Nothing detected, so treated as rest."}
+        </p>
+      </Card>
+
+      {catchUp && "blocked" in catchUp && (
+        <div className="mt-4">
+          <Notice tone="warn">{catchUp.blocked}</Notice>
+        </div>
+      )}
+      {catchUp && "session" in catchUp && (
+        <Card className="mt-4">
+          <Toggle
+            checked={mode === "catchup"}
+            onChange={(v) => setMode(v ? "catchup" : "today")}
+            label="Lift this morning for yesterday"
+            hint="You didn't lift after yesterday's hard run, and the next hard day is 48h+ away."
+          />
+        </Card>
+      )}
+
+      <SectionTitle>Lift</SectionTitle>
+      {loggedToday.length > 0 && (
+        <div className="mb-3">
+          <Notice tone="good">
+            Logged today: {loggedToday.map((l) => l.session.replace("-", " + ")).join(", ")}.
+          </Notice>
+        </div>
+      )}
+      {saved && (
+        <div className="mb-3">
+          <Notice tone="good">Saved “{saved}” to your history.</Notice>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {(mode === "today" ? preview.strength : catchUp && "session" in catchUp && catchUp.strength) && (
+          <Card className="py-1">
+            <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time" hint="20-min version" />
+          </Card>
+        )}
+
+        {!current && (
+          <>
+            <p className="text-sm text-muted">
+              Plan: <span className="font-medium text-ink">{(mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview).why}</span>
+            </p>
+            {preview.session !== "none" || mode === "catchup" ? (
+              <Button variant="primary" className="w-full py-4 text-base" onClick={() => generate(0)} disabled={loading}>
+                Generate workout
+              </Button>
+            ) : (
+              <Notice>Rest day. Nothing to lift.</Notice>
+            )}
+          </>
+        )}
+
+        {current && (
+          <>
+            <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} />
+            <div className="grid grid-cols-2 gap-2">
+              <Button onClick={() => generate(current.workout.attempt + 1)}>Regenerate</Button>
+              <Button variant="primary" onClick={complete} disabled={current.workout.items.length === 0}>
+                Mark complete
+              </Button>
+            </div>
+            <p className="text-center text-xs text-muted">
+              Tick off exercises as you go. Mark complete saves the ticked ones (or all if none are ticked).
+            </p>
+          </>
+        )}
+      </div>
     </div>
   );
 }
