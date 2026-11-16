@@ -1,0 +1,6627 @@
+{
+ "_meta": {
+  "description": "Exercise bank built from @the_runstrong_coach's free online exercise library (names, categories, tiers) plus the 43 'featured' exercises seen with sets/reps in his reels. Default sets/reps, equipment, intensity and unilateral flags on library entries are auto-assigned, not his. Videos live on his site at video_url.",
+  "slots": {
+   "A1": "vertical/linear plyo",
+   "A2": "lateral plyo",
+   "B1": "lower-body compound",
+   "POWER": "Olympic-style power (optional)",
+   "C1": "posterior chain",
+   "C2": "calf/foot/ankle",
+   "D1": "hip flexor",
+   "D2": "abduction/adduction",
+   "ISO": "isometric (from reels)",
+   "MOBILITY": "hip mobility/control",
+   "UPPER": "upper body/postural (optional, max 1 per session)"
+  },
+  "plyo_tiers": "From his library: light < medium < ping (fast, reactive) / deep (big landings). Intensity mapping is an assumption."
+ },
+ "featured": [
+  {
+   "id": "drop-jump",
+   "name": "Drop jump",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "deep",
+   "equipment": "box",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "rest": "20 s between reps, 60 s between sets",
+   "cue": "Step off, land with both feet, floor is lava: minimize ground contact. Height is not the goal.",
+   "session_types": [
+    "full",
+    "short"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "split-stance-drop-jump",
+   "name": "Split-stance drop jump",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "deep",
+   "equipment": "box",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3/side",
+   "rest": "60 s",
+   "cue": "Land in a split stance and rebound fast.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "pogo",
+   "name": "Pogos",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "pogo",
+   "equipment": "none",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "20 contacts",
+   "rest": "60 s",
+   "cue": "Stiff ankles, quick bounce, whole-foot contact.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "single-leg-pogo",
+   "name": "Single-leg pogos",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "pogo",
+   "equipment": "none",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "15/side",
+   "rest": "60 s",
+   "cue": "Quiet, springy contacts; keep the knee soft but stiff ankle.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "split-exchange-pogo",
+   "name": "Split exchange pogos",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "pogo",
+   "equipment": "none",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "20 m",
+   "rest": "60 s",
+   "cue": "Switch legs in the air each contact while moving forward.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "sl-hop",
+   "name": "Alternating single-leg hopping",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "single-leg-hop",
+   "equipment": "none",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "20-30 m",
+   "rest": "90 s",
+   "cue": "Build up to it; arguably the best plyo for running efficiency.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "band-assisted-sl-hop",
+   "name": "Band-assisted single-leg hops",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "single-leg-hop",
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10/side",
+   "rest": "60 s",
+   "cue": "Use the band to keep contacts fast while learning the pattern.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "db-jump",
+   "name": "Dumbbell jump",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "loaded",
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 4,
+   "reps": "2",
+   "rest": "60-90 s",
+   "cue": "Light dumbbells, max intent, stick the landing.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "skips-bounds",
+   "name": "Skips, gallops and bounds",
+   "slot": "A1",
+   "category": "plyo-vertical",
+   "plyo_type": "rhythm",
+   "equipment": "none",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "50-60 m",
+   "rest": "walk back",
+   "cue": "Long reps so you actually find the rhythm.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "slalom-jump",
+   "name": "Slalom jumps",
+   "slot": "A2",
+   "category": "plyo-lateral",
+   "plyo_type": "lateral",
+   "equipment": "none",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "rest": "60 s",
+   "cue": "Side to side with quick contacts.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "skater-bound",
+   "name": "Skater bounds",
+   "slot": "A2",
+   "category": "plyo-lateral",
+   "plyo_type": "lateral",
+   "equipment": "none",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "6/side",
+   "rest": "60 s",
+   "cue": "Push laterally, stick each landing.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "slant-board-hop",
+   "name": "Slant board lateral hops",
+   "slot": "A2",
+   "category": "plyo-lateral",
+   "plyo_type": "lateral",
+   "equipment": "slant board",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10/side",
+   "rest": "45 s",
+   "cue": "Builds ankle stability against rolling.",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "back-squat",
+   "name": "Back squat",
+   "slot": "B1",
+   "category": "lower-compound",
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "rest": "2-3 min",
+   "cue": "RPE 7, crisp reps, never to failure.",
+   "session_types": [
+    "full",
+    "short"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "trap-bar-deadlift",
+   "name": "Trap bar deadlift",
+   "slot": "B1",
+   "category": "lower-compound",
+   "equipment": "trap bar",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "rest": "2-3 min",
+   "cue": "Heavy and fast off the floor; doubles as core work.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "bulgarian-split-squat",
+   "name": "Bulgarian split squat",
+   "slot": "B1",
+   "category": "lower-compound",
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "5/side",
+   "rest": "90 s",
+   "cue": "Feet close = more glute; farther = more hamstring.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "sled-backpedal",
+   "name": "Sled backpedal",
+   "slot": "B1",
+   "category": "lower-compound",
+   "equipment": "sled",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "20 m",
+   "rest": "90 s",
+   "cue": "Low impact quad work.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "rdl",
+   "name": "Romanian deadlift",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "rest": "2 min",
+   "cue": "Hip hinge, hamstrings loaded from the hip.",
+   "session_types": [
+    "full",
+    "short"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "landmine-rdl",
+   "name": "Landmine RDL",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "landmine",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "rest": "90 s",
+   "cue": "The landmine arc naturally teaches the hinge.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "sl-landmine-rdl",
+   "name": "Single-leg landmine RDL",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "landmine",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "90 s",
+   "cue": "Drive your back heel to the ceiling. Slow and intentional.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "slider-rdl",
+   "name": "Slider RDL",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "dumbbells, slider",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "90 s",
+   "cue": "Back toe stays on the slider for balance so you can load more.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "nordic",
+   "name": "Nordic curl",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "nordic bench or partner",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3",
+   "rest": "2 min",
+   "cue": "Hard cap: 3 sets x 3 reps. Don't start here if new.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "sprinter-ham-curl",
+   "name": "Sprinter hamstring curl",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "cable or band",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "60 s",
+   "cue": "Hamstring trained from a flexed hip, like running.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "physioball-oscillation",
+   "name": "Physioball hamstring oscillations",
+   "slot": "C1",
+   "category": "posterior-chain",
+   "equipment": "physioball",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10 s",
+   "rest": "60 s",
+   "cue": "Rapid contract-relax cycles.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "bb-calf-raise",
+   "name": "Barbell calf raise",
+   "slot": "C2",
+   "category": "calf",
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "rest": "60 s",
+   "cue": "Press through the big toe.",
+   "session_types": [
+    "full",
+    "short"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "sl-calf-raise",
+   "name": "Single-leg calf raise",
+   "slot": "C2",
+   "category": "calf",
+   "equipment": "dumbbell",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "rest": "60 s",
+   "cue": "Full range, press through the big toe.",
+   "session_types": [
+    "full",
+    "short",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "runner-stance-calf",
+   "name": "Runner-stance calf raise",
+   "slot": "C2",
+   "category": "calf",
+   "equipment": "dumbbell, step",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "60 s",
+   "cue": "Opposite knee driven up like a stride.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "bent-knee-calf",
+   "name": "Bent-knee calf raise (soleus)",
+   "slot": "C2",
+   "category": "calf",
+   "equipment": "dumbbell or machine",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "10",
+   "rest": "60 s",
+   "cue": "Soleus does most of the work in distance running.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "angled-calf-raise",
+   "name": "Angled / slant board calf raise",
+   "slot": "C2",
+   "category": "calf",
+   "equipment": "slant board",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10",
+   "rest": "45 s",
+   "cue": "Builds 360-degree foot and ankle resilience.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "farmer-toe-walk",
+   "name": "Farmer carry toe walk",
+   "slot": "C2",
+   "category": "foot",
+   "equipment": "dumbbells",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "60 m",
+   "rest": "60 s",
+   "cue": "On the balls of your feet; play with the angles.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "big-toe-iso",
+   "name": "Big toe overcoming iso",
+   "slot": "C2",
+   "category": "foot",
+   "equipment": "none",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "5 x 3-5 s",
+   "rest": "30 s",
+   "cue": "Press the big toe down as hard as possible.",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "tib-bar",
+   "name": "Tib bar raises",
+   "slot": "C2",
+   "category": "foot",
+   "equipment": "tib bar",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "12",
+   "rest": "45 s",
+   "cue": "Front of shin; controlled tempo.",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "banded-hf-iso",
+   "name": "Banded hip flexor overcoming iso",
+   "slot": "D1",
+   "category": "hip-flexor",
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "5 x 3-5 s",
+   "rest": "30 s",
+   "cue": "Drive the knee up hard against the band.",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "banded-sprint-hf",
+   "name": "Banded sprint-angle hip flexor",
+   "slot": "D1",
+   "category": "hip-flexor",
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "rest": "45 s",
+   "cue": "Lean like a sprint start and punch the knee through.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "reverse-hyper-hf",
+   "name": "Reverse hyper hip flexor",
+   "slot": "D1",
+   "category": "hip-flexor",
+   "equipment": "reverse hyper",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "rest": "45 s",
+   "cue": "Lift legs from hanging using the hip flexors.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "band-hf-march",
+   "name": "Band hip flexor (lying)",
+   "slot": "D1",
+   "category": "hip-flexor",
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "rest": "45 s",
+   "cue": "Lying on back, band on the foot, drive knee to chest.",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "rocking-hf",
+   "name": "Dynamic rocking hip flexor",
+   "slot": "D1",
+   "category": "hip-flexor",
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3",
+   "rest": "45 s",
+   "cue": "Rock back on the bench and lift both legs.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "copenhagen",
+   "name": "Copenhagen plank",
+   "slot": "D2",
+   "category": "adduction",
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "20 s/side",
+   "rest": "45 s",
+   "cue": "Progress lever length over weeks.",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "monster-walk",
+   "name": "Long-range monster walks",
+   "slot": "D2",
+   "category": "abduction",
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "20 m",
+   "rest": "30 s",
+   "cue": "Extra volume only off-season and early in-season.",
+   "session_types": [
+    "full"
+   ],
+   "phases": [
+    "off-season",
+    "early"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "ffess-oscillation",
+   "name": "FFESS oscillation",
+   "slot": "A1",
+   "category": "oscillation",
+   "equipment": "box",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "15/side",
+   "rest": "45 s",
+   "cue": "Front-foot-elevated split squat, quick small bounces at the bottom.",
+   "session_types": [
+    "full"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "split-squat-overcoming-iso",
+   "name": "Split squat overcoming iso",
+   "slot": "ISO",
+   "category": "isometric-overcoming",
+   "equipment": "squat rack (pin)",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3 x 3-5 s/side",
+   "rest": "60 s",
+   "cue": "Push max effort into fixed pins. High force, almost no fatigue.",
+   "session_types": [
+    "plyos-isos",
+    "taper"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "hamstring-overcoming-iso",
+   "name": "Overcoming hamstring iso (roller)",
+   "slot": "ISO",
+   "category": "isometric-overcoming",
+   "equipment": "foam roller",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3 x 3-5 s/side",
+   "rest": "45 s",
+   "cue": "Heel drives down into the roller as hard as possible.",
+   "session_types": [
+    "plyos-isos",
+    "taper"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "ss-ankle-iso",
+   "name": "Split-stance ankle iso",
+   "slot": "ISO",
+   "category": "isometric-yielding",
+   "equipment": "none",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "30 s/side",
+   "rest": "30 s",
+   "cue": "Rear heel raised, hold strong. Good for nagging spots.",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "return",
+    "touch-up"
+   ],
+   "featured": true,
+   "source": "reels"
+  },
+  {
+   "id": "ss-iso",
+   "name": "Split-stance iso hold",
+   "slot": "ISO",
+   "category": "isometric-yielding",
+   "equipment": "none",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "30-45 s/side",
+   "rest": "30 s",
+   "cue": "Low split stance hold. Used in return weeks.",
+   "session_types": [
+    "return",
+    "plyos-isos"
+   ],
+   "featured": true,
+   "source": "reels"
+  }
+ ],
+ "library": [
+  {
+   "id": "touch-the-ceiling",
+   "name": "Touch the Ceiling",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "other",
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "split-squat-oscillations-deep-tier",
+   "name": "Split Squat Oscillations - Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "split-squat-oscillations-10in-deep-tier",
+   "name": "Split Squat Oscillations - 10in Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "split-squat-oscillations-8in-deep-tier",
+   "name": "Split Squat Oscillations - 8in Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "split-squat-oscillations-6in-deep-tier",
+   "name": "Split Squat Oscillations - 6in Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "split-squat-oscillations-4in-deep-tier",
+   "name": "Split Squat Oscillations - 4in deep tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-deceleration-18in-deep-tier",
+   "name": "Single Leg Deceleration - 18in deep tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-deceleration-12in-deep-tier",
+   "name": "Single Leg Deceleration - 12in deep tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "slalom-leap-deep-tier",
+   "name": "Slalom Leap - Deep Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "slalom-leap-ping-tier",
+   "name": "Slalom Leap - Ping Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "slalom-leap-medium-tier",
+   "name": "Slalom leap - Medium Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "slalom-leap-light-tier",
+   "name": "Slalom Leap - light Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skips-for-height-ping-tier",
+   "name": "Skips for height - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "rhythm",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skips-for-distance-ping-tier",
+   "name": "Skips for Distance - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "rhythm",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skips-medium-tier",
+   "name": "Skips - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "rhythm",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skips-light-tier",
+   "name": "Skips - Light Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "rhythm",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skater-bounds-deep-tier",
+   "name": "Skater bounds - Deep Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "skater-bounds-medium-tier",
+   "name": "Skater Bounds - Medium Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "plyo-step-up",
+   "name": "Plyo Step Up",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "other",
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-squat-oscillations-deep-tier",
+   "name": "Med Ball Squat Oscillations - Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-squat-in-out-oscillations",
+   "name": "Med Ball Squat In-out Oscillations",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "oscillation",
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-split-exchange-pogo-ping-tier",
+   "name": "Locomotive Split Exchange Pogo - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-split-exchange-pogo-medium-tier",
+   "name": "Locomotive Split Exchange Pogo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-split-exchange-pogo-light-tier",
+   "name": "Locomotive Split Exchange pogo - Light tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-single-leg-pogo-ping-tier",
+   "name": "Locomotive Single Leg Pogo - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-single-leg-pogo-medium-tier",
+   "name": "Locomotive Single Leg Pogo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "locomotive-single-leg-pogo-light-tier",
+   "name": "Locomotive Single Leg Pogo - Light Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hop-hop-hop-ping-tier",
+   "name": "Hop Hop HOP - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "single-leg-hop",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hop-hop-hop-medium-tier",
+   "name": "Hop hop HOP - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "single-leg-hop",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hop-hop-hop-light-tier",
+   "name": "Hop Hop HOP - Light Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "single-leg-hop",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hand-assisted-split-squat-oscillations",
+   "name": "Hand Assisted Split Squat Oscillations",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "oscillation",
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hand-assisted-split-exchange-pogo-medium-tier",
+   "name": "Hand Assisted Split Exchange Pogo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hand-assisted-double-leg-pogo-medium-tier",
+   "name": "Hand Assisted Double Leg Pogo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hand-assisted-single-leg-pogo-medium-tier",
+   "name": "Hand Assisted Single Leg Pogo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-jump-reactive",
+   "name": "Dumbbell Jump - Reactive",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "loaded",
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-jump-double-action",
+   "name": "Dumbbell Jump - Double Action",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "loaded",
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-jump-single-action",
+   "name": "Dumbbell Jump - Single Action",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "loaded",
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "drop-jump-16in-to-24in-box",
+   "name": "Drop Jump 16in to 24in Box",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "drop-jump-12in-to-16in-box",
+   "name": "Drop Jump 12in to 16in Box",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "depth-jump-12in-to-16in-box",
+   "name": "Depth Jump 12in to 16in box",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dc-skater-bound-deep-tier",
+   "name": "DC Skater Bound - Deep Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "DC block",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dc-skater-bound-ping-tier",
+   "name": "DC Skater Bound - Ping Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "DC block",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dc-skater-bound-medium-tier",
+   "name": "DC Skater Bound - Medium Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "DC block",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dc-skater-bound-light-tier",
+   "name": "DC Skater Bound - Light Tier",
+   "slot": "A2",
+   "library_category": "plyo",
+   "plyo_type": "lateral",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "DC block",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bss-plyo-ping-tier",
+   "name": "BSS Plyo - Ping Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "other",
+   "tier": "ping",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bss-plyo-medium-tier",
+   "name": "BSS Plyo - Medium Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "other",
+   "tier": "medium",
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "band-assisted-split-squat-oscillations-deep-tier",
+   "name": "Band Assisted Split Squat Oscillations - Deep Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "deep",
+   "tier": "deep",
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "band-assisted-split-exchange-pogo",
+   "name": "Band Assisted Split Exchange Pogo",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "band-assisted-double-leg-pogo-light-tier",
+   "name": "Band Assisted Double Leg Pogo - Light Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "band-assisted-single-leg-pogo-light-tier",
+   "name": "Band Assisted Single Leg Pogo - Light Tier",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "pogo",
+   "tier": "light",
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10-20 contacts or 20 m",
+   "session_types": [
+    "full",
+    "plyos-isos"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "accentuated-jumps",
+   "name": "Accentuated Jumps",
+   "slot": "A1",
+   "library_category": "plyo",
+   "plyo_type": "other",
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-plyometrics",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-back-squat",
+   "name": "Barbell Back Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-box-squat",
+   "name": "Barbell Box Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-bulgarian-split-squat",
+   "name": "Barbell Bulgarian Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-cyclist-squat",
+   "name": "Barbell Cyclist Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-front-squat",
+   "name": "Barbell Front Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-lunge",
+   "name": "Barbell Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-alternating-lunge",
+   "name": "Barbell Alternating Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-alt-reverse-lunge",
+   "name": "Barbell Alt Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-reverse-lunge",
+   "name": "Barbell Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-split-squat",
+   "name": "Barbell Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-step-up-dynamic",
+   "name": "Barbell Step Up Dynamic",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-step-up-with-tempo",
+   "name": "Barbell Step Up With Tempo",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-step-up-with-pick-up",
+   "name": "Barbell Step Up With Pick Up",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-walking-lunge",
+   "name": "Barbell Walking Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "belt-squat",
+   "name": "Belt Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "belt squat",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "clean-deadlift",
+   "name": "Clean Deadlift",
+   "slot": "POWER",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "clean-shrug",
+   "name": "Clean Shrug",
+   "slot": "POWER",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cyclist-squat",
+   "name": "Cyclist Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-bulgarian-split-squat",
+   "name": "Dumbbell Bulgarian Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-reverse-lunge",
+   "name": "Dumbbell Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-split-squat",
+   "name": "Dumbbell Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-step-up",
+   "name": "Dumbbell Step Up",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-walking-lunge",
+   "name": "Dumbbell Walking Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "ffess",
+   "name": "FFESS",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "front-rack-lunge",
+   "name": "Front Rack Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "front-rack-reverse-lunge",
+   "name": "Front Rack Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "front-rack-step-up",
+   "name": "Front Rack Step Up",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "goblet-squat",
+   "name": "Goblet Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "heel-elevated-goblet-squat",
+   "name": "Heel Elevated Goblet Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hatfield-squat",
+   "name": "Hatfield Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hatfield-split-squat",
+   "name": "Hatfield Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hatfield-bulgarian-split-squat",
+   "name": "Hatfield Bulgarian Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hatfield-floating-heel-split-squat",
+   "name": "Hatfield Floating Heel Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "leg-press",
+   "name": "Leg Press",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "pin-squat",
+   "name": "Pin Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "pistol-squat",
+   "name": "Pistol Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trx-pistol-squat",
+   "name": "TRX Pistol Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "TRX",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "powerjerk",
+   "name": "Powerjerk",
+   "slot": "POWER",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "safety-bar-squat",
+   "name": "Safety Bar Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "safety-bar-split-squat",
+   "name": "Safety Bar Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "safety-bar-reverse-lunge",
+   "name": "Safety Bar Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "safety-bar-bulgarian-split-squat",
+   "name": "Safety Bar Bulgarian Split Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-squat-on-box",
+   "name": "Single Leg Squat On Box",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-squat-to-bench",
+   "name": "Single Leg Squat To Bench",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "sled-push-pull",
+   "name": "Sled Push Pull",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "sled",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trap-bar-deadlift",
+   "name": "Trap Bar Deadlift",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "trap bar",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "zercher-squat",
+   "name": "Zercher Squat",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "zercher-lunge",
+   "name": "Zercher Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "zercher-reverse-lunge",
+   "name": "Zercher Reverse Lunge",
+   "slot": "B1",
+   "library_category": "lower",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "3-5",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-lower-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "90-90",
+   "name": "90:90",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "abduction-in-side-plank",
+   "name": "Abduction In Side Plank",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "abductor-oscillations-on-band",
+   "name": "Abductor Oscillations On Band",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "adductor-plate-push",
+   "name": "Adductor Plate Push",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "plate",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "abductor-plate-push",
+   "name": "Abductor Plate Push",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "plate",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "adductor-oscillations-on-band",
+   "name": "Adductor Oscillations On Band",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "adductor-slide",
+   "name": "Adductor Slide",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "adductor-slide-splits",
+   "name": "Adductor Slide Splits",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "adductor-sit-up-on-ghd",
+   "name": "Adductor Sit Up On GHD",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "GHD",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-abduction",
+   "name": "Banded Abduction",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-abduction-in-side-plank",
+   "name": "Banded Abduction In Side Plank",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-adductor-slide",
+   "name": "Banded Adductor Slide",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-chain-adductor-drag",
+   "name": "Banded Chain Adductor Drag",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-chain-abductor-drag",
+   "name": "Banded Chain Abductor Drag",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hip-flexor",
+   "name": "Banded Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hip-flexor-in-front-plank",
+   "name": "Banded Hip Flexor In Front Plank",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hip-flexor-in-side-plank",
+   "name": "Banded Hip Flexor In Side Plank",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hip-flexor-march",
+   "name": "Banded Hip Flexor March",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hurdler-cars",
+   "name": "Banded Hurdler CARs",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-overcoming-hip-flexor-iso",
+   "name": "Banded Overcoming Hip Flexor Iso",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-external-rotation",
+   "name": "Banded External Rotation",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-internal-rotation",
+   "name": "Banded Internal Rotation",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-overcoming-banded-abductor-iso",
+   "name": "Banded Overcoming Banded Abductor Iso",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "butterfly-hip-lifts",
+   "name": "Butterfly Hip Lifts",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-hip-flexor",
+   "name": "Cable Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-hip-flexor-with-dowel",
+   "name": "Cable Hip Flexor With Dowel",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "straight-leg-cable-hip-flexor",
+   "name": "Straight Leg Cable Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-abductor",
+   "name": "Cable Abductor",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-adductor",
+   "name": "Cable Adductor",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "copenhagen",
+   "name": "Copenhagen",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "copenhagen-dips",
+   "name": "Copenhagen Dips",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "copenhagen-plank-with-drop",
+   "name": "Copenhagen Plank With Drop",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "figure-4-contours",
+   "name": "Figure 4 Contours",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "glute-bridge-iso-with-hip-flexor",
+   "name": "Glute Bridge Iso With Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "heel-clicks",
+   "name": "Heel Clicks",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hip-airplane",
+   "name": "Hip Airplane",
+   "slot": "MOBILITY",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hip-flexor-flutter-oscillations",
+   "name": "Hip Flexor Flutter Oscillations",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hip-flexor-iso-with-glute-bridge-up",
+   "name": "Hip Flexor Iso With Glute Bridge Up",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "rocking-hip-flexor",
+   "name": "Rocking Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "rocking-hip-flexor-iso",
+   "name": "Rocking Hip Flexor Iso",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "sprint-angle-hip-flexor",
+   "name": "Sprint Angle Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kettlebell-hip-flexor",
+   "name": "Kettlebell Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "kettlebell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kettlebell-hip-flexor-in-deadhang",
+   "name": "Kettlebell Hip Flexor In Deadhang",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "kettlebell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kettlebell-hip-flexor-iso-in-deadhang",
+   "name": "Kettlebell Hip Flexor Iso In Deadhang",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "kettlebell",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "landmine-cossack-slide",
+   "name": "Landmine Cossack Slide",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "landmine",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "lateral-lunge-on-dc",
+   "name": "Lateral Lunge On DC",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "DC block",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-adductor-squeeze",
+   "name": "Med Ball Adductor Squeeze",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "monster-walk",
+   "name": "Monster Walk",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "plate-hip-flexor",
+   "name": "Plate Hip Flexor",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "plate",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "reverse-squat",
+   "name": "Reverse Squat",
+   "slot": "D2",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-dumbbell-sit-up",
+   "name": "Single Leg Dumbbell Sit Up",
+   "slot": "D1",
+   "library_category": "hip",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-hip-flexor",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "achilles-yielding-iso-on-box",
+   "name": "Achilles Yielding Iso On Box",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "yielding",
+   "equipment": "box",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "achilles-yielding-iso-against-band",
+   "name": "Achilles Yielding Iso Against Band",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "yielding",
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "achilles-yielding-iso-on-leg-press",
+   "name": "Achilles Yielding Iso On Leg Press",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "yielding",
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "balance-pad-around-the-world",
+   "name": "Balance Pad Around The World",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-toe-adduction",
+   "name": "Banded Toe Adduction",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-calf-raise",
+   "name": "Barbell Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-calf-raise-on-dc-box",
+   "name": "Barbell Calf Raise On DC Box",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-toes-in-calf-raise-on-dc",
+   "name": "Barbell Toes In Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-toes-out-calf-raise-on-dc",
+   "name": "Barbell Toes Out Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "belt-squat-calf-raise",
+   "name": "Belt Squat Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "belt squat",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "belt-squat-toes-in-calf-raise",
+   "name": "Belt Squat Toes In Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "belt squat",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "belt-squat-toes-out-calf-raise",
+   "name": "Belt Squat Toes Out Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "belt squat",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "big-toe-banded-extension",
+   "name": "Big Toe Banded Extension",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "big-toe-banded-flexion",
+   "name": "Big Toe Banded Flexion",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "big-toe-flexion-overcoming-iso-on-floor",
+   "name": "Big Toe Flexion Overcoming Iso On Floor",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "big-toe-flexion-overcoming-iso-on-incline-surface",
+   "name": "Big Toe Flexion Overcoming Iso On Incline Surface",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "blind-bosu",
+   "name": "Blind Bosu",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bosu",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bosu-around-the-world",
+   "name": "Bosu Around The World",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bosu",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bosu-wall-ball",
+   "name": "Bosu Wall Ball",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bosu",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bodyweight-calf-raise-on-box",
+   "name": "Bodyweight Calf Raise On Box",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bodyweight-toes-in-calf-raise-on-box",
+   "name": "Bodyweight Toes In Calf Raise On Box",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bodyweight-toes-out-calf-raise-on-box",
+   "name": "Bodyweight Toes Out Calf Raise On Box",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "box",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-calf-raise-on-dc",
+   "name": "Dumbbell Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-toes-in-calf-raise-on-dc",
+   "name": "Dumbbell Toes In Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-toes-out-calf-raise-on-dc",
+   "name": "Dumbbell Toes Out Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "farmer-carry-toe-walk",
+   "name": "Farmer Carry Toe Walk",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "foot-plank",
+   "name": "Foot Plank",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "foot-tso",
+   "name": "Foot TSO",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "heel-walk",
+   "name": "Heel Walk",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "leg-press-calf-raise",
+   "name": "Leg Press Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "leg-press-soleus-press",
+   "name": "Leg Press Soleus Press",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "leg-press-toes-in-calf-raise",
+   "name": "Leg Press Toes In Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "leg-press-toes-out-calf-raise",
+   "name": "Leg Press Toes Out Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "seated-calf-raise",
+   "name": "Seated Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "short-foot",
+   "name": "Short Foot",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-balance-pad-dribble",
+   "name": "Single Leg Balance Pad Dribble",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-balance-pad-wall-ball",
+   "name": "Single Leg Balance Pad Wall Ball",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-seated-dumbbell-calf-raise-on-dc",
+   "name": "Single Leg Seated Dumbbell Calf Raise On DC",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-press-calf-raise",
+   "name": "Single Leg Press Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "leg press",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-dumbbell-calf-raise-on-dc-block",
+   "name": "Single Leg Dumbbell Calf Raise On DC Block",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "sprint-angle-single-leg-overcoming-ankle-iso",
+   "name": "Sprint Angle Single Leg Overcoming Ankle Iso",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "squatted-soleus-raise",
+   "name": "Squatted Soleus Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "tib-bar-curl",
+   "name": "Tib Bar Curl",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "tib bar",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "tib-bar-iso",
+   "name": "Tib Bar Iso",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "tib bar",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "tib-raises",
+   "name": "Tib Raises",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "tib-taps",
+   "name": "Tib Taps",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "toe-abduction-adduction",
+   "name": "Toe Abduction/Adduction",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "low",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "wall-angle-calf-raise",
+   "name": "Wall Angle Calf Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "wall-angled-soleus-raise",
+   "name": "Wall Angled Soleus Raise",
+   "slot": "C2",
+   "library_category": "ankle",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-ankle",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-hamstring-slider-curl",
+   "name": "Single Leg Hamstring Slider Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "slider",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "landmine-single-leg-rdl",
+   "name": "Landmine Single Leg RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "landmine",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "physioball-hamstring-tantrum",
+   "name": "Physioball Hamstring Tantrum",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "physioball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-hamstring-impulse-drop",
+   "name": "Single Leg Hamstring Impulse Drop",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-hamstring-impulse-with-bridge",
+   "name": "Single Leg Hamstring Impulse With Bridge",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-hamstring-impulse",
+   "name": "Single Leg Hamstring Impulse",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-slider-hamstring-curl-with-bridge",
+   "name": "Single Leg Slider Hamstring Curl With Bridge",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "slider",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hamstring-walkout",
+   "name": "Hamstring Walkout",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "ghd-razor-curl",
+   "name": "GHD Razor Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "GHD",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "ghd-lean",
+   "name": "GHD Lean",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "GHD",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "ghd-hamstring-curl",
+   "name": "GHD Hamstring Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "GHD",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "eccentric-single-leg-hamstring-slider",
+   "name": "Eccentric Single Leg Hamstring Slider",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "slider",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "double-leg-hamstring-impulse",
+   "name": "Double Leg Hamstring Impulse",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-kneeling-hip-extension",
+   "name": "Barbell Kneeling Hip Extension",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-kneeling-hip-extension",
+   "name": "Banded Kneeling Hip Extension",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-hamstring-oscillation",
+   "name": "Banded Hamstring Oscillation",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trap-bar-stagger-rdl",
+   "name": "Trap Bar Stagger RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "trap bar",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-physioball-curl",
+   "name": "Single Leg Physioball Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "physioball",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-dumbbell-rdl-with-slider",
+   "name": "Single Leg Dumbbell RDL With Slider",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-barbell-rdl-with-slider",
+   "name": "Single Leg Barbell RDL With Slider",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "safety-bar-goodmorning",
+   "name": "Safety Bar Goodmorning",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "safety bar",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "reverse-hyper",
+   "name": "Reverse Hyper",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "long-lever-single-leg-glute-hip-thrust",
+   "name": "Long Lever Single Leg Glute Hip Thrust",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "long-lever-single-leg-glute-bridge-up",
+   "name": "Long Lever Single Leg Glute Bridge Up",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "goodmorning",
+   "name": "Goodmorning",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-stagger-rdl",
+   "name": "Dumbbell Stagger RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-stagger-rdl",
+   "name": "Barbell Stagger RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-long-lever-glute-hip-thrust",
+   "name": "Barbell Long Lever Glute Hip Thrust",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-glute-bridge-up",
+   "name": "Barbell Glute Bridge Up",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "back-extension",
+   "name": "Back Extension",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "back-extension-plank",
+   "name": "Back Extension Plank",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "slider-hamstring-curl",
+   "name": "Slider Hamstring Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "slider",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-hamstring-curl-with-bridge",
+   "name": "Single Leg Hamstring Curl With Bridge",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-glute-hip-thrust",
+   "name": "Single Leg Glute Hip Thrust",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-dumbbell-contralateral-rdl",
+   "name": "Single Leg Dumbbell Contralateral RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-glute-bridge-up",
+   "name": "Single Leg Glute Bridge Up",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-leg-dumbbell-ipsilateral-rdl",
+   "name": "Single Leg Dumbbell Ipsilateral RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "razor-curl",
+   "name": "Razor Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "physioball-hamstring-curl",
+   "name": "Physioball Hamstring Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "physioball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "glute-hip-thrust",
+   "name": "Glute Hip Thrust",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kettlebell-rdl",
+   "name": "Kettlebell RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "kettlebell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kettlebell-swing",
+   "name": "Kettlebell Swing",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "kettlebell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "long-lever-glute-bridge-up",
+   "name": "Long Lever Glute Bridge Up",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "nordic-lean",
+   "name": "Nordic Lean",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "foam-roller-hamstring-iso",
+   "name": "Foam Roller Hamstring Iso",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "overcoming",
+   "equipment": "foam roller",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "5 x 3-5 s max push",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "eccentric-only-nordic-lean",
+   "name": "Eccentric Only Nordic Lean",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "3",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-rdl",
+   "name": "Dumbbell RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-hamstring-curl",
+   "name": "Cable Hamstring Curl",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-rdl",
+   "name": "Barbell RDL",
+   "slot": "C1",
+   "library_category": "posterior",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "high",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "6",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-posterior-chain",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "atyt",
+   "name": "ATYT",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "iyt-on-bench",
+   "name": "IYT On Bench",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "w-on-bench",
+   "name": "W On Bench",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "wy",
+   "name": "WY",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "back-extension-iso-with-single-arm-row",
+   "name": "Back Extension Iso With Single Arm Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "back-extension-iso-with-2-arm-row",
+   "name": "Back Extension Iso With 2 Arm Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": "iso",
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "2-3 x 20-45 s hold",
+   "session_types": [
+    "full",
+    "plyos-isos",
+    "return",
+    "taper",
+    "touch-up"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "banded-external-rotation-upper",
+   "name": "Banded External Rotation",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "band",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-bench-press",
+   "name": "Barbell Bench Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "barbell-row",
+   "name": "Barbell Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "barbell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "bear-crawl",
+   "name": "Bear Crawl",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "lateral-bear-crawl",
+   "name": "Lateral Bear Crawl",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-external-rotation",
+   "name": "Cable External Rotation",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-lat-pull-down",
+   "name": "Cable Lat Pull Down",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-row",
+   "name": "Cable Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "cable-row-in-side-plank",
+   "name": "Cable Row In Side Plank",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "cable",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "chin-up",
+   "name": "Chin Up",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "pull-up",
+   "name": "Pull Up",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "pull-up-eccentric-only",
+   "name": "Pull Up Eccentric Only",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "contralateral-carry",
+   "name": "Contralateral Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "deadhang",
+   "name": "Deadhang",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-bench-press",
+   "name": "Dumbbell Bench Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-incline-bench-press",
+   "name": "Dumbbell Incline Bench Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-external-rotation",
+   "name": "Dumbbell External Rotation",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-farmer-carry",
+   "name": "Dumbbell Farmer Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-arm-farmer-carry",
+   "name": "Single Arm Farmer Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "dumbbell-waiter-carry",
+   "name": "Dumbbell Waiter Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trap-bar-farmer-carry",
+   "name": "Trap Bar Farmer Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "trap bar",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trap-bar-offset-carry",
+   "name": "Trap Bar Offset Carry",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "trap bar",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "seated-dumbbell-overhead-press",
+   "name": "Seated Dumbbell Overhead Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-arm-overhead-dumbbell-press-in-split",
+   "name": "Single Arm Overhead Dumbbell Press In Split",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "single-arm-dumbbell-row",
+   "name": "Single Arm Dumbbell Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "dumbbells",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "field-goal-on-bench",
+   "name": "Field Goal On Bench",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "gusu",
+   "name": "GUSU",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "hand-pick-up-push-up",
+   "name": "Hand Pick Up Push Up",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "kb-saw-in-front-plank",
+   "name": "KB Saw In Front Plank",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "kettlebell",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "landmine-press",
+   "name": "Landmine Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "landmine",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "landmine-press-with-rotation",
+   "name": "Landmine Press With Rotation",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "landmine",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-jackhammer",
+   "name": "Med Ball Jackhammer",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-bench",
+   "name": "Med Ball Bench",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-scoop-toss",
+   "name": "Med Ball Scoop Toss",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-pocket-to-pocket-rainbow-slam",
+   "name": "Med Ball Pocket To Pocket Rainbow Slam",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "med-ball-slam",
+   "name": "Med Ball Slam",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "med ball",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "sa-snow-angel",
+   "name": "SA Snow Angel",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "scap-pull-up",
+   "name": "Scap Pull Up",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "scap-push-up",
+   "name": "Scap Push Up",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "serratus-crawl",
+   "name": "Serratus Crawl",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "serratus-wall-walk",
+   "name": "Serratus Wall Walk",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "swiss-bar-bench-press",
+   "name": "Swiss Bar Bench Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bench",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "trx-row",
+   "name": "TRX Row",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "TRX",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  },
+  {
+   "id": "z-press",
+   "name": "Z Press",
+   "slot": "UPPER",
+   "library_category": "upper",
+   "plyo_type": null,
+   "tier": null,
+   "isometric": null,
+   "equipment": "bodyweight",
+   "intensity": "med",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8",
+   "session_types": [
+    "full"
+   ],
+   "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
+   "source": "runstrong-library"
+  }
+ ]
+}
