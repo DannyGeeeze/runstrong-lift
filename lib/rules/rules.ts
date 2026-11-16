@@ -177,8 +177,9 @@ export function nextHardDay(
   races: Race[],
   settings: Pick<Settings, "tuneUpDay" | "workoutDays">,
   extra: string[] = [],
+  ignore: (h: HardDay) => boolean = () => false,
 ): (HardDay & { inDays: number }) | null {
-  const next = hardDays(after, races, settings, extra).find((h) => h.date > after);
+  const next = hardDays(after, races, settings, extra).find((h) => h.date > after && !ignore(h));
   return next ? { ...next, inDays: diffDays(after, next.date) } : null;
 }
 
@@ -322,7 +323,11 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   rules.push(`${phaseLabel}, ${roleLabel}: ${sessionLabel({ session, half, plyos, strength })}`);
 
   // --- Step 4: 48h guard -----------------------------------------------------
-  const nextHard = nextHardDay(guardFrom, ctx.races, ctx.settings, ctx.extraHardDays);
+  // If today is the race-week tune-up, the planned tune-up day later this week isn't
+  // another hard day: the workout just happened today instead.
+  const nextHard = nextHardDay(guardFrom, ctx.races, ctx.settings, ctx.extraHardDays, (h) =>
+    role === "thu-tuneup" && h.label === "tune-up workout" && mondayOf(h.date) === mondayOf(ctx.today),
+  );
   if (strength && nextHard && nextHard.inDays < 2) {
     session = "plyos-isos";
     half = false;

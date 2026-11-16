@@ -24,6 +24,16 @@ import type { RunType } from "@/lib/types";
 
 const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 
+const LOGGED_LABEL: Record<string, string> = {
+  full: "Full strength",
+  short: "Short strength",
+  "plyos-isos": "Plyos + Isos",
+  taper: "Race-day isos",
+  return: "Return isos",
+  "touch-up": "Touch-up",
+  none: "Nothing",
+};
+
 export default function TodayPage() {
   const hydrated = useHydrated();
   if (!hydrated) return <p className="pt-10 text-center text-muted">Loading…</p>;
@@ -171,7 +181,7 @@ function Today() {
             : day.source === "race-schedule"
               ? "Race on your schedule today."
               : day.source === "strava"
-                ? "Detected from Strava's workout type."
+                ? source === "mock" ? "Detected from the demo run's workout type." : "Detected from Strava's workout type."
                 : "Nothing detected, so treated as rest."}
         </p>
       </Card>
@@ -196,7 +206,7 @@ function Today() {
       {loggedToday.length > 0 && (
         <div className="mb-3">
           <Notice tone="good">
-            Logged today: {loggedToday.map((l) => l.session.replace("-", " + ")).join(", ")}.
+            Logged today: {loggedToday.map((l) => LOGGED_LABEL[l.session] + (l.volume === "half" ? " (half)" : "")).join(", ")}.
           </Notice>
         </div>
       )}

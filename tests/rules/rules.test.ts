@@ -85,6 +85,13 @@ describe("Thursday-race week (default)", () => {
     );
     expect(mon.warnings).toHaveLength(0);
   });
+
+  it("a Monday workout is the tune-up even when the setting says Tuesday", () => {
+    const d = decideSession(ctx({ today: MON, dayType: "workout", phase: "early" }));
+    expect(d.role).toBe("thu-tuneup");
+    expect(d.session).toBe("full");
+    expect(d.nextHard?.date).toBe(THU);
+  });
 });
 
 describe("Races on other days (Saturday race: 1st = Tue, 2nd = Thu)", () => {
