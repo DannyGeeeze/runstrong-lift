@@ -126,7 +126,8 @@ export function LiveWorkout({
     return () => clearInterval(id);
   }, []);
 
-  // Rests start on their own when you reach them.
+  // Rests and timed sets start on their own when you reach them (timed sets after a 3-2-1).
+  // Rep-based sets wait for you to tap Done.
   useEffect(() => {
     lastBeep.current = null;
     if (pausedAt.current) {
@@ -135,6 +136,8 @@ export function LiveWorkout({
     }
     if (step?.kind === "rest") {
       setTimer({ phase: "running", endAt: Date.now() + step.seconds * 1000, total: step.seconds, pausedLeft: null });
+    } else if (step?.kind === "work" && step.seconds !== null) {
+      setTimer({ phase: "countdown", endAt: Date.now() + 3000, total: 3, pausedLeft: null });
     } else {
       setTimer({ phase: "idle" });
     }

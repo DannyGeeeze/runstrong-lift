@@ -99,3 +99,4 @@ These are choices I made where the brief left room. Each one says where it lives
     - **Controls:** a thumb-reachable bottom row of Back, a big center button, and Skip. The center button is Start, Done, Pause or Resume depending on the step.
     - **Pause** freezes the active timer and the workout clock.
     - **Finish screen** shows time, sets done and moves done before saving.
+52. **Hands-free timed sets.** Timed holds and pushes start a 3-2-1 countdown by themselves as soon as you reach them, then run and move on automatically. Rests do the same. Rep-based sets wait for you to tap **Done**. The only tap needed to begin is **Start** after the warm-up, which also unlocks sound on phones.
