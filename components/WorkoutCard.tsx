@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Workout } from "@/lib/rules";
+import { ExerciseDemo } from "./ExerciseDemo";
 import { Card, Notice } from "./ui";
 
 export function WorkoutCard({
@@ -14,6 +15,7 @@ export function WorkoutCard({
   onToggle: (id: string) => void;
 }) {
   const [showWarmup, setShowWarmup] = useState(false);
+  const [demo, setDemo] = useState<string | null>(null);
   const { decision } = workout;
 
   return (
@@ -84,14 +86,19 @@ export function WorkoutCard({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
                     <h3 className="font-semibold leading-snug">{p.exercise.name}</h3>
-                    <a
-                      href={p.videoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="shrink-0 text-sm font-medium text-accent"
+                    <button
+                      type="button"
+                      onClick={() => setDemo(demo === p.key ? null : p.key)}
+                      aria-expanded={demo === p.key}
+                      className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+                        demo === p.key ? "bg-accent text-accent-ink" : "bg-accent-soft text-accent"
+                      }`}
                     >
-                      watch ↗
-                    </a>
+                      <svg viewBox="0 0 10 10" className="h-2.5 w-2.5" aria-hidden>
+                        {demo === p.key ? <rect x="2" y="2" width="6" height="6" rx="1" fill="currentColor" /> : <path d="M2.5 1.5v7l6-3.5z" fill="currentColor" />}
+                      </svg>
+                      Demo
+                    </button>
                   </div>
                   <p className="mt-0.5 font-mono text-sm">
                     {p.sets} × {p.reps}
@@ -104,6 +111,11 @@ export function WorkoutCard({
                   {p.note && <p className="mt-1 text-xs font-medium text-ink">{p.note}</p>}
                 </div>
               </div>
+              {demo === p.key && (
+                <div className="animate-rise mt-3">
+                  <ExerciseDemo exercise={p.exercise} />
+                </div>
+              )}
             </li>
           );
         })}

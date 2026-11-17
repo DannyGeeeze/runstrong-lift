@@ -75,3 +75,10 @@ These are choices I made where the brief left room. Each one says where it lives
 42. **Events are multi-select** (`profile.events`). Profiles saved with the old single `event` field are converted automatically.
 43. **Minimal text:** onboarding shows only the question and its options. Helper captions are gone from Today, Settings and Races too. "Why today" and warnings stay.
 44. **Test mode** (Settings → Test mode) loads a mid-track-season scenario into a separate storage slot. That scenario is Deep phase, a meet every Thursday, league champs as the A race in 4 weeks, last meet's lift in history, and demo runs. Exit throws the test copy away, and your real data is never touched.
+
+## In-app exercise demos (`lib/demo`, `components/ExerciseDemo.tsx`)
+
+45. **No leaving the app to see an exercise.** The brief's "watch" link is replaced by a **Demo** button that opens inside the exercise card.
+46. **A direct video link plays in the app.** If an exercise's `video_url` is a YouTube, YouTube Shorts, Instagram post/reel or Vimeo link, the Demo plays it with that site's official embed player (YouTube uses the privacy-enhanced youtube-nocookie domain). The coach's category-page links aren't videos, so they fall through to the animation.
+47. **Everything else gets a built-in animation.** There are 17 movement patterns: squat, hinge, split squat, calf raise, tib raise, pogo, hop, skip, jump, drop jump, lateral bound, band walk, knee drive, bridge, Nordic, Copenhagen and row. They're drawn with a small stick-figure rig whose knees are solved automatically, so feet stay planted. Exercises are matched by name keywords first and then by slot, so new JSON entries get an animation with no code changes. Isometric exercises show the held position with a "Hold" tag. Reduced-motion settings show a still frame.
+48. **The animations are original drawings.** No video or artwork is copied from the coach's site. Showing his videos in the app only happens through official embeds of links you add.
