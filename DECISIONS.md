@@ -119,11 +119,10 @@ These are choices I made where the brief left room. Each one says where it lives
 
 ## Easy-day upper body (`lib/rules/sessions.ts`)
 
-60. **Easy and long days get a picker:** Touch-up or Upper body. Both are optional. Workout, race and rest days are unchanged, and the pick has no effect on them.
-61. **No core or hip sessions.** The team already does core and hip work at practice, so the app doesn't add them. (Core and Mobility options were built and then removed for this reason.)
-62. **Upper body doesn't load the legs,** so it doesn't count toward the weekly 2 strength + 2 plyo caps and doesn't affect the 48h rule. Return week still swaps the touch-up for yielding isos, but leaves upper body alone.
+60. **Easy and long days default to an upper-body lift.** In the 7 days before an A race they default to the touch-up instead, and the reason says so ("State (A) in 4 days, so no upper-body lift"). B and C races don't change it. The runner can still switch between the two. Workout, race and rest days are unchanged.
+61. **No core or hip sessions.** The team already does core and hip work at practice, so the app doesn't add them. (Core and Mobility options were built and then removed for this reason. A "suggest whatever you haven't done this week" rotation was also removed once upper body became the default.)
+62. **Upper body doesn't load the legs,** so it doesn't count toward the weekly 2 strength + 2 plyo caps and doesn't affect the 48h rule. In a return week the touch-up still becomes yielding isos, but upper body stays.
 63. **Upper body template (~20 min):** a pull, a push, a shoulder/posture move and a carry or crawl. Pull and push are 3 x 8-10, leaving 2-3 reps in the tank.
-64. **Getting to both each week.** The picker starts on whichever option you haven't done in the last 7 days. If you've done neither, it starts on the touch-up (the coach's default). If you've done both, it picks the one done longer ago. Tapping the other option overrides it. The Week page shows a check for each one done in the last 7 days, under the plyo categories. A session counts only once it's finished or marked complete.
-65. **New exercises:** push-ups, band rows and band pull-aparts, tagged `"source": "app"` since they aren't from the coach's library. They mean minimal-equipment runners still get a pull and a push.
-66. **Equipment fixes:** pull-ups, scap pull-ups and dead hangs now need a pull-up bar. Single-arm and contralateral carries need dumbbells or a kettlebell. Z Press needs dumbbells or a barbell.
-67. **New animations:** overhead press, push-up and forearm plank. Upper-body moves now pick between row, press, push-up and plank instead of always showing a row.
+64. **New exercises:** push-ups, band rows and band pull-aparts, tagged `"source": "app"` since they aren't from the coach's library. They mean minimal-equipment runners still get a pull and a push.
+65. **Equipment fixes:** pull-ups, scap pull-ups and dead hangs now need a pull-up bar. Single-arm and contralateral carries need dumbbells or a kettlebell. Z Press needs dumbbells or a barbell.
+66. **New animations:** overhead press, push-up and forearm plank. Upper-body moves now pick between row, press, push-up and plank instead of always showing a row.

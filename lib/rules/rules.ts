@@ -7,8 +7,8 @@
  *  It does not choose exercises (see select.ts) or sets/reps (see sessions.ts).
  *
  *  Order of evaluation (each step records a human-readable rule for "why"):
- *    1. Day type: Easy/Long → optional touch-up, or (the runner's pick) an upper-body
- *       session, which doesn't load the legs. Rest → nothing.
+ *    1. Day type: Easy/Long → optional upper-body lift (no leg loading), or the
+ *       touch-up when an A race is within 7 days. The runner can switch. Rest → nothing.
  *    2. Race-week role: Thursday race / tune-up, or 1st/2nd hard day before a
  *       non-Thursday race, or a plain workout day.
  *    3. Phase table → base session (Full, Full at half volume, Plyos + Isos, taper).
@@ -267,9 +267,9 @@ function baseFor(role: Role, ctx: RuleContext): Base {
   switch (role) {
     case "easy":
     case "long":
-      // No main lift on easy/long days: an optional touch-up, or an upper-body
-      // session that leaves the legs alone.
-      return { session: ctx.easyFocus ?? "touch-up", half: false, optional: true };
+      // No leg lift on easy/long days: an upper-body lift by default, or the touch-up
+      // in the week before an A race. The runner can switch between the two.
+      return { session: ctx.easyFocus ?? defaultEasyFocus(ctx.races, ctx.today), half: false, optional: true };
     case "rest":
       return { session: "none", half: false, optional: false };
     case "thu-race":
@@ -296,25 +296,23 @@ export function weekCounts(history: LiftLog[], today: string) {
     strength: recent.filter((h) => h.hadStrength).length,
     plyo: recent.filter((h) => h.hadPlyo).length,
     plyoTypes: [...new Set(recent.flatMap((h) => h.plyoTypes))],
-    /** Easy-day sessions done (touch-up, upper). */
-    easy: [...new Set(recent.map((h) => h.session).filter((s) => EASY_SESSIONS.includes(s)))] as EasyFocus[],
   };
 }
 
-const EASY_ORDER: EasyFocus[] = ["touch-up", "upper"];
+/** Easy days skip the upper-body lift this many days before an A race. */
+export const A_RACE_EASY_DAYS = 7;
 
-/**
- * Which easy-day option to start the picker on, so the runner gets to both in a week:
- * the one not done in the last 7 days (the touch-up first if neither), otherwise
- * the one done longer ago.
- */
-export function suggestEasyFocus(history: LiftLog[], today: string): EasyFocus {
-  const last = (f: EasyFocus) =>
-    history.filter((h) => h.session === f && h.date <= today).reduce((m, h) => (h.date > m ? h.date : m), "");
-  const from = addDays(today, -6);
-  const missing = EASY_ORDER.filter((f) => last(f) < from);
-  if (missing.length) return missing[0];
-  return [...EASY_ORDER].sort((a, b) => last(a).localeCompare(last(b)))[0];
+/** An A race within A_RACE_EASY_DAYS after today, if any. */
+export function upcomingARace(races: Race[], today: string): (Race & { inDays: number }) | null {
+  const r = races
+    .filter((x) => x.priority === "A" && x.date > today && diffDays(today, x.date) <= A_RACE_EASY_DAYS)
+    .sort((x, y) => x.date.localeCompare(y.date))[0];
+  return r ? { ...r, inDays: diffDays(today, r.date) } : null;
+}
+
+/** Easy days are an upper-body lift, except in the week before an A race: then the touch-up. */
+export function defaultEasyFocus(races: Race[], today: string): EasyFocus {
+  return upcomingARace(races, today) ? "touch-up" : "upper";
 }
 
 // ---------------------------------------------------------------------------
@@ -348,6 +346,8 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   const warnings: string[] = [];
 
   rules.push(`${phaseLabel}, ${roleLabel}: ${sessionLabel({ session, half, plyos, strength })}`);
+  const aRace = (role === "easy" || role === "long") && !ctx.easyFocus ? upcomingARace(ctx.races, ctx.today) : null;
+  if (aRace) rules.push(`${aRace.name} (A) in ${aRace.inDays} day${aRace.inDays === 1 ? "" : "s"}, so no upper-body lift`);
 
   // --- Step 4: 48h guard -----------------------------------------------------
   // If today is the race-week tune-up, the planned tune-up day later this week isn't

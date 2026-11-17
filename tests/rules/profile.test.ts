@@ -105,7 +105,7 @@ describe("goals", () => {
 
 describe("trouble spots", () => {
   it("puts exercises for the runner's trouble spots first in their slot", () => {
-    const w = generateWorkout(input({ troubleSpots: ["shins"] }, { dayType: "easy" }));
+    const w = generateWorkout(input({ troubleSpots: ["shins"] }, { dayType: "easy", easyFocus: "touch-up" }));
     // Touch-up: foot/calf slots should lead with shin work.
     expect(w.items.some((i) => matchesFocus(i.exercise, ["shins"]))).toBe(true);
   });

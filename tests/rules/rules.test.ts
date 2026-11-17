@@ -196,10 +196,16 @@ describe("weekly caps (2 strength + 2 plyo per rolling 7 days)", () => {
 });
 
 describe("easy / long / rest days", () => {
-  it.each(["easy", "long"] as const)("%s → optional touch-up only", (dayType) => {
-    const d = decideSession(ctx({ today: WED, dayType, phase: "deep" }));
+  it.each(["easy", "long"] as const)("%s → optional upper body by default, no leg strength or plyos", (dayType) => {
+    expect(decideSession(ctx({ today: WED, dayType, phase: "deep" }))).toMatchObject({
+      session: "upper", optional: true, strength: false, plyos: false,
+    });
+  });
+
+  it.each(["easy", "long"] as const)("%s → touch-up when picked: 2-3 foot/calf/hip-flexor moves", (dayType) => {
+    const d = decideSession(ctx({ today: WED, dayType, phase: "deep", easyFocus: "touch-up" }));
     expect(d).toMatchObject({ session: "touch-up", optional: true, strength: false, plyos: false });
-    const w = generateWorkout(input({ today: WED, dayType, phase: "deep" }));
+    const w = generateWorkout(input({ today: WED, dayType, phase: "deep", easyFocus: "touch-up" }));
     expect(w.items.length).toBeGreaterThanOrEqual(2);
     expect(w.items.length).toBeLessThanOrEqual(3);
     expect(w.items.every((i) => ["C2", "D1"].includes(i.slot))).toBe(true);

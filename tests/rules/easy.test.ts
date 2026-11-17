@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { generateWorkout, suggestEasyFocus, toLiftLog, weekCounts, type GenerateInput } from "@/lib/rules";
+import { generateWorkout, toLiftLog, type GenerateInput } from "@/lib/rules";
 import { patternFor } from "@/lib/demo/match";
 import { ALL_EXERCISES } from "@/lib/exercises";
 import { DEFAULT_SETTINGS } from "@/lib/storage";
 import type { Profile } from "@/lib/profile";
-import type { EasyFocus, LiftLog, Slot } from "@/lib/types";
+import type { EasyFocus, Race, Slot } from "@/lib/types";
 
 const WED = "2026-09-16";
 
@@ -29,8 +29,9 @@ const minimal = {
 const LEG_SLOTS: Slot[] = ["A1", "A2", "B1", "POWER", "C1"];
 
 describe("easy-day sessions", () => {
-  it("defaults to the touch-up", () => {
-    expect(generateWorkout(input()).decision.session).toBe("touch-up");
+  it("defaults to an upper-body lift", () => {
+    expect(generateWorkout(input()).decision.session).toBe("upper");
+    expect(generateWorkout(input({ dayType: "long" })).decision.session).toBe("upper");
   });
 
   for (const focus of ["upper"] as EasyFocus[]) {
@@ -76,8 +77,8 @@ describe("easy-day sessions", () => {
 
   it("return week keeps upper body but still swaps the touch-up for isos", () => {
     const settings = { ...DEFAULT_SETTINGS, returnWeek: true };
-    expect(generateWorkout(input({ easyFocus: "upper", settings })).decision.session).toBe("upper");
-    expect(generateWorkout(input({ settings })).decision.session).toBe("return");
+    expect(generateWorkout(input({ settings })).decision.session).toBe("upper");
+    expect(generateWorkout(input({ easyFocus: "touch-up", settings })).decision.session).toBe("return");
   });
 
   it("new moves get fitting animations", () => {
@@ -93,31 +94,25 @@ describe("easy-day sessions", () => {
   });
 });
 
-describe("easy-day suggestion over the week", () => {
-  const log = (date: string, session: LiftLog["session"]): LiftLog => ({
-    id: date + session, date, session, volume: "full", exerciseIds: [], hadStrength: false, hadPlyo: false, plyoTypes: [],
+describe("easy days before an A race", () => {
+  const race = (date: string, priority: Race["priority"]): Race => ({ id: date, date, name: "State", distance: "5K", priority });
+
+  it("switches to the touch-up when an A race is within 7 days", () => {
+    for (const date of ["2026-09-17", "2026-09-19", "2026-09-23"]) {
+      const w = generateWorkout(input({ races: [race(date, "A")] }));
+      expect(w.decision.session, date).toBe("touch-up");
+      expect(w.decision.why).toMatch(/State \(A\) in \d+ days?, so no upper-body lift/);
+    }
   });
 
-  it("starts on the touch-up with no history", () => {
-    expect(suggestEasyFocus([], WED)).toBe("touch-up");
+  it("keeps upper body when the A race is further out, already past, or only a B/C race", () => {
+    expect(generateWorkout(input({ races: [race("2026-09-24", "A")] })).decision.session).toBe("upper");
+    expect(generateWorkout(input({ races: [race("2026-09-13", "A")] })).decision.session).toBe("upper");
+    expect(generateWorkout(input({ races: [race("2026-09-18", "B"), race("2026-09-19", "C")] })).decision.session).toBe("upper");
   });
 
-  it("after a touch-up this week, suggests upper body, and the reverse", () => {
-    expect(suggestEasyFocus([log("2026-09-14", "touch-up")], WED)).toBe("upper");
-    expect(suggestEasyFocus([log("2026-09-14", "upper")], WED)).toBe("touch-up");
-  });
-
-  it("ignores easy sessions more than 7 days ago", () => {
-    expect(suggestEasyFocus([log("2026-09-09", "touch-up")], WED)).toBe("touch-up");
-  });
-
-  it("when both are done, suggests the one done longer ago", () => {
-    expect(suggestEasyFocus([log("2026-09-11", "upper"), log("2026-09-14", "touch-up")], WED)).toBe("upper");
-    expect(suggestEasyFocus([log("2026-09-14", "upper"), log("2026-09-11", "touch-up")], WED)).toBe("touch-up");
-  });
-
-  it("the Week page counts easy sessions from the last 7 days", () => {
-    const counts = weekCounts([log("2026-09-14", "upper"), log("2026-09-01", "touch-up"), log("2026-09-15", "full")], WED);
-    expect(counts.easy).toEqual(["upper"]);
+  it("the runner can still pick either one", () => {
+    expect(generateWorkout(input({ races: [race("2026-09-19", "A")], easyFocus: "upper" })).decision.session).toBe("upper");
+    expect(generateWorkout(input({ easyFocus: "touch-up" })).decision.session).toBe("touch-up");
   });
 });

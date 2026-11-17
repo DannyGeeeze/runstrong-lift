@@ -128,7 +128,7 @@ describe("regenerate", () => {
     ["early Full", { today: TUE, dayType: "workout", phase: "early" }],
     ["off-season Full", { today: TUE, dayType: "workout", phase: "off" }],
     ["championship Plyos + Isos", { today: TUE, dayType: "workout", phase: "championship" }],
-    ["touch-up", { today: TUE, dayType: "easy", phase: "deep" }],
+    ["touch-up", { today: TUE, dayType: "easy", phase: "deep", easyFocus: "touch-up" }],
     ["short", { today: TUE, dayType: "workout", phase: "early", shortOnTime: true }],
   ];
 

@@ -13,7 +13,6 @@ import {
   addToBlock,
   decideCatchUp,
   EASY_SESSIONS,
-  suggestEasyFocus,
   decideSession,
   generateWorkout,
   PHASE_LABEL,
@@ -29,8 +28,8 @@ import type { EasyFocus, LiftLog, RunType } from "@/lib/types";
 const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 
 const EASY_OPTIONS: { value: EasyFocus; label: string }[] = [
-  { value: "touch-up", label: "Touch-up" },
   { value: "upper", label: "Upper body" },
+  { value: "touch-up", label: "Touch-up" },
 ];
 
 const LOGGED_LABEL: Record<string, string> = {
@@ -67,9 +66,9 @@ function Today() {
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [live, setLive] = useState(false);
-  // Starts on whichever easy-day session you haven't done this week; tapping one overrides it.
-  const [easyPick, setEasyPick] = useState<EasyFocus | null>(null);
-  const easyFocus = easyPick ?? suggestEasyFocus(history, today);
+  // Easy days default to upper body (touch-up the week before an A race); tapping overrides it.
+  const [easyPick, setEasyPick] = useState<EasyFocus | undefined>(undefined);
+  const easyFocus = easyPick;
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
@@ -248,10 +247,10 @@ function Today() {
               <button
                 key={o.value}
                 type="button"
-                aria-pressed={easyFocus === o.value}
+                aria-pressed={preview.session === o.value}
                 onClick={() => setEasyPick(o.value)}
                 className={`min-h-10 rounded-lg px-1 text-sm font-semibold transition-colors ${
-                  easyFocus === o.value ? "bg-accent text-accent-ink" : "text-muted"
+                  preview.session === o.value ? "bg-accent text-accent-ink" : "text-muted"
                 }`}
               >
                 {o.label}

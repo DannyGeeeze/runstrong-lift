@@ -63,11 +63,6 @@ function Week() {
             <Check key={t} done={counts.plyoTypes.includes(t)} label={PLYO_LABEL[t]} />
           ))}
         </div>
-        <p className="mb-2 mt-3 text-xs font-medium text-muted">Easy days this week</p>
-        <div className="flex flex-wrap gap-2">
-          <Check done={counts.easy.includes("touch-up")} label="Touch-up" />
-          <Check done={counts.easy.includes("upper")} label="Upper body" />
-        </div>
       </Card>
 
       <SectionTitle>Day by day {source === "mock" && <span className="normal-case">(demo runs)</span>}</SectionTitle>
