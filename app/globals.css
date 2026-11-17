@@ -87,3 +87,32 @@ body {
     animation: none;
   }
 }
+
+/* Live workout player: always dark, whatever the phone's theme. */
+.player {
+  --bg: #0b0a09;
+  --card: #171614;
+  --card-2: #211f1c;
+  --border: #302d28;
+  --text: #f6f3ed;
+  --muted: #9d988d;
+  --accent: #ff6a33;
+  --accent-ink: #120c09;
+  --accent-soft: #3a2117;
+  --good: #4ccb7f;
+  --good-soft: #17301f;
+  /* Tailwind's color utilities read these, so they must be re-pointed here too. */
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-card-2: var(--card-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  color-scheme: dark;
+  color: var(--text);
+}

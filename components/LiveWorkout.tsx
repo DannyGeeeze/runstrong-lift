@@ -1,18 +1,27 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSteps, formatClock, type LiveStep } from "@/lib/live";
 import type { Workout } from "@/lib/rules";
 import { ExerciseDemo } from "./ExerciseDemo";
 
-type Timer = { phase: "idle" } | { phase: "countdown" | "running"; endAt: number; total: number };
+/**
+ * Guided, full-screen workout player.
+ * Layout: segmented progress + clock on top, the move's demo filling the top
+ * half, the move and its reps/time in large type, one big ring for timed work
+ * and rest, and thumb-reachable Back / main / Skip controls at the bottom.
+ */
+
+type Timer =
+  | { phase: "idle" }
+  | { phase: "countdown" | "running"; endAt: number; total: number; pausedLeft: number | null };
 
 // ---------------------------------------------------------------------------
 // Sound, vibration and keeping the screen awake
 
 function useBeeper() {
   const ctx = useRef<AudioContext | null>(null);
-  // Browsers only allow audio after a tap, so every button calls unlock().
+  // Browsers only allow audio after a tap, so every control calls unlock().
   const unlock = useCallback(() => {
     if (ctx.current) return;
     try {
@@ -66,6 +75,21 @@ function useWakeLock() {
   }, []);
 }
 
+/** Progress segments: warm-up, then one per exercise (rests belong to the exercise before them). */
+function segmentsFor(steps: LiveStep[]) {
+  const segOf: number[] = [];
+  let lastItem = -1;
+  for (const s of steps) {
+    if (s.kind === "warmup") segOf.push(0);
+    else if (s.kind === "work") {
+      lastItem = s.item;
+      segOf.push(s.item + 1);
+    } else segOf.push(lastItem + 1);
+  }
+  const count = Math.max(0, ...segOf) + 1;
+  return { segOf, count };
+}
+
 // ---------------------------------------------------------------------------
 
 export function LiveWorkout({
@@ -78,11 +102,15 @@ export function LiveWorkout({
   onFinish: (doneIds: string[]) => void;
 }) {
   const steps = useMemo(() => buildSteps(workout.items, workout.warmup), [workout]);
+  const { segOf, count } = useMemo(() => segmentsFor(steps), [steps]);
   const [index, setIndex] = useState(0);
   const [timer, setTimer] = useState<Timer>({ phase: "idle" });
   const [done, setDone] = useState<Set<string>>(new Set());
+  const [setsDone, setSetsDone] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   const startedAt = useRef(Date.now());
+  const pausedMs = useRef(0);
+  const pausedAt = useRef<number | null>(null);
   const lastBeep = useRef<number | null>(null);
   // Each timer finishes exactly once, even if React re-runs the effect before the next step loads.
   const firedFor = useRef<number | null>(null);
@@ -91,6 +119,7 @@ export function LiveWorkout({
 
   const finished = index >= steps.length;
   const step = steps[index] as LiveStep | undefined;
+  const paused = timer.phase !== "idle" && timer.pausedLeft !== null;
 
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 200);
@@ -100,8 +129,12 @@ export function LiveWorkout({
   // Rests start on their own when you reach them.
   useEffect(() => {
     lastBeep.current = null;
+    if (pausedAt.current) {
+      pausedMs.current += Date.now() - pausedAt.current;
+      pausedAt.current = null;
+    }
     if (step?.kind === "rest") {
-      setTimer({ phase: "running", endAt: Date.now() + step.seconds * 1000, total: step.seconds });
+      setTimer({ phase: "running", endAt: Date.now() + step.seconds * 1000, total: step.seconds, pausedLeft: null });
     } else {
       setTimer({ phase: "idle" });
     }
@@ -113,15 +146,18 @@ export function LiveWorkout({
     if (step?.kind === "work") {
       const id = workout.items[step.item].exercise.id;
       setDone((d) => new Set(d).add(id));
+      // Count a set once, not once per side.
+      if (step.side !== "left") setSetsDone((n) => n + 1);
     }
     next();
   }, [step, workout.items, next]);
 
-  const remaining = timer.phase === "idle" ? 0 : Math.max(0, Math.ceil((timer.endAt - now) / 1000));
+  const leftMs = timer.phase === "idle" ? 0 : timer.pausedLeft ?? timer.endAt - now;
+  const remaining = Math.max(0, Math.ceil(leftMs / 1000));
 
   // Tick beeps for the last 3 seconds, a long beep at zero, then move on.
   useEffect(() => {
-    if (timer.phase === "idle") return;
+    if (timer.phase === "idle" || timer.pausedLeft !== null) return;
     if (remaining > 0 && remaining <= 3 && lastBeep.current !== remaining) {
       lastBeep.current = remaining;
       beep(660, 90);
@@ -132,7 +168,7 @@ export function LiveWorkout({
     if (timer.phase === "countdown" && step?.kind === "work" && step.seconds) {
       beep(990, 160);
       lastBeep.current = null;
-      setTimer({ phase: "running", endAt: Date.now() + step.seconds * 1000, total: step.seconds });
+      setTimer({ phase: "running", endAt: Date.now() + step.seconds * 1000, total: step.seconds, pausedLeft: null });
     } else if (timer.phase === "running") {
       beep(990, 350);
       if (step?.kind === "work") completeWork();
@@ -145,29 +181,62 @@ export function LiveWorkout({
     fn();
   };
 
-  function exit() {
-    if (done.size === 0 || confirm("End the workout? Nothing will be saved.")) onClose();
+  function togglePause() {
+    if (timer.phase === "idle") return;
+    if (timer.pausedLeft === null) {
+      pausedAt.current = Date.now();
+      setTimer({ ...timer, pausedLeft: Math.max(0, timer.endAt - Date.now()) });
+    } else {
+      if (pausedAt.current) pausedMs.current += Date.now() - pausedAt.current;
+      pausedAt.current = null;
+      setTimer({ ...timer, endAt: Date.now() + timer.pausedLeft, pausedLeft: null });
+    }
   }
 
-  const elapsed = (now - startedAt.current) / 1000;
-  const progress = Math.min(1, index / steps.length);
+  function exit() {
+    if (index === 0 || confirm("End the workout? Nothing will be saved.")) onClose();
+  }
+
+  const elapsed = Math.max(0, ((pausedAt.current ?? now) - startedAt.current - pausedMs.current) / 1000);
+
+  // Segment fill: finished segments full, the current one by how far through its steps you are.
+  const seg = finished ? count : segOf[index];
+  const segSteps = segOf.filter((s) => s === seg).length;
+  const segDone = segOf.slice(0, index).filter((s) => s === seg).length;
+  const segFill = finished ? 1 : segSteps ? segDone / segSteps : 0;
+
+  // The big center control for this step.
+  let main: { icon: ReactNode; label: string; onClick: () => void } | null = null;
+  if (step?.kind === "warmup") main = { icon: <PlayIcon />, label: "Start", onClick: next };
+  else if (step?.kind === "work" && step.seconds === null) main = { icon: <CheckIcon />, label: "Done", onClick: completeWork };
+  else if (step?.kind === "work" && timer.phase === "idle")
+    main = {
+      icon: <PlayIcon />,
+      label: `Start ${step.seconds}s`,
+      onClick: () => setTimer({ phase: "countdown", endAt: Date.now() + 3000, total: 3, pausedLeft: null }),
+    };
+  else if (timer.phase !== "idle") main = { icon: paused ? <PlayIcon /> : <PauseIcon />, label: paused ? "Resume" : "Pause", onClick: togglePause };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-bg pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]">
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 min-h-0">
-        {/* Top bar */}
+    <div className="player fixed inset-0 z-50 flex flex-col bg-bg pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4">
+        {/* Top: close, segmented progress, clock */}
         <div className="flex items-center gap-3">
           <button type="button" onClick={exit} aria-label="End workout" className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-2xl text-muted">
             ×
           </button>
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
-            <div className="h-full rounded-full bg-accent transition-all duration-300" style={{ width: `${progress * 100}%` }} />
+          <div className="flex flex-1 gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={count} aria-valuenow={seg}>
+            {Array.from({ length: count }, (_, i) => (
+              <div key={i} className={`h-1.5 overflow-hidden rounded-full bg-line ${i === 0 ? "flex-[0.6]" : "flex-1"}`}>
+                <div className="h-full rounded-full bg-accent transition-all duration-300" style={{ width: `${i < seg ? 100 : i === seg ? segFill * 100 : 0}%` }} />
+              </div>
+            ))}
           </div>
           <span className="w-12 text-right font-mono text-sm tabular-nums text-muted">{formatClock(elapsed)}</span>
         </div>
 
         {finished ? (
-          <FinishView elapsed={elapsed} done={done.size} total={workout.items.length} />
+          <FinishView elapsed={elapsed} setsDone={setsDone} exercisesDone={done.size} exercises={workout.items.length} />
         ) : step?.kind === "warmup" ? (
           <div key={index} className="animate-rise flex flex-1 flex-col justify-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-accent">Warm-up</p>
@@ -181,52 +250,63 @@ export function LiveWorkout({
             </ul>
           </div>
         ) : step?.kind === "work" ? (
-          <WorkView key={index} workout={workout} step={step} timer={timer} remaining={remaining} />
+          <WorkView key={index} workout={workout} step={step} timer={timer} remaining={remaining} paused={paused} />
         ) : step?.kind === "rest" ? (
-          <RestView key={index} workout={workout} step={step} remaining={remaining} total={timer.phase === "idle" ? step.seconds : timer.total} nextStep={steps[index + 1]} />
+          <RestView
+            key={index}
+            workout={workout}
+            step={step}
+            remaining={remaining}
+            total={timer.phase === "idle" ? step.seconds : timer.total}
+            paused={paused}
+            nextStep={steps[index + 1]}
+            onAdd={tap(() =>
+              setTimer((t) =>
+                t.phase === "idle"
+                  ? t
+                  : t.pausedLeft !== null
+                    ? { ...t, pausedLeft: t.pausedLeft + 15000, total: t.total + 15 }
+                    : { ...t, endAt: t.endAt + 15000, total: t.total + 15 },
+              ),
+            )}
+          />
         ) : null}
 
-        {/* Bottom actions */}
-        <div className="mt-4 space-y-2">
+        {/* Bottom controls */}
+        <div className="mt-4">
           {finished ? (
-            <>
-              <button type="button" onClick={() => onFinish([...done])} className="w-full rounded-2xl bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
+            <div className="space-y-2">
+              <button type="button" onClick={() => onFinish([...done])} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
                 Save workout
               </button>
               <button type="button" onClick={onClose} className="w-full py-2 text-sm text-muted">
                 Close without saving
               </button>
-            </>
+            </div>
           ) : (
-            <>
-              {step?.kind === "warmup" && <Primary onClick={tap(next)}>Start lifting</Primary>}
-              {step?.kind === "work" && step.seconds === null && <Primary onClick={tap(completeWork)}>Done</Primary>}
-              {step?.kind === "work" && step.seconds !== null && timer.phase === "idle" && (
-                <Primary onClick={tap(() => setTimer({ phase: "countdown", endAt: Date.now() + 3000, total: 3 }))}>Start {step.seconds} s</Primary>
-              )}
-              {step?.kind === "work" && step.seconds !== null && timer.phase !== "idle" && (
-                <Primary secondary onClick={tap(completeWork)}>Skip timer</Primary>
-              )}
-              {step?.kind === "rest" && (
-                <div className="grid grid-cols-2 gap-2">
-                  <Primary
-                    secondary
-                    onClick={tap(() => setTimer((t) => (t.phase === "idle" ? t : { ...t, endAt: t.endAt + 15000, total: t.total + 15 })))}
+            <div className="flex items-start justify-between px-2">
+              <RoundButton label="Back" onClick={tap(() => setIndex((i) => Math.max(0, i - 1)))} disabled={index === 0}>
+                <BackIcon />
+              </RoundButton>
+              {main ? (
+                <div className="flex flex-col items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={tap(main.onClick)}
+                    aria-label={main.label}
+                    className="flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-ink shadow-lg transition active:scale-95"
                   >
-                    +15 s
-                  </Primary>
-                  <Primary onClick={tap(next)}>Skip rest</Primary>
+                    {main.icon}
+                  </button>
+                  <span className="text-xs font-semibold text-muted">{main.label}</span>
                 </div>
+              ) : (
+                <span />
               )}
-              <div className="flex justify-between text-sm text-muted">
-                <button type="button" className="py-2 disabled:opacity-30" disabled={index === 0} onClick={tap(() => setIndex((i) => Math.max(0, i - 1)))}>
-                  ‹ Back
-                </button>
-                <button type="button" className="py-2" onClick={tap(next)}>
-                  Skip ›
-                </button>
-              </div>
-            </>
+              <RoundButton label={step?.kind === "rest" ? "Skip rest" : "Skip"} onClick={tap(next)}>
+                <SkipIcon />
+              </RoundButton>
+            </div>
           )}
         </div>
       </div>
@@ -236,38 +316,51 @@ export function LiveWorkout({
 
 // ---------------------------------------------------------------------------
 
-function WorkView({ workout, step, timer, remaining }: { workout: Workout; step: Extract<LiveStep, { kind: "work" }>; timer: Timer; remaining: number }) {
+function WorkView({
+  workout,
+  step,
+  timer,
+  remaining,
+  paused,
+}: {
+  workout: Workout;
+  step: Extract<LiveStep, { kind: "work" }>;
+  timer: Timer;
+  remaining: number;
+  paused: boolean;
+}) {
   const p = workout.items[step.item];
-  const timed = step.seconds !== null && timer.phase !== "idle";
+  const timing = step.seconds !== null && timer.phase !== "idle";
+  const holdish = /hold|iso/i.test(`${p.reps} ${p.exercise.name}`);
   return (
-    <div className="animate-rise flex min-h-0 flex-1 flex-col pt-4">
-      <p className="text-sm font-semibold text-muted">
-        <span className="mr-2 rounded-md bg-card-2 px-1.5 py-0.5 text-xs font-bold text-ink">{p.slot}</span>
-        Set {step.set} of {step.sets}
-        {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"} side</span>}
-      </p>
-      <h1 className="mt-1 text-2xl font-bold leading-tight">{p.exercise.name}</h1>
-
-      <div className="relative mt-3 min-h-0 flex-1 overflow-hidden rounded-2xl bg-card">
+    <div className="animate-rise flex min-h-0 flex-1 flex-col pt-3">
+      {/* The move fills the top half */}
+      <div className="relative h-[45dvh] shrink-0 overflow-hidden rounded-3xl bg-card">
         <div className="absolute inset-0">
           <ExerciseDemo exercise={p.exercise} size="lg" />
         </div>
-        {timed && (
+        {timing && (
           <div className="absolute inset-0 flex items-center justify-center bg-bg/70 backdrop-blur-sm">
             {timer.phase === "countdown" ? (
-              <span key={remaining} className="animate-rise text-8xl font-bold text-accent">{remaining}</span>
+              <span key={remaining} className="animate-rise text-9xl font-bold tabular-nums text-accent">
+                {remaining}
+              </span>
             ) : (
-              <Ring value={remaining} total={timer.phase === "running" ? timer.total : 1} label={/hold|iso/i.test(`${p.reps} ${p.exercise.name}`) ? "Hold" : "Go"} />
+              <Ring value={remaining} total={timer.phase === "running" ? timer.total : 1} label={paused ? "Paused" : holdish ? "Hold" : "Go"} />
             )}
           </div>
         )}
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-3">
-        <p className="text-4xl font-bold tracking-tight">{step.seconds !== null ? `${step.seconds} s` : step.reps}</p>
-        {p.note && <p className="max-w-[55%] text-right text-xs font-medium text-muted">{p.note}</p>}
+      <div className="mt-4 flex min-h-0 flex-1 flex-col">
+        <p className="text-sm font-semibold uppercase tracking-wider text-muted">
+          Set {step.set} of {step.sets}
+          {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"} side</span>}
+        </p>
+        <h1 className="mt-0.5 text-2xl font-bold leading-tight">{p.exercise.name}</h1>
+        <p className="mt-2 text-7xl font-bold leading-none tracking-tight tabular-nums">{step.seconds !== null ? `${step.seconds}s` : step.reps}</p>
+        <p className="mt-2 line-clamp-2 text-sm text-muted">{p.cue}</p>
       </div>
-      <p className="mt-1 text-sm text-muted">{p.cue}</p>
     </div>
   );
 }
@@ -277,29 +370,36 @@ function RestView({
   step,
   remaining,
   total,
+  paused,
   nextStep,
+  onAdd,
 }: {
   workout: Workout;
   step: Extract<LiveStep, { kind: "rest" }>;
   remaining: number;
   total: number;
+  paused: boolean;
   nextStep: LiveStep | undefined;
+  onAdd: () => void;
 }) {
   const up = nextStep?.kind === "work" ? nextStep : null;
   const upItem = up ? workout.items[up.item] : null;
   return (
-    <div className="animate-rise flex min-h-0 flex-1 flex-col items-center justify-center gap-6">
-      <Ring value={remaining} total={total} label={step.label} big />
+    <div className="animate-rise flex min-h-0 flex-1 flex-col items-center justify-center gap-5">
+      <Ring value={remaining} total={total} label={paused ? "Paused" : step.label} big />
+      <button type="button" onClick={onAdd} className="rounded-full border border-line bg-card px-5 py-2 text-sm font-semibold">
+        +15 s
+      </button>
       {up && upItem && (
-        <div className="flex w-full items-center gap-3 rounded-2xl border border-line bg-card p-3">
-          <div className="h-16 w-20 shrink-0 overflow-hidden rounded-lg">
+        <div className="flex w-full items-center gap-3 rounded-3xl border border-line bg-card p-3">
+          <div className="h-20 w-24 shrink-0 overflow-hidden rounded-2xl">
             <ExerciseDemo exercise={upItem.exercise} size="lg" />
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">Up next</p>
-            <p className="truncate font-semibold">{upItem.exercise.name}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-accent">Up next</p>
+            <p className="truncate text-lg font-semibold">{upItem.exercise.name}</p>
             <p className="text-sm text-muted">
-              Set {up.set} of {up.sets} · {up.seconds !== null ? `${up.seconds} s` : up.reps}
+              Set {up.set} of {up.sets} · {up.seconds !== null ? `${up.seconds}s` : up.reps}
               {up.side ? ` · ${up.side}` : ""}
             </p>
           </div>
@@ -309,23 +409,27 @@ function RestView({
   );
 }
 
-function FinishView({ elapsed, done, total }: { elapsed: number; done: number; total: number }) {
+function FinishView({ elapsed, setsDone, exercisesDone, exercises }: { elapsed: number; setsDone: number; exercisesDone: number; exercises: number }) {
   return (
     <div className="animate-rise flex flex-1 flex-col items-center justify-center text-center">
-      <p className="text-6xl">💪</p>
-      <h1 className="mt-4 text-3xl font-bold">Workout done</h1>
-      <div className="mt-6 grid w-full grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-line bg-card p-4">
-          <p className="text-3xl font-bold tabular-nums">{formatClock(elapsed)}</p>
-          <p className="text-xs text-muted">time</p>
-        </div>
-        <div className="rounded-2xl border border-line bg-card p-4">
-          <p className="text-3xl font-bold tabular-nums">
-            {done}/{total}
-          </p>
-          <p className="text-xs text-muted">exercises</p>
-        </div>
+      <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-ink">
+        <CheckIcon />
       </div>
+      <h1 className="mt-5 text-3xl font-bold">Workout complete</h1>
+      <div className="mt-8 grid w-full grid-cols-3 gap-2">
+        <Stat value={formatClock(elapsed)} label="time" />
+        <Stat value={String(setsDone)} label="sets" />
+        <Stat value={`${exercisesDone}/${exercises}`} label="moves" />
+      </div>
+    </div>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-2xl border border-line bg-card px-2 py-4">
+      <p className="text-2xl font-bold tabular-nums">{value}</p>
+      <p className="text-xs uppercase tracking-wider text-muted">{label}</p>
     </div>
   );
 }
@@ -335,16 +439,16 @@ function Ring({ value, total, label, big }: { value: number; total: number; labe
   const c = 2 * Math.PI * r;
   const frac = total > 0 ? Math.max(0, Math.min(1, value / total)) : 0;
   return (
-    <div className={`relative ${big ? "h-64 w-64" : "h-44 w-44"}`}>
+    <div className={`relative ${big ? "h-64 w-64" : "h-48 w-48"}`}>
       <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
-        <circle cx="60" cy="60" r={r} fill="none" stroke="var(--border)" strokeWidth="8" />
+        <circle cx="60" cy="60" r={r} fill="none" stroke="var(--border)" strokeWidth="7" />
         <circle
           cx="60"
           cy="60"
           r={r}
           fill="none"
           stroke="var(--accent)"
-          strokeWidth="8"
+          strokeWidth="7"
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - frac)}
@@ -359,16 +463,48 @@ function Ring({ value, total, label, big }: { value: number; total: number; labe
   );
 }
 
-function Primary({ children, onClick, secondary }: { children: React.ReactNode; onClick: () => void; secondary?: boolean }) {
+function RoundButton({ children, label, onClick, disabled }: { children: ReactNode; label: string; onClick: () => void; disabled?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`w-full rounded-2xl py-4 text-lg font-semibold transition active:scale-[0.99] ${
-        secondary ? "border border-line bg-card-2 text-ink" : "bg-accent text-accent-ink"
-      }`}
-    >
-      {children}
-    </button>
+    <div className="flex flex-col items-center gap-1.5 pt-3">
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={label}
+        className="flex h-14 w-14 items-center justify-center rounded-full border border-line bg-card text-ink transition active:scale-95 disabled:opacity-30"
+      >
+        {children}
+      </button>
+      <span className="text-xs font-semibold text-muted">{label}</span>
+    </div>
   );
 }
+
+const PlayIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden>
+    <path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z" />
+  </svg>
+);
+const PauseIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor" aria-hidden>
+    <rect x="6" y="5" width="4.5" height="14" rx="1.2" />
+    <rect x="13.5" y="5" width="4.5" height="14" rx="1.2" />
+  </svg>
+);
+const CheckIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-8 w-8" fill="none" stroke="currentColor" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </svg>
+);
+const SkipIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden>
+    <path d="M5 6.2v11.6a.8.8 0 0 0 1.25.66L14.5 12.7a.8.8 0 0 0 0-1.4L6.25 5.54A.8.8 0 0 0 5 6.2Z" />
+    <rect x="16" y="5.5" width="3" height="13" rx="1" />
+  </svg>
+);
+const BackIcon = () => (
+  <svg viewBox="0 0 24 24" className="h-6 w-6" fill="currentColor" aria-hidden>
+    <path d="M19 6.2v11.6a.8.8 0 0 1-1.25.66L9.5 12.7a.8.8 0 0 1 0-1.4l8.25-5.76A.8.8 0 0 1 19 6.2Z" />
+    <rect x="5" y="5.5" width="3" height="13" rx="1" />
+  </svg>
+);

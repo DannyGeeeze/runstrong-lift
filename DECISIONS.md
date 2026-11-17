@@ -93,3 +93,9 @@ These are choices I made where the brief left room. Each one says where it lives
     - **Beeps** sound on the last 3 seconds and at zero, with vibration on Android. The screen is kept awake where the browser allows it.
     - **Timers use real timestamps**, so locking the phone doesn't throw them off.
     - **Finishing** saves only the exercises you actually did, the same as Mark complete with those ticked.
+51. **Player design** (direction from the user: guided-workout feel, own design, no third-party branding or assets).
+    - **Layout:** always-dark full-screen player. The move's demo fills the top ~45% of the screen. Below it: "Set X of Y", the move name, and the reps or time in very large type.
+    - **Progress bar:** one segment per exercise (plus a short warm-up segment), with elapsed time next to it.
+    - **Controls:** a thumb-reachable bottom row of Back, a big center button, and Skip. The center button is Start, Done, Pause or Resume depending on the step.
+    - **Pause** freezes the active timer and the workout clock.
+    - **Finish screen** shows time, sets done and moves done before saving.
