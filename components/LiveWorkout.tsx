@@ -155,8 +155,12 @@ export function LiveWorkout({
     next();
   }, [step, workout.items, next]);
 
-  const leftMs = timer.phase === "idle" ? 0 : timer.pausedLeft ?? timer.endAt - now;
-  const remaining = Math.max(0, Math.ceil(leftMs / 1000));
+  // Read the clock fresh on every render: the 200 ms tick only triggers re-renders. Using the
+  // last tick's time made a just-started timer look up to 0.2 s longer (3-2-1 flashed a 4).
+  // Never show more than the timer's own length either.
+  const clock = Math.max(now, Date.now());
+  const leftMs = timer.phase === "idle" ? 0 : timer.pausedLeft ?? timer.endAt - clock;
+  const remaining = timer.phase === "idle" ? 0 : Math.min(timer.total, Math.max(0, Math.ceil(leftMs / 1000)));
 
   // Tick beeps for the last 3 seconds, a long beep at zero, then move on.
   useEffect(() => {
@@ -200,7 +204,7 @@ export function LiveWorkout({
     if (index === 0 || confirm("End the workout? Nothing will be saved.")) onClose();
   }
 
-  const elapsed = Math.max(0, ((pausedAt.current ?? now) - startedAt.current - pausedMs.current) / 1000);
+  const elapsed = Math.max(0, ((pausedAt.current ?? clock) - startedAt.current - pausedMs.current) / 1000);
 
   // Segment fill: finished segments full, the current one by how far through its steps you are.
   const seg = finished ? count : segOf[index];
