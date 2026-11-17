@@ -19,8 +19,6 @@ const SESSION_LABEL: Record<LiftLog["session"], string> = {
   return: "Return isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
-  core: "Core",
-  mobility: "Mobility",
   none: "None",
 };
 
@@ -61,18 +59,14 @@ function Week() {
       <Card className="mt-2 py-3">
         <p className="mb-2 text-xs font-medium text-muted">Plyo categories this week</p>
         <div className="flex flex-wrap gap-2">
-          {ROTATION_TYPES.map((t) => {
-            const done = counts.plyoTypes.includes(t);
-            return (
-              <span
-                key={t}
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${done ? "bg-good-soft text-good" : "bg-card-2 text-muted"}`}
-              >
-                {done ? "✓ " : ""}
-                {PLYO_LABEL[t]}
-              </span>
-            );
-          })}
+          {ROTATION_TYPES.map((t) => (
+            <Check key={t} done={counts.plyoTypes.includes(t)} label={PLYO_LABEL[t]} />
+          ))}
+        </div>
+        <p className="mb-2 mt-3 text-xs font-medium text-muted">Easy days this week</p>
+        <div className="flex flex-wrap gap-2">
+          <Check done={counts.easy.includes("touch-up")} label="Touch-up" />
+          <Check done={counts.easy.includes("upper")} label="Upper body" />
         </div>
       </Card>
 
@@ -138,5 +132,14 @@ function Stat({ label, value, full }: { label: string; value: string; full?: boo
       <p className={`text-2xl font-bold ${full ? "text-accent" : ""}`}>{value}</p>
       <p className="text-xs text-muted">{label}</p>
     </Card>
+  );
+}
+
+function Check({ done, label }: { done: boolean; label: string }) {
+  return (
+    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${done ? "bg-good-soft text-good" : "bg-card-2 text-muted"}`}>
+      {done ? "✓ " : ""}
+      {label}
+    </span>
   );
 }

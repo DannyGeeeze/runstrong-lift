@@ -13,6 +13,7 @@ import {
   addToBlock,
   decideCatchUp,
   EASY_SESSIONS,
+  suggestEasyFocus,
   decideSession,
   generateWorkout,
   PHASE_LABEL,
@@ -30,8 +31,6 @@ const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 const EASY_OPTIONS: { value: EasyFocus; label: string }[] = [
   { value: "touch-up", label: "Touch-up" },
   { value: "upper", label: "Upper body" },
-  { value: "core", label: "Core" },
-  { value: "mobility", label: "Mobility" },
 ];
 
 const LOGGED_LABEL: Record<string, string> = {
@@ -42,8 +41,6 @@ const LOGGED_LABEL: Record<string, string> = {
   return: "Return isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
-  core: "Core",
-  mobility: "Mobility",
   none: "Nothing",
 };
 
@@ -70,7 +67,9 @@ function Today() {
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [live, setLive] = useState(false);
-  const [easyFocus, setEasyFocus] = useState<EasyFocus>("touch-up");
+  // Starts on whichever easy-day session you haven't done this week; tapping one overrides it.
+  const [easyPick, setEasyPick] = useState<EasyFocus | null>(null);
+  const easyFocus = easyPick ?? suggestEasyFocus(history, today);
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
@@ -244,14 +243,14 @@ function Today() {
         )}
 
         {easyDay && mode === "today" && (
-          <div className="grid grid-cols-4 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
             {EASY_OPTIONS.map((o) => (
               <button
                 key={o.value}
                 type="button"
                 aria-pressed={easyFocus === o.value}
-                onClick={() => setEasyFocus(o.value)}
-                className={`min-h-10 rounded-lg px-1 text-xs font-semibold transition-colors ${
+                onClick={() => setEasyPick(o.value)}
+                className={`min-h-10 rounded-lg px-1 text-sm font-semibold transition-colors ${
                   easyFocus === o.value ? "bg-accent text-accent-ink" : "text-muted"
                 }`}
               >

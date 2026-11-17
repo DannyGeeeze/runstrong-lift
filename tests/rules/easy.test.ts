@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { generateWorkout, toLiftLog, type GenerateInput } from "@/lib/rules";
+import { generateWorkout, suggestEasyFocus, toLiftLog, weekCounts, type GenerateInput } from "@/lib/rules";
 import { patternFor } from "@/lib/demo/match";
 import { ALL_EXERCISES } from "@/lib/exercises";
 import { DEFAULT_SETTINGS } from "@/lib/storage";
 import type { Profile } from "@/lib/profile";
-import type { EasyFocus, Slot } from "@/lib/types";
+import type { EasyFocus, LiftLog, Slot } from "@/lib/types";
 
 const WED = "2026-09-16";
 
@@ -33,7 +33,7 @@ describe("easy-day sessions", () => {
     expect(generateWorkout(input()).decision.session).toBe("touch-up");
   });
 
-  for (const focus of ["upper", "core", "mobility"] as EasyFocus[]) {
+  for (const focus of ["upper"] as EasyFocus[]) {
     it(`${focus}: optional, leaves the legs alone, and doesn't count toward the caps`, () => {
       for (const dayType of ["easy", "long"] as const) {
         for (let attempt = 0; attempt < 6; attempt++) {
@@ -74,26 +74,50 @@ describe("easy-day sessions", () => {
     }
   });
 
-  it("mobility works even when mobility is off for Full sessions", () => {
-    const w = generateWorkout(input({ easyFocus: "mobility", settings: { ...DEFAULT_SETTINGS, enableMobility: false } }));
-    expect(w.items.every((i) => i.slot === "MOBILITY")).toBe(true);
-    expect(w.items.length).toBe(5);
-  });
-
-  it("return week keeps upper, core and mobility but still swaps the touch-up for isos", () => {
+  it("return week keeps upper body but still swaps the touch-up for isos", () => {
     const settings = { ...DEFAULT_SETTINGS, returnWeek: true };
-    expect(generateWorkout(input({ easyFocus: "core", settings })).decision.session).toBe("core");
+    expect(generateWorkout(input({ easyFocus: "upper", settings })).decision.session).toBe("upper");
     expect(generateWorkout(input({ settings })).decision.session).toBe("return");
   });
 
   it("new moves get fitting animations", () => {
     const id = (x: string) => patternFor(ALL_EXERCISES.find((e) => e.id === x)!).id;
-    expect(id("dead-bug")).toBe("dead-bug");
-    expect(id("bird-dog")).toBe("bird-dog");
-    expect(id("front-plank")).toBe("plank");
+    expect(id("kb-saw-in-front-plank")).toBe("plank");
     expect(id("push-up")).toBe("push-up");
     expect(id("seated-dumbbell-overhead-press")).toBe("press");
     expect(id("barbell-row")).toBe("row");
-    expect(id("side-plank")).toBe("copenhagen");
+  });
+
+  it("no core or hip-mobility sessions (done at practice)", () => {
+    expect(ALL_EXERCISES.some((e) => (e.slot as string) === "CORE")).toBe(false);
+  });
+});
+
+describe("easy-day suggestion over the week", () => {
+  const log = (date: string, session: LiftLog["session"]): LiftLog => ({
+    id: date + session, date, session, volume: "full", exerciseIds: [], hadStrength: false, hadPlyo: false, plyoTypes: [],
+  });
+
+  it("starts on the touch-up with no history", () => {
+    expect(suggestEasyFocus([], WED)).toBe("touch-up");
+  });
+
+  it("after a touch-up this week, suggests upper body, and the reverse", () => {
+    expect(suggestEasyFocus([log("2026-09-14", "touch-up")], WED)).toBe("upper");
+    expect(suggestEasyFocus([log("2026-09-14", "upper")], WED)).toBe("touch-up");
+  });
+
+  it("ignores easy sessions more than 7 days ago", () => {
+    expect(suggestEasyFocus([log("2026-09-09", "touch-up")], WED)).toBe("touch-up");
+  });
+
+  it("when both are done, suggests the one done longer ago", () => {
+    expect(suggestEasyFocus([log("2026-09-11", "upper"), log("2026-09-14", "touch-up")], WED)).toBe("upper");
+    expect(suggestEasyFocus([log("2026-09-14", "upper"), log("2026-09-11", "touch-up")], WED)).toBe("touch-up");
+  });
+
+  it("the Week page counts easy sessions from the last 7 days", () => {
+    const counts = weekCounts([log("2026-09-14", "upper"), log("2026-09-01", "touch-up"), log("2026-09-15", "full")], WED);
+    expect(counts.easy).toEqual(["upper"]);
   });
 });

@@ -70,7 +70,6 @@ const DEFAULT_CUES: Record<string, string> = {
   ISO: "Brace and hold position. Breathe.",
   MOBILITY: "Slow, controlled range. No forcing it.",
   UPPER: "Tall posture, shoulder blades down and back.",
-  CORE: "Brace like you're about to be poked in the stomach. Breathe behind the brace.",
 };
 
 export function cueFor(e: Exercise): string {
@@ -89,7 +88,6 @@ const DEFAULT_REST: Record<string, string> = {
   ISO: "45 s",
   MOBILITY: "30 s",
   UPPER: "60 s",
-  CORE: "30 s",
 };
 
 export function restFor(e: Exercise): string {

@@ -8,9 +8,6 @@ import { PATTERNS, type Pattern } from "./patterns";
 
 /** First match wins, so more specific patterns come first. */
 const RULES: [RegExp, string][] = [
-  [/dead-bug|hollow/, "dead-bug"],
-  [/bird-dog/, "bird-dog"],
-  [/greatest-stretch|couch-stretch/, "split-squat"],
   [/drop-jump|depth-jump|drop jump/, "drop-jump"],
   [/nordic/, "nordic"],
   [/copenhagen|side-plank|adductor|adduction/, "copenhagen"],
@@ -27,7 +24,6 @@ const RULES: [RegExp, string][] = [
   [/rdl|deadlift|hinge|good-morning|swing|back-extension|reverse-hyper|pull-through/, "hinge"],
   [/calf|achilles|soleus|toe|foot|ankle|arch|heel|balance|bosu/, "calf-raise"],
   [/squat|leg-press|belt|wall-sit/, "squat"],
-  [/front-plank|shoulder-tap|^plank/, "plank"],
   [/row|press|push|pull-up|chin|curl|fly|raise|plank|carry/, "row"],
 ];
 
@@ -43,7 +39,6 @@ const BY_SLOT: Record<string, string> = {
   ISO: "split-squat",
   MOBILITY: "knee-drive",
   UPPER: "row",
-  CORE: "plank",
 };
 
 /** Upper-body moves only match upper-body animations. */

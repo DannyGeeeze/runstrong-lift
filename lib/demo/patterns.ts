@@ -248,7 +248,7 @@ const row: Pattern = {
 };
 
 
-// Easy-day upper body and core -----------------------------------------------
+// Easy-day upper body -----------------------------------------------
 
 const press: Pattern = {
   id: "press",
@@ -284,38 +284,8 @@ const plank: Pattern = {
   ],
 };
 
-// Lying on the back, head to the right. Legs in tabletop; opposite arm and leg reach out.
-const TABLE_A = L(28, 56, 0, "u");
-const TABLE_B = L(29, 56, 0, "u");
-const deadBug: Pattern = {
-  id: "dead-bug",
-  view: "side",
-  holdFrame: 0,
-  frames: [
-    { pose: P([45, 74], 90, TABLE_A, TABLE_B, [0, 0], [0, 0]), move: 0.8, hold: 0.2 },
-    { pose: P([45, 74], 90, L(11, 72, 270, "u"), TABLE_B, [0, 0], [80, 80]), move: 1.2, hold: 0.6 },
-    { pose: P([45, 74], 90, TABLE_A, TABLE_B, [0, 0], [0, 0]), move: 1.0, hold: 0.2 },
-    { pose: P([45, 74], 90, TABLE_A, L(11, 72, 270, "u"), [80, 80], [0, 0]), move: 1.2, hold: 0.6 },
-  ],
-};
-
-// On hands and knees, facing right. Opposite arm and leg reach long.
-const KNEEL_A = L(23, 78, 270, "d");
-const KNEEL_B = L(24, 78, 270, "d");
-const birdDog: Pattern = {
-  id: "bird-dog",
-  view: "side",
-  holdFrame: 1,
-  frames: [
-    { pose: P([40, 60], 78, KNEEL_A, KNEEL_B, [180, 180], [180, 180]), move: 0.8, hold: 0.2 },
-    { pose: P([40, 60], 78, L(5, 60, 270, "d"), KNEEL_B, [180, 180], [88, 88]), move: 1.2, hold: 0.8 },
-    { pose: P([40, 60], 78, KNEEL_A, KNEEL_B, [180, 180], [180, 180]), move: 1.0, hold: 0.2 },
-    { pose: P([40, 60], 78, KNEEL_A, L(5, 60, 270, "d"), [88, 88], [180, 180]), move: 1.2, hold: 0.8 },
-  ],
-};
-
 export const PATTERNS: Record<string, Pattern> = Object.fromEntries(
-  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, deadBug, birdDog].map(
+  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank].map(
     (p) => [p.id, p],
   ),
 );

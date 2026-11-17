@@ -47,8 +47,6 @@ const TITLES: Record<Decision["session"], string> = {
   return: "Return week isos",
   "touch-up": "10-min touch-up",
   upper: "Upper body",
-  core: "Core",
-  mobility: "Mobility",
   none: "No lift today",
 };
 

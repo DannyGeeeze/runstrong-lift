@@ -12,10 +12,9 @@
  *  Taper (Championship race day, optional): a few overcoming isos incl. calf/ankle.
  *  Return week: yielding isometrics only, 20-45 s holds.
  *  Touch-up: 2-3 low-intensity foot/calf/hip-flexor moves, ~10 min.
- *  Easy-day extras (the runner picks one instead of the touch-up; none load the legs):
- *    Upper body: a pull, a push, a shoulder/posture move and a carry or crawl.
- *    Core: 4 trunk moves (anti-extension, anti-rotation, side, one more).
- *    Mobility: 5 hip/ankle mobility moves, 2 easy sets each.
+ *  Upper body (easy days, the runner's pick instead of the touch-up; no leg loading):
+ *    a pull, a push, a shoulder/posture move and a carry or crawl.
+ *    (No core or hip sessions: the team already does those at practice.)
  *
  *  Dosing: low sets, low reps, >70% effort, never to failure. Nordics max 3x3.
  *  Drop jumps: minimal ground contact; height isn't the goal.
@@ -336,7 +335,7 @@ function buildTouchUp(ctx: Ctx): Prescription[] {
 }
 
 // ---------------------------------------------------------------------------
-// Easy-day extras: upper body, core, mobility
+// Easy-day upper body
 // ---------------------------------------------------------------------------
 
 const UPPER_GROUPS: { key: string; match: RegExp; sets: number; reps: string; rest: string }[] = [
@@ -369,52 +368,13 @@ function buildUpper(ctx: Ctx): Prescription[] {
   return out;
 }
 
-/** Core: anti-extension, anti-rotation, side, then one more. */
-const CORE_PLAN: [string, RegExp][] = [
-  ["core:front", /dead-bug|front-plank|hollow|bear-crawl|saw/],
-  ["core:rotation", /bird-dog|pallof|shoulder-tap|contralateral/],
-  ["core:side", /side-plank/],
-  ["core:extra", /./],
-];
-
-function buildCore(ctx: Ctx): Prescription[] {
-  const pool = fitProfile(
-    ctx.pool.filter(
-      (e) => e.slot === "CORE" || (e.slot === "UPPER" && /crawl|saw-in-front-plank|contralateral-carry/.test(e.id)) || e.id === "abduction-in-side-plank",
-    ),
-    ctx.profile,
-  );
-  const out: Prescription[] = [];
-  for (const [key, match] of CORE_PLAN) {
-    const e = choose(ctx, key, pool.filter((x) => match.test(x.id)), (x) => x.slot === "CORE");
-    if (!e) continue;
-    let p = baseDose(e, key);
-    if (e.slot !== "CORE") p = { ...p, sets: 2, reps: /crawl|carry/.test(e.id) ? "30 s" : perSide(e, "8"), rest: "30 s" };
-    out.push(p);
-  }
-  return out;
-}
-
-function buildMobility(ctx: Ctx): Prescription[] {
-  const pool = fitProfile(ctx.pool.filter((e) => e.slot === "MOBILITY"), ctx.profile);
-  const out: Prescription[] = [];
-  for (let i = 1; i <= 5; i++) {
-    const key = `mobility:${i}`;
-    const e = choose(ctx, key, pool);
-    if (!e) break;
-    out.push({ ...baseDose(e, key), sets: 2, rest: "20 s" });
-  }
-  return out;
-}
-
 export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
   const ctx: Ctx = { ...opts, used: new Set(), pool: opts.pool ?? ALL_EXERCISES };
-  // POWER/MOBILITY only when turned on (a Mobility session always uses them);
-  // UPPER only via the Full and Upper builders; CORE only via the Core builder.
+  // POWER/MOBILITY only when turned on; UPPER only via the Full and Upper builders.
   ctx.pool = ctx.pool.filter(
     (e) =>
       (e.slot !== "POWER" || opts.enablePower) &&
-      (e.slot !== "MOBILITY" || opts.enableMobility || d.session === "mobility"),
+      (e.slot !== "MOBILITY" || opts.enableMobility),
   );
   switch (d.session) {
     case "full":
@@ -431,10 +391,6 @@ export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
       return buildTouchUp(ctx);
     case "upper":
       return buildUpper(ctx);
-    case "core":
-      return buildCore(ctx);
-    case "mobility":
-      return buildMobility(ctx);
     case "none":
       return [];
   }
@@ -459,10 +415,6 @@ export function warmupFor(d: Decision): string[] {
       return ["Leg swings, 10 each direction", "A-skips, 2 x 20 m", "Ankle rocks, 10/side"];
     case "upper":
       return ["Arm circles, 10 each way", "Wall slides, 10", "1 light set of your first two moves"];
-    case "core":
-      return ["Cat-camel, 8", "Glute bridge, 10"];
-    case "mobility":
-      return [];
     case "none":
       return [];
     default:
@@ -499,7 +451,7 @@ function workSeconds(p: Prescription): number {
 }
 
 export function estimateMinutes(d: Decision, items: Prescription[]): number {
-  const warm = { full: 5, short: 4, "plyos-isos": 4, taper: 2, return: 2, "touch-up": 2, upper: 3, core: 2, mobility: 0, none: 0 }[d.session];
+  const warm = { full: 5, short: 4, "plyos-isos": 4, taper: 2, return: 2, "touch-up": 2, upper: 3, none: 0 }[d.session];
   const work = items.reduce((sum, p) => sum + p.sets * (workSeconds(p) + restSeconds(p.rest)), 0);
   const total = warm + work / 60;
   return Math.max(5, Math.round(total / 5) * 5);

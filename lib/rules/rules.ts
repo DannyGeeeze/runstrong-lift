@@ -7,8 +7,8 @@
  *  It does not choose exercises (see select.ts) or sets/reps (see sessions.ts).
  *
  *  Order of evaluation (each step records a human-readable rule for "why"):
- *    1. Day type: Easy/Long → optional touch-up, or (the runner's pick) an upper-body,
- *       core or mobility session: none of them load the legs. Rest → nothing.
+ *    1. Day type: Easy/Long → optional touch-up, or (the runner's pick) an upper-body
+ *       session, which doesn't load the legs. Rest → nothing.
  *    2. Race-week role: Thursday race / tune-up, or 1st/2nd hard day before a
  *       non-Thursday race, or a plain workout day.
  *    3. Phase table → base session (Full, Full at half volume, Plyos + Isos, taper).
@@ -80,6 +80,9 @@ export interface Decision {
   weekCounts: { strength: number; plyo: number };
 }
 
+/** The optional easy-day sessions. Neither counts toward the weekly strength or plyo caps. */
+export const EASY_SESSIONS: SessionType[] = ["touch-up", "upper"];
+
 // ---------------------------------------------------------------------------
 // Labels
 // ---------------------------------------------------------------------------
@@ -120,10 +123,6 @@ export function sessionLabel(d: Pick<Decision, "session" | "half" | "plyos" | "s
       return "optional 10-min touch-up";
     case "upper":
       return "optional upper body";
-    case "core":
-      return "optional core";
-    case "mobility":
-      return "optional mobility";
     case "none":
       return "no lift";
   }
@@ -268,8 +267,8 @@ function baseFor(role: Role, ctx: RuleContext): Base {
   switch (role) {
     case "easy":
     case "long":
-      // No main lift on easy/long days: an optional touch-up, or an upper-body,
-      // core or mobility session that leaves the legs alone.
+      // No main lift on easy/long days: an optional touch-up, or an upper-body
+      // session that leaves the legs alone.
       return { session: ctx.easyFocus ?? "touch-up", half: false, optional: true };
     case "rest":
       return { session: "none", half: false, optional: false };
@@ -297,15 +296,30 @@ export function weekCounts(history: LiftLog[], today: string) {
     strength: recent.filter((h) => h.hadStrength).length,
     plyo: recent.filter((h) => h.hadPlyo).length,
     plyoTypes: [...new Set(recent.flatMap((h) => h.plyoTypes))],
+    /** Easy-day sessions done (touch-up, upper). */
+    easy: [...new Set(recent.map((h) => h.session).filter((s) => EASY_SESSIONS.includes(s)))] as EasyFocus[],
   };
+}
+
+const EASY_ORDER: EasyFocus[] = ["touch-up", "upper"];
+
+/**
+ * Which easy-day option to start the picker on, so the runner gets to both in a week:
+ * the one not done in the last 7 days (the touch-up first if neither), otherwise
+ * the one done longer ago.
+ */
+export function suggestEasyFocus(history: LiftLog[], today: string): EasyFocus {
+  const last = (f: EasyFocus) =>
+    history.filter((h) => h.session === f && h.date <= today).reduce((m, h) => (h.date > m ? h.date : m), "");
+  const from = addDays(today, -6);
+  const missing = EASY_ORDER.filter((f) => last(f) < from);
+  if (missing.length) return missing[0];
+  return [...EASY_ORDER].sort((a, b) => last(a).localeCompare(last(b)))[0];
 }
 
 // ---------------------------------------------------------------------------
 // Main entry
 // ---------------------------------------------------------------------------
-
-/** The optional easy-day sessions. None of them count toward the weekly strength or plyo caps. */
-export const EASY_SESSIONS: SessionType[] = ["touch-up", "upper", "core", "mobility"];
 
 function hasStrength(session: SessionType) {
   return session === "full" || session === "short";
@@ -371,8 +385,8 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   }
 
   // --- Step 6: modifiers -----------------------------------------------------
-  // Upper body, core and mobility don't load the legs, so return week leaves them alone.
-  const legFree = session === "upper" || session === "core" || session === "mobility";
+  // Upper body doesn't load the legs, so return week leaves it alone.
+  const legFree = session === "upper";
   if (ctx.settings.returnWeek && session !== "none" && !legFree) {
     session = "return";
     strength = false;
