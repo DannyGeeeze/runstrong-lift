@@ -7,7 +7,7 @@ import { blend, BONES, easeInOut, solve, type Skeleton, type Vec } from "@/lib/d
 import type { Exercise } from "@/lib/types";
 
 /** In-app demo: an embedded video when the exercise has a direct link, otherwise an animation. */
-export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
+export function ExerciseDemo({ exercise, size = "sm" }: { exercise: Exercise; size?: "sm" | "lg" }) {
   const embed = embedFor(exercise.video_url);
   if (embed) {
     return (
@@ -23,7 +23,7 @@ export function ExerciseDemo({ exercise }: { exercise: Exercise }) {
       </div>
     );
   }
-  return <Animation pattern={patternFor(exercise)} hold={isHold(exercise)} label={exercise.name} />;
+  return <Animation pattern={patternFor(exercise)} hold={isHold(exercise)} label={exercise.name} size={size} />;
 }
 
 function usePrefersReducedMotion() {
@@ -38,7 +38,19 @@ function usePrefersReducedMotion() {
   return reduced;
 }
 
-export function Animation({ pattern, hold, label, frame }: { pattern: Pattern; hold?: boolean; label: string; frame?: number }) {
+export function Animation({
+  pattern,
+  hold,
+  label,
+  frame,
+  size = "sm",
+}: {
+  pattern: Pattern;
+  hold?: boolean;
+  label: string;
+  frame?: number;
+  size?: "sm" | "lg";
+}) {
   const reduced = usePrefersReducedMotion();
   const still = hold || reduced || frame !== undefined;
   const [t, setT] = useState(0);
@@ -59,8 +71,8 @@ export function Animation({ pattern, hold, label, frame }: { pattern: Pattern; h
   const sk = solve(pose, pattern.view);
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-card">
-      <svg viewBox="0 -14 120 104" className="mx-auto block h-44 w-full" role="img" aria-label={`${label} demo`}>
+    <div className={`relative overflow-hidden rounded-xl bg-card ${size === "lg" ? "h-full" : ""}`}>
+      <svg viewBox="0 -14 120 104" className={`mx-auto block w-full ${size === "lg" ? "h-full" : "h-44"}`} role="img" aria-label={`${label} demo`}>
         <line x1="4" x2="116" y1={GROUND + 0.8} y2={GROUND + 0.8} stroke="var(--border)" strokeWidth="1.2" strokeLinecap="round" />
         {pattern.props?.map((p, i) => <PropShape key={i} prop={p} sk={sk} under />)}
         <Figure sk={sk} />

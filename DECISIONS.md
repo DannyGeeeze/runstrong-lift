@@ -82,3 +82,14 @@ These are choices I made where the brief left room. Each one says where it lives
 46. **A direct video link plays in the app.** If an exercise's `video_url` is a YouTube, YouTube Shorts, Instagram post/reel or Vimeo link, the Demo plays it with that site's official embed player (YouTube uses the privacy-enhanced youtube-nocookie domain). The coach's category-page links aren't videos, so they fall through to the animation.
 47. **Everything else gets a built-in animation.** There are 17 movement patterns: squat, hinge, split squat, calf raise, tib raise, pogo, hop, skip, jump, drop jump, lateral bound, band walk, knee drive, bridge, Nordic, Copenhagen and row. They're drawn with a small stick-figure rig whose knees are solved automatically, so feet stay planted. Exercises are matched by name keywords first and then by slot, so new JSON entries get an animation with no code changes. Isometric exercises show the held position with a "Hold" tag. Reduced-motion settings show a still frame.
 48. **The animations are original drawings.** No video or artwork is copied from the coach's site. Showing his videos in the app only happens through official embeds of links you add.
+
+## Home screen and live workouts
+
+49. **App-shell layout.** The page never scrolls; only the content area between the top and the tab bar does, and only when its content is taller than the screen. The tab bar is part of the layout instead of floating over it. Rubber-band bounce is off. This, plus the web app manifest and icons (`app/manifest.ts`, `public/icon-*.png`, `app/apple-icon.png`), makes "Add to Home Screen" open full-screen like an app. The status bar uses `default`, which follows the light/dark theme color on newer iPhones.
+50. **Live workout** (`lib/live.ts`, `components/LiveWorkout.tsx`) goes warm-up → every set of every exercise → rests between sets.
+    - **Untimed sets** show the reps and a **Done** button.
+    - **Timed sets** (holds, pushes) do a 3-2-1 countdown, then run a ring timer. Holds use the middle of the range rounded down (20–45 s → 30 s). Short pushes use the top of the range (3–5 s → 5 s). One-sided holds run left, then a 5 s switch, then right.
+    - **Rests start on their own**, using the exercise's rest (ranges use the middle), with +15 s and Skip. There's at least 45 s between exercises. Supersets alternate both exercises before resting.
+    - **Beeps** sound on the last 3 seconds and at zero, with vibration on Android. The screen is kept awake where the browser allows it.
+    - **Timers use real timestamps**, so locking the phone doesn't throw them off.
+    - **Finishing** saves only the exercises you actually did, the same as Mark complete with those ticked.

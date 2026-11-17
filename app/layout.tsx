@@ -9,7 +9,7 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 export const metadata: Metadata = {
   title: "RunStrong Lift",
   description: "Strength sessions built around today's run and your race schedule.",
-  appleWebApp: { capable: true, title: "RunStrong Lift", statusBarStyle: "default" },
+  appleWebApp: { capable: true, title: "RS Lift", statusBarStyle: "default" },
 };
 
 export const viewport: Viewport = {
@@ -25,8 +25,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-      <body className="min-h-dvh">
-        <main className="mx-auto w-full max-w-md px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-28">{children}</main>
+      {/* App shell: the page itself never scrolls; only <main> does, and only when its content is taller than the screen. */}
+      <body className="flex h-dvh flex-col overflow-hidden">
+        <main id="scroller" className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mx-auto flex min-h-full w-full max-w-md flex-col px-4 pb-6 pt-[max(1rem,env(safe-area-inset-top))]">{children}</div>
+        </main>
         <Nav />
       </body>
     </html>

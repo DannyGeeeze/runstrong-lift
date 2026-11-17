@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { RunRow } from "@/components/RunList";
+import { LiveWorkout } from "@/components/LiveWorkout";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
@@ -57,6 +58,7 @@ function Today() {
   const [mode, setMode] = useState<"today" | "catchup">("today");
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [live, setLive] = useState(false);
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
@@ -101,10 +103,11 @@ function Today() {
     setState({ ...current, done });
   }
 
-  function complete() {
+  function complete(ids?: string[]) {
     if (!current) return;
     const w = current.workout;
-    const doneIds = current.done.size > 0 ? [...current.done] : undefined;
+    const picked = ids ?? [...current.done];
+    const doneIds = picked.length > 0 ? picked : undefined;
     storage.addLift(toLiftLog(w, newId(), doneIds));
     storage.saveBlock(addToBlock(block, today, w.items.map((i) => ({ key: i.key, exerciseId: i.exercise.id }))));
     setSaved(w.title);
@@ -247,12 +250,27 @@ function Today() {
         {current && (
           <>
             <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} />
+            {current.workout.items.length > 0 && (
+              <Button variant="primary" className="w-full py-4 text-base" onClick={() => setLive(true)}>
+                ▶ Start workout
+              </Button>
+            )}
             <div className="grid grid-cols-2 gap-2">
               <Button onClick={() => generate(current.workout.attempt + 1)}>Regenerate</Button>
-              <Button variant="primary" onClick={complete} disabled={current.workout.items.length === 0}>
+              <Button onClick={() => complete()} disabled={current.workout.items.length === 0}>
                 Mark complete
               </Button>
             </div>
+            {live && (
+              <LiveWorkout
+                workout={current.workout}
+                onClose={() => setLive(false)}
+                onFinish={(ids) => {
+                  setLive(false);
+                  complete(ids);
+                }}
+              />
+            )}
           </>
         )}
       </div>

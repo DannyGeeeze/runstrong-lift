@@ -21,6 +21,7 @@ describe("exercise demos", () => {
     expect(id("bulgarian-split-squat")).toBe("split-squat");
     expect(id("sl-calf-raise")).toBe("calf-raise");
     expect(id("skater-bound")).toBe("lateral-bound");
+    expect(id("physioball-oscillation")).toBe("bridge");
   });
 
   it("every animation frame is a valid figure with feet at or above the floor", () => {

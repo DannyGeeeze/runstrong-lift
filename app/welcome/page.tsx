@@ -134,7 +134,7 @@ function Onboarding() {
   }
 
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    document.getElementById("scroller")?.scrollTo({ top: 0 });
   }, [step]);
 
   const profile: Profile | null =
@@ -201,7 +201,7 @@ function Onboarding() {
 
   if (building) {
     return (
-      <div className="flex min-h-[70dvh] flex-col items-center justify-center gap-5">
+      <div className="flex flex-1 flex-col items-center justify-center gap-5">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-accent-soft border-t-accent" />
         <p className="animate-rise text-lg font-semibold">Building your plan…</p>
       </div>
@@ -209,7 +209,7 @@ function Onboarding() {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-3rem)] flex-col">
+    <div className="flex flex-1 flex-col">
       <div className="sticky top-0 z-10 -mx-4 bg-bg/95 px-4 pb-3 pt-1 backdrop-blur">
         <div className="flex items-center gap-3">
           <button
@@ -398,7 +398,7 @@ function Onboarding() {
       </div>
 
       {!current.auto && (
-        <div className="sticky bottom-0 -mx-4 mt-6 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
+        <div className="sticky bottom-0 -mx-4 -mb-6 mt-6 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
           <button
             type="button"
             disabled={!current.ready}

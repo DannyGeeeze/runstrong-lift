@@ -14,7 +14,7 @@ export function Nav() {
   const path = usePathname();
   if (path.startsWith("/welcome")) return null;
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-card/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+    <nav className="shrink-0 border-t border-line bg-card pb-[env(safe-area-inset-bottom)]">
       <ul className="mx-auto flex max-w-md">
         {TABS.map((t) => {
           const active = t.href === "/" ? path === "/" : path.startsWith(t.href);
