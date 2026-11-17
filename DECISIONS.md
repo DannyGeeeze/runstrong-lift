@@ -106,3 +106,13 @@ These are choices I made where the brief left room. Each one says where it lives
 53. **Which moves get a weight:** a move counts as loaded when its equipment includes a barbell, dumbbell, kettlebell, trap/safety bar, landmine, plate, cable, leg press, belt squat, sled, machine, med ball or weight vest. That's 135 of the exercises. "Bodyweight" deliberately doesn't count.
 54. **Logging:** in the live workout, loaded rep sets show a −5 / weight / +5 stepper above Done. You can also tap the number to type any weight. It's pre-filled with this session's previous set, otherwise last session's same set, otherwise last session's top set. Weights are saved in pounds with the session in lift history (`LiftLog.weights`), so export/import carries them.
 55. **Showing it:** exercise cards and the "Up next" card show "Last time: 95 lb" (or a range across sets). The finish screen calls out a 🏆 new best when you beat your heaviest logged weight for a move; the first time you log a move isn't counted as a best.
+
+## iPhone app + lock-screen Live Activity (`ios/`, `capacitor.config.ts`)
+
+56. **A thin native shell.** The iPhone app is a Capacitor shell that loads the live site (`server.url`), so web deploys show up in the app without reinstalling. Strava sign-in stays inside the app (`allowNavigation`). Minimum iOS is 16.2, the first version with Live Activity content updates. The app is portrait only.
+57. **The Live Activity** is a WidgetKit extension (`ios/App/RSLiftWidget`) drawing `WorkoutActivityAttributes` (`ios/App/Shared`).
+    - **Lock-screen card:** the move, "Set 2 of 3", a big readout (reps, or a countdown), a progress bar and "Up next".
+    - **Dynamic Island:** compact and expanded views.
+    - **Countdowns** use `Text(timerInterval:)`, so they keep ticking on the lock screen while the app is asleep.
+58. **The bridge.** The web app drives the Live Activity through a local Capacitor plugin (`LiveActivityPlugin.swift`, registered in `MainViewController.swift`; JS in `lib/native.ts`). The live workout sends an update only when the step, the timer or the pause state changes. It ends the activity on exit, and on finish leaves a "Workout complete" card up for 5 minutes. In a browser every call does nothing.
+59. **The widget target** is added to the Xcode project by `scripts/ios-add-live-activity.rb`, which can be re-run safely, rather than by hand in Xcode.

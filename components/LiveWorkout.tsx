@@ -5,6 +5,7 @@ import { buildSteps, formatClock, type LiveStep } from "@/lib/live";
 import type { Workout } from "@/lib/rules";
 import { getExercise } from "@/lib/exercises";
 import type { LiftLog } from "@/lib/types";
+import { liveActivity, type ActivityState } from "@/lib/native";
 import { formatWeights, isLoaded, lastTime, newBests, suggestWeight } from "@/lib/weights";
 import { ExerciseDemo } from "./ExerciseDemo";
 
@@ -228,6 +229,57 @@ export function LiveWorkout({
   }
 
   const elapsed = Math.max(0, ((pausedAt.current ?? clock) - startedAt.current - pausedMs.current) / 1000);
+
+  // Mirror the current step on the iPhone lock screen (Live Activity). No-op on the web.
+  const activityStarted = useRef(false);
+  const activityFinished = useRef(false);
+  useEffect(() => {
+    const progress = steps.length ? index / steps.length : 1;
+    let state: ActivityState;
+    if (finished) {
+      state = { phase: "done", title: "Workout complete", detail: `${setsDone} sets · ${formatClock(elapsed)}`, progress: 1 };
+    } else if (!step || step.kind === "warmup") {
+      state = { phase: "work", title: "Warm-up", detail: workout.title, big: "", progress };
+    } else if (step.kind === "work") {
+      const p = workout.items[step.item];
+      const detail = `Set ${step.set} of ${step.sets}${step.side ? ` · ${step.side === "left" ? "Left" : "Right"}` : ""}`;
+      state = { phase: "work", title: p.exercise.name, detail, big: step.seconds === null ? step.reps : `${step.seconds}s`, progress };
+      if (timer.phase !== "idle") {
+        state = { ...state, phase: timer.phase === "countdown" ? "countdown" : "hold", endsAt: timer.endAt, big: undefined };
+      }
+    } else {
+      const up = steps[index + 1];
+      const upItem = up?.kind === "work" ? workout.items[up.item] : null;
+      state = {
+        phase: "rest",
+        title: step.label,
+        detail: upItem && up?.kind === "work" ? `Next: set ${up.set} of ${up.sets}` : "",
+        endsAt: timer.phase !== "idle" ? timer.endAt : undefined,
+        progress,
+        next: upItem?.exercise.name,
+      };
+    }
+    if (timer.phase !== "idle" && timer.pausedLeft !== null && !finished) {
+      state = { ...state, phase: "paused", endsAt: undefined, pausedLeft: timer.pausedLeft / 1000 };
+    }
+    if (!activityStarted.current) {
+      activityStarted.current = true;
+      liveActivity.start(workout.title, state);
+    } else if (finished) {
+      activityFinished.current = true;
+      liveActivity.end(state, true);
+    } else {
+      liveActivity.update(state);
+    }
+    // Only when the step, timer or finish state changes, not every clock tick.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, timer, finished]);
+  useEffect(
+    () => () => {
+      if (!activityFinished.current) liveActivity.end();
+    },
+    [],
+  );
 
   // Segment fill: finished segments full, the current one by how far through its steps you are.
   const seg = finished ? count : segOf[index];
