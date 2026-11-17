@@ -1,15 +1,16 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { storage, type AppData } from "./storage";
+import { activeKey, storage, type AppData } from "./storage";
 
 let cache: { raw: string | null; data: AppData } | null = null;
 const SERVER = storage.load(); // window is undefined on the server → defaults
 
 function snapshot(): AppData {
   let raw: string | null = null;
+  const key = activeKey();
   try {
-    raw = window.localStorage.getItem("runstrong-lift:v1");
+    raw = key + "|" + window.localStorage.getItem(key);
   } catch {
     raw = null;
   }

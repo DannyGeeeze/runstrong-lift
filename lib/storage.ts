@@ -25,30 +25,55 @@ export interface AppData {
   overrides: Record<string, RunType>;
   /** Onboarding answers; null until onboarding is finished. */
   profile: Profile | null;
+  /** True while a test scenario is loaded (read-only flag, set by the storage mode). */
+  testMode: boolean;
 }
 
 const KEY = "runstrong-lift:v1";
+/** Test scenarios live in their own slot so real data is never touched. */
+const TEST_KEY = "runstrong-lift:test";
+const MODE_KEY = "runstrong-lift:mode";
+
+function inTestMode(): boolean {
+  try {
+    return window.localStorage.getItem(MODE_KEY) === "test";
+  } catch {
+    return false;
+  }
+}
+
+/** The localStorage key currently in use. */
+export function activeKey(): string {
+  return typeof window !== "undefined" && inTestMode() ? TEST_KEY : KEY;
+}
 
 function empty(): AppData {
-  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], block: null, overrides: {}, profile: null };
+  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], block: null, overrides: {}, profile: null, testMode: false };
 }
 
 function read(): AppData {
   if (typeof window === "undefined") return empty();
+  const testMode = inTestMode();
   try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return empty();
-    return normalize(JSON.parse(raw));
+    const raw = window.localStorage.getItem(activeKey());
+    if (!raw) return { ...empty(), testMode };
+    return { ...normalize(JSON.parse(raw)), testMode };
   } catch {
-    return empty();
+    return { ...empty(), testMode };
   }
+}
+
+function notify() {
+  window.dispatchEvent(new Event("runstrong-storage"));
 }
 
 function write(data: AppData) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(data));
-    window.dispatchEvent(new Event("runstrong-storage"));
+    const { testMode: _t, ...rest } = data;
+    void _t;
+    window.localStorage.setItem(activeKey(), JSON.stringify(rest));
+    notify();
   } catch {
     // Storage full or blocked: nothing else we can do in a local-only app.
   }
@@ -62,8 +87,19 @@ function normalize(input: Partial<AppData>): AppData {
     history: Array.isArray(input.history) ? input.history : [],
     block: input.block ?? null,
     overrides: input.overrides ?? {},
-    profile: input.profile ?? null,
+    profile: normalizeProfile(input.profile),
+    testMode: false,
   };
+}
+
+/** Older profiles stored a single `event`; they now hold a list. */
+function normalizeProfile(p: unknown): Profile | null {
+  if (!p || typeof p !== "object") return null;
+  const old = p as Profile & { event?: Profile["events"][number] };
+  const events = Array.isArray(old.events) && old.events.length ? old.events : old.event ? [old.event] : ["xc" as const];
+  const { event: _drop, ...rest } = old;
+  void _drop;
+  return { ...rest, events };
 }
 
 function update(fn: (d: AppData) => AppData) {
@@ -104,6 +140,27 @@ export const storage = {
       else delete overrides[date];
       return { ...d, overrides };
     });
+  },
+
+  /** Switch to a throwaway copy of the data (e.g. a mid-season scenario). */
+  enterTestMode(scenario: AppData) {
+    try {
+      window.localStorage.setItem(MODE_KEY, "test");
+    } catch {
+      return;
+    }
+    write(scenario);
+  },
+
+  /** Back to real data; the test copy is discarded. */
+  exitTestMode() {
+    try {
+      window.localStorage.removeItem(MODE_KEY);
+      window.localStorage.removeItem(TEST_KEY);
+    } catch {
+      // ignore
+    }
+    notify();
   },
 
   exportJson(): string {

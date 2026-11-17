@@ -144,7 +144,6 @@ function RaceForm({
             </Chip>
           ))}
         </div>
-        <p className="mt-1 text-xs text-muted">A = peak race. A races in the next 3 weeks suggest Championship phase.</p>
       </div>
       <div className="flex gap-2 pt-1">
         <Button variant="primary" className="flex-1" disabled={!r.date || !r.name.trim()} onClick={() => onSave({ ...r, name: r.name.trim() })}>

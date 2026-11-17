@@ -71,3 +71,7 @@ These are choices I made where the brief left room. Each one says where it lives
 38. **Every profile filter relaxes rather than leaving a slot empty.** First it drops the experience filter, then the equipment filter. The coach's Short template uses its own picks when they fit, and otherwise the nearest Full option for that slot.
 39. **The profile only changes which exercises fill a slot.** The coach's timing rules (48h, weekly caps, phase tables) are never changed by onboarding answers.
 40. **Rep text cleanup:** where a library entry repeats its set count inside reps (e.g. "2-3 x 20-45 s hold"), the count is dropped from reps, since `sets` already holds it.
+41. **Pull-up bar equipment:** "Kettlebell Hip Flexor Iso In Deadhang" now needs `kettlebell, pull-up bar`, and "Chin Up" needs `pull-up bar` (it was listed as bodyweight). Neither shows up for Home or Bodyweight setups.
+42. **Events are multi-select** (`profile.events`). Profiles saved with the old single `event` field are converted automatically.
+43. **Minimal text:** onboarding shows only the question and its options. Helper captions are gone from Today, Settings and Races too. "Why today" and warnings stay.
+44. **Test mode** (Settings → Test mode) loads a mid-track-season scenario into a separate storage slot. That scenario is Deep phase, a meet every Thursday, league champs as the A race in 4 weeks, last meet's lift in history, and demo runs. Exit throws the test copy away, and your real data is never touched.

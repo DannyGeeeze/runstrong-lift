@@ -122,13 +122,12 @@ function overcomingDose(p: Prescription): Prescription {
     sets: 5,
     reps: `3-5 s max push${side}`,
     rest: "15-20 s between pushes",
-    note: "Push as hard as you can against something that won't move.",
   };
 }
 
 function yieldingDose(p: Prescription): Prescription {
   const side = p.exercise.unilateral ? "/side" : "";
-  return { ...p, sets: 3, reps: `20-45 s hold${side}`, rest: "30-60 s", note: "Hold the position, don't let it sag." };
+  return { ...p, sets: 3, reps: `20-45 s hold${side}`, rest: "30-60 s" };
 }
 
 function isoDose(p: Prescription): Prescription {

@@ -128,21 +128,26 @@ function Today() {
         )}
       </header>
 
-      {source === "mock" && (
+      {data.testMode && (
+        <div className="mt-4 flex items-center justify-between rounded-xl bg-warn-soft px-3 py-2.5 text-sm text-warn">
+          <span className="font-semibold">Test: mid track season</span>
+          <button type="button" className="font-semibold underline" onClick={() => storage.exitTestMode()}>
+            Exit
+          </button>
+        </div>
+      )}
+      {source === "mock" && !data.testMode && (
         <div className="mt-4">
           <Notice>
-            Demo data: these runs are made up.{" "}
-            {status?.configured ? (
-              <Link className="font-semibold text-accent" href="/settings">Turn off in Settings</Link>
-            ) : (
-              <>Set up Strava (see SETUP.md) to use your real runs.</>
+            Demo runs{" "}
+            {status?.configured && (
+              <Link className="font-semibold text-accent" href="/settings">· Turn off</Link>
             )}
           </Notice>
         </div>
       )}
       {status?.configured && !status.connected && !settings.mockMode && (
         <Card className="mt-4 space-y-3">
-          <p className="text-sm">Connect Strava so the app can see today&apos;s run.</p>
           <div className="flex gap-2">
             <a href="/api/strava/login" className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink">
               Connect Strava
@@ -170,7 +175,7 @@ function Today() {
             ))}
           </div>
         ) : (
-          <p className="text-sm text-muted">No run logged today yet. Pick the day type below.</p>
+          <p className="text-sm text-muted">No run yet today</p>
         )}
         <div className="mt-3 flex flex-wrap gap-2">
           {TYPES.map((t) => (
@@ -183,15 +188,6 @@ function Today() {
             </Chip>
           ))}
         </div>
-        <p className="mt-2 text-xs text-muted">
-          {day.source === "override"
-            ? "You set this. Tap it again to go back to auto."
-            : day.source === "race-schedule"
-              ? "Race on your schedule today."
-              : day.source === "strava"
-                ? source === "mock" ? "Detected from the demo run's workout type." : "Detected from Strava's workout type."
-                : "Nothing detected, so treated as rest."}
-        </p>
       </Card>
 
       {catchUp && "blocked" in catchUp && (
@@ -205,7 +201,6 @@ function Today() {
             checked={mode === "catchup"}
             onChange={(v) => setMode(v ? "catchup" : "today")}
             label="Lift this morning for yesterday"
-            hint="You didn't lift after yesterday's hard run, and the next hard day is 48h+ away."
           />
         </Card>
       )}
@@ -227,17 +222,17 @@ function Today() {
       <div className="space-y-3">
         {(mode === "today" ? preview.strength : catchUp && "session" in catchUp && catchUp.strength) && (
           <Card className="py-1">
-            <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time" hint="20-min version" />
+            <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time (20 min)" />
           </Card>
         )}
 
         {!current && (
           <>
             {preview.session === "touch-up" && mode === "today" && profile?.goals.includes("healthy") && (
-              <Notice tone="good">Recommended: you said staying healthy is a goal, and touch-ups are how that happens.</Notice>
+              <Notice tone="good">Recommended for staying healthy</Notice>
             )}
             <p className="text-sm text-muted">
-              Plan: <span className="font-medium text-ink">{(mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview).why}</span>
+              <span className="font-medium text-ink">{(mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview).why}</span>
             </p>
             {preview.session !== "none" || mode === "catchup" ? (
               <Button variant="primary" className="w-full py-4 text-base" onClick={() => generate(0)} disabled={loading}>
@@ -258,9 +253,6 @@ function Today() {
                 Mark complete
               </Button>
             </div>
-            <p className="text-center text-xs text-muted">
-              Tick off exercises as you go. Mark complete saves the ticked ones (or all if none are ticked).
-            </p>
           </>
         )}
       </div>

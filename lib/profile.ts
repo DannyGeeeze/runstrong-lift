@@ -28,7 +28,8 @@ export type EventFocus = "xc" | "distance" | "mid" | "long";
 
 export interface Profile {
   name: string;
-  event: EventFocus;
+  /** One or more, e.g. XC in the fall and 1600/3200 in the spring. */
+  events: EventFocus[];
   weeklyMiles: number;
   experience: Experience;
   equipment: EquipmentAccess;
@@ -108,30 +109,30 @@ export function wantsPlyoEmphasis(profile: Profile | null | undefined): boolean 
 // Labels (shared by onboarding and Settings)
 // ---------------------------------------------------------------------------
 
-export const EVENT_OPTIONS: { value: EventFocus; label: string; hint: string; icon: string }[] = [
-  { value: "xc", label: "Cross country", hint: "5K over grass and hills", icon: "🌲" },
-  { value: "distance", label: "1600 / 3200", hint: "Distance on the track", icon: "🏟️" },
-  { value: "mid", label: "800 / mile", hint: "Middle distance, speed matters", icon: "⚡" },
-  { value: "long", label: "Longer stuff", hint: "10K, half, road races", icon: "🛣️" },
+export const EVENT_OPTIONS: { value: EventFocus; label: string; icon: string }[] = [
+  { value: "xc", label: "Cross country", icon: "🌲" },
+  { value: "distance", label: "1600 / 3200", icon: "🏟️" },
+  { value: "mid", label: "800 / mile", icon: "⚡" },
+  { value: "long", label: "Road / longer", icon: "🛣️" },
 ];
 
-export const EXPERIENCE_OPTIONS: { value: Experience; label: string; hint: string; icon: string }[] = [
-  { value: "new", label: "Brand new", hint: "I've barely touched a barbell. Teach me.", icon: "🌱" },
-  { value: "some", label: "Some experience", hint: "I've done team lifts or a few months on my own.", icon: "💪" },
-  { value: "solid", label: "I know my way around", hint: "Squats, RDLs and box jumps feel familiar.", icon: "🏋️" },
+export const EXPERIENCE_OPTIONS: { value: Experience; label: string; icon: string }[] = [
+  { value: "new", label: "New to it", icon: "🌱" },
+  { value: "some", label: "Some", icon: "💪" },
+  { value: "solid", label: "A lot", icon: "🏋️" },
 ];
 
-export const EQUIPMENT_OPTIONS: { value: EquipmentAccess; label: string; hint: string; icon: string }[] = [
-  { value: "gym", label: "Full gym", hint: "Barbells, racks, machines (school weight room counts)", icon: "🏫" },
-  { value: "home", label: "Home setup", hint: "Dumbbells or kettlebells, bands, a box or bench", icon: "🏠" },
-  { value: "minimal", label: "Just me", hint: "Bodyweight, a band, stairs or a bench", icon: "🎒" },
+export const EQUIPMENT_OPTIONS: { value: EquipmentAccess; label: string; icon: string }[] = [
+  { value: "gym", label: "Gym", icon: "🏫" },
+  { value: "home", label: "Home", icon: "🏠" },
+  { value: "minimal", label: "Bodyweight", icon: "🎒" },
 ];
 
-export const GOAL_OPTIONS: { value: Goal; label: string; hint: string; icon: string }[] = [
-  { value: "kick", label: "Faster finishing kick", hint: "More pop in the last 200", icon: "🚀" },
-  { value: "healthy", label: "Stay healthy all season", hint: "Fewer niggles, more training days", icon: "🛡️" },
-  { value: "economy", label: "Run more efficiently", hint: "Springier stride, same pace for less effort", icon: "🦘" },
-  { value: "strength", label: "Get stronger overall", hint: "Build a base that lasts years", icon: "🧱" },
+export const GOAL_OPTIONS: { value: Goal; label: string; icon: string }[] = [
+  { value: "kick", label: "Faster kick", icon: "🚀" },
+  { value: "healthy", label: "Stay healthy", icon: "🛡️" },
+  { value: "economy", label: "Run efficiently", icon: "🦘" },
+  { value: "strength", label: "Get stronger", icon: "🧱" },
 ];
 
 export const SPOT_OPTIONS: { value: TroubleSpot; label: string }[] = [

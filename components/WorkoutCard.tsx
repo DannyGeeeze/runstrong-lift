@@ -109,11 +109,6 @@ export function WorkoutCard({
         })}
       </ol>
 
-      {decision.session !== "none" && (
-        <p className="text-xs text-muted">
-          Low sets, low reps, more than 70% effort, never to failure.
-        </p>
-      )}
     </Card>
   );
 }

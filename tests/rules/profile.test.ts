@@ -8,7 +8,7 @@ const TUE = "2026-09-15";
 
 const BASE: Profile = {
   name: "",
-  event: "xc",
+  events: ["xc", "distance"],
   weeklyMiles: 55,
   experience: "solid",
   equipment: "gym",

@@ -7,6 +7,7 @@ import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/u
 import { formatDay, todayLocal } from "@/lib/dates";
 import { blockEnds, PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import { storage } from "@/lib/storage";
+import { trackSeasonScenario } from "@/lib/mock";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
 import type { Phase, Settings, Weekday } from "@/lib/types";
@@ -29,7 +30,8 @@ export default function SettingsPage() {
 }
 
 function SettingsView() {
-  const { settings, races, block, profile } = useStore();
+  const data = useStore();
+  const { settings, races, block, profile } = data;
   const { status, reload } = useRuns(settings.mockMode);
   const today = todayLocal();
   const suggestion = suggestPhase(races, today);
@@ -79,7 +81,7 @@ function SettingsView() {
         {profile ? (
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
             <dt className="text-muted">Event</dt>
-            <dd>{EVENT_OPTIONS.find((o) => o.value === profile.event)?.label} · {profile.weeklyMiles} mi/wk</dd>
+            <dd>{EVENT_OPTIONS.filter((o) => profile.events.includes(o.value)).map((o) => o.label).join(", ")} · {profile.weeklyMiles} mi/wk</dd>
             <dt className="text-muted">Lifting</dt>
             <dd>{EXPERIENCE_OPTIONS.find((o) => o.value === profile.experience)?.label}</dd>
             <dt className="text-muted">Gear</dt>
@@ -106,7 +108,7 @@ function SettingsView() {
           ))}
         </div>
         <p className="text-sm text-muted">
-          Suggested: <span className="font-semibold text-ink">{PHASE_LABEL[suggestion.phase]}</span>. {suggestion.reason}
+          Suggested: <span className="font-semibold text-ink">{PHASE_LABEL[suggestion.phase]}</span>
           {suggestion.phase !== settings.phase && (
             <button type="button" className="ml-1 font-semibold text-accent" onClick={() => set("phase", suggestion.phase)}>
               Use it
@@ -133,7 +135,6 @@ function SettingsView() {
         </div>
         <div>
           <p className="text-sm font-medium">Workout days in weeks with no race</p>
-          <p className="text-xs text-muted">Used for the 48h rule.</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {DAYS.map((d) => (
               <Chip
@@ -155,19 +156,19 @@ function SettingsView() {
 
       <SectionTitle>Sessions</SectionTitle>
       <Card className="divide-y divide-line py-1">
-        <Toggle checked={settings.returnWeek} onChange={(v) => set("returnWeek", v)} label="Return week" hint="First week back after a break: yielding isos only" />
-        <Toggle checked={settings.enablePower} onChange={(v) => set("enablePower", v)} label="Include POWER moves" hint="Olympic-style power in Full sessions" />
-        <Toggle checked={settings.enableMobility} onChange={(v) => set("enableMobility", v)} label="Include MOBILITY moves" hint="Hip mobility/control in Full sessions" />
+        <Toggle checked={settings.returnWeek} onChange={(v) => set("returnWeek", v)} label="Return week (after a break)" />
+        <Toggle checked={settings.enablePower} onChange={(v) => set("enablePower", v)} label="Power moves" />
+        <Toggle checked={settings.enableMobility} onChange={(v) => set("enableMobility", v)} label="Mobility moves" />
       </Card>
 
       <SectionTitle>Exercise block</SectionTitle>
       <Card className="space-y-3">
         {block ? (
           <p className="text-sm text-muted">
-            Current picks started {formatDay(block.startedOn)} and rotate on {formatDay(blockEnds(block))}. {Object.keys(block.picks).length} slots set.
+            Rotates {formatDay(blockEnds(block))}
           </p>
         ) : (
-          <p className="text-sm text-muted">No block yet. Your first completed sessions set the picks you&apos;ll keep for 4 weeks.</p>
+          <p className="text-sm text-muted">Starts with your first session</p>
         )}
         {block && (
           <Button onClick={() => confirm("Start a new block with fresh picks?") && storage.saveBlock(null)}>Start new block now</Button>
@@ -180,7 +181,7 @@ function SettingsView() {
         {!status ? (
           <p className="text-sm text-muted">Checking…</p>
         ) : !status.configured ? (
-          <p className="text-sm text-muted">Strava isn&apos;t set up on this server yet. Follow SETUP.md, then come back here.</p>
+          <p className="text-sm text-muted">Not set up</p>
         ) : status.connected ? (
           <div className="flex items-center justify-between">
             <p className="text-sm">Connected{status.athlete ? ` as ${status.athlete}` : ""}.</p>
@@ -191,12 +192,21 @@ function SettingsView() {
             Connect Strava
           </a>
         )}
-        <Toggle checked={settings.mockMode} onChange={(v) => set("mockMode", v)} label="Demo data" hint="Use made-up runs instead of Strava" />
+        <Toggle checked={settings.mockMode} onChange={(v) => set("mockMode", v)} label="Demo runs" />
+      </Card>
+
+      <SectionTitle>Test mode</SectionTitle>
+      <Card className="flex items-center justify-between">
+        <span className="text-sm font-medium">{data.testMode ? "Mid track season (on)" : "Mid track season"}</span>
+        {data.testMode ? (
+          <Button onClick={() => storage.exitTestMode()}>Exit</Button>
+        ) : (
+          <Button onClick={() => storage.enterTestMode(trackSeasonScenario(today, data))}>Try it</Button>
+        )}
       </Card>
 
       <SectionTitle>Your data</SectionTitle>
       <Card className="space-y-3">
-        <p className="text-sm text-muted">Races, settings and lift history are stored on this device only. Export to back them up or move phones.</p>
         <div className="flex gap-2">
           <Button onClick={exportData}>Export JSON</Button>
           <Button onClick={() => fileRef.current?.click()}>Import JSON</Button>
