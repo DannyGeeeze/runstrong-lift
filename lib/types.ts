@@ -103,6 +103,8 @@ export interface LiftLog {
   plyoTypes: string[];
   /** Set when this was a next-morning catch-up for the previous day's workout. */
   catchUpFor?: string;
+  /** Weights lifted (lb), per exercise id, one entry per set (null = set done without a weight). */
+  weights?: Record<string, (number | null)[]>;
 }
 
 /** Block picks per "session:slot" key, kept for 3–4 weeks before rotating. */

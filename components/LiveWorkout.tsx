@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { buildSteps, formatClock, type LiveStep } from "@/lib/live";
 import type { Workout } from "@/lib/rules";
+import { getExercise } from "@/lib/exercises";
+import type { LiftLog } from "@/lib/types";
+import { formatWeights, isLoaded, lastTime, newBests, suggestWeight } from "@/lib/weights";
 import { ExerciseDemo } from "./ExerciseDemo";
+
+type Weights = Record<string, (number | null)[]>;
 
 /**
  * Guided, full-screen workout player.
@@ -94,12 +99,14 @@ function segmentsFor(steps: LiveStep[]) {
 
 export function LiveWorkout({
   workout,
+  history,
   onClose,
   onFinish,
 }: {
   workout: Workout;
+  history: LiftLog[];
   onClose: () => void;
-  onFinish: (doneIds: string[]) => void;
+  onFinish: (doneIds: string[], weights: Weights) => void;
 }) {
   const steps = useMemo(() => buildSteps(workout.items, workout.warmup), [workout]);
   const { segOf, count } = useMemo(() => segmentsFor(steps), [steps]);
@@ -107,6 +114,9 @@ export function LiveWorkout({
   const [timer, setTimer] = useState<Timer>({ phase: "idle" });
   const [done, setDone] = useState<Set<string>>(new Set());
   const [setsDone, setSetsDone] = useState(0);
+  const [weights, setWeights] = useState<Weights>({});
+  /** Weight shown in the stepper for the current set (loaded rep sets only). */
+  const [draft, setDraft] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const startedAt = useRef(Date.now());
   const pausedMs = useRef(0);
@@ -130,6 +140,10 @@ export function LiveWorkout({
   // Rep-based sets wait for you to tap Done.
   useEffect(() => {
     lastBeep.current = null;
+    if (step?.kind === "work" && step.seconds === null) {
+      const ex = workout.items[step.item].exercise;
+      setDraft(isLoaded(ex) ? (weights[ex.id]?.[step.set - 1] ?? suggestWeight(history, ex.id, step.set, weights[ex.id])) : null);
+    }
     if (pausedAt.current) {
       pausedMs.current += Date.now() - pausedAt.current;
       pausedAt.current = null;
@@ -141,19 +155,28 @@ export function LiveWorkout({
     } else {
       setTimer({ phase: "idle" });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, step]);
 
   const next = useCallback(() => setIndex((i) => Math.min(i + 1, steps.length)), [steps.length]);
 
   const completeWork = useCallback(() => {
     if (step?.kind === "work") {
-      const id = workout.items[step.item].exercise.id;
+      const ex = workout.items[step.item].exercise;
+      const id = ex.id;
       setDone((d) => new Set(d).add(id));
+      if (step.seconds === null && isLoaded(ex)) {
+        setWeights((w) => {
+          const sets = [...(w[id] ?? [])];
+          sets[step.set - 1] = draft;
+          return { ...w, [id]: sets };
+        });
+      }
       // Count a set once, not once per side.
       if (step.side !== "left") setSetsDone((n) => n + 1);
     }
     next();
-  }, [step, workout.items, next]);
+  }, [step, workout.items, next, draft]);
 
   // Read the clock fresh on every render: the 200 ms tick only triggers re-renders. Using the
   // last tick's time made a just-started timer look up to 0.2 s longer (3-2-1 flashed a 4).
@@ -243,7 +266,13 @@ export function LiveWorkout({
         </div>
 
         {finished ? (
-          <FinishView elapsed={elapsed} setsDone={setsDone} exercisesDone={done.size} exercises={workout.items.length} />
+          <FinishView
+            elapsed={elapsed}
+            setsDone={setsDone}
+            exercisesDone={done.size}
+            exercises={workout.items.length}
+            bests={newBests(history, weights).map((b) => ({ name: getExercise(b.id)?.name ?? b.id, weight: b.weight }))}
+          />
         ) : step?.kind === "warmup" ? (
           <div key={index} className="animate-rise flex flex-1 flex-col justify-center">
             <p className="text-sm font-semibold uppercase tracking-wider text-accent">Warm-up</p>
@@ -257,7 +286,17 @@ export function LiveWorkout({
             </ul>
           </div>
         ) : step?.kind === "work" ? (
-          <WorkView key={index} workout={workout} step={step} timer={timer} remaining={remaining} paused={paused} />
+          <WorkView
+            key={index}
+            workout={workout}
+            step={step}
+            timer={timer}
+            remaining={remaining}
+            paused={paused}
+            draft={draft}
+            onDraft={setDraft}
+            last={lastTime(history, workout.items[step.item].exercise.id)}
+          />
         ) : step?.kind === "rest" ? (
           <RestView
             key={index}
@@ -267,6 +306,7 @@ export function LiveWorkout({
             total={timer.phase === "idle" ? step.seconds : timer.total}
             paused={paused}
             nextStep={steps[index + 1]}
+            history={history}
             onAdd={tap(() =>
               setTimer((t) =>
                 t.phase === "idle"
@@ -283,7 +323,7 @@ export function LiveWorkout({
         <div className="mt-4">
           {finished ? (
             <div className="space-y-2">
-              <button type="button" onClick={() => onFinish([...done])} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
+              <button type="button" onClick={() => onFinish([...done], weights)} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
                 Save workout
               </button>
               <button type="button" onClick={onClose} className="w-full py-2 text-sm text-muted">
@@ -329,14 +369,21 @@ function WorkView({
   timer,
   remaining,
   paused,
+  draft,
+  onDraft,
+  last,
 }: {
   workout: Workout;
   step: Extract<LiveStep, { kind: "work" }>;
   timer: Timer;
   remaining: number;
   paused: boolean;
+  draft: number | null;
+  onDraft: (w: number | null) => void;
+  last: ReturnType<typeof lastTime>;
 }) {
   const p = workout.items[step.item];
+  const loaded = step.seconds === null && isLoaded(p.exercise);
   const timing = step.seconds !== null && timer.phase !== "idle";
   const holdish = /hold|iso/i.test(`${p.reps} ${p.exercise.name}`);
   return (
@@ -365,8 +412,17 @@ function WorkView({
           {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"} side</span>}
         </p>
         <h1 className="mt-0.5 text-2xl font-bold leading-tight">{p.exercise.name}</h1>
-        <p className="mt-2 text-7xl font-bold leading-none tracking-tight tabular-nums">{step.seconds !== null ? `${step.seconds}s` : step.reps}</p>
-        <p className="mt-2 line-clamp-2 text-sm text-muted">{p.cue}</p>
+        <p className={`mt-2 font-bold leading-none tracking-tight tabular-nums ${loaded ? "text-6xl" : "text-7xl"}`}>
+          {step.seconds !== null ? `${step.seconds}s` : step.reps}
+        </p>
+        {loaded ? (
+          <div className="mt-3">
+            <WeightStepper value={draft} onChange={onDraft} />
+            {last && <p className="mt-1.5 text-center text-xs text-muted">Last time: {formatWeights(last.weights)}</p>}
+          </div>
+        ) : (
+          <p className="mt-2 line-clamp-2 text-sm text-muted">{p.cue}</p>
+        )}
       </div>
     </div>
   );
@@ -379,6 +435,7 @@ function RestView({
   total,
   paused,
   nextStep,
+  history,
   onAdd,
 }: {
   workout: Workout;
@@ -387,10 +444,12 @@ function RestView({
   total: number;
   paused: boolean;
   nextStep: LiveStep | undefined;
+  history: LiftLog[];
   onAdd: () => void;
 }) {
   const up = nextStep?.kind === "work" ? nextStep : null;
   const upItem = up ? workout.items[up.item] : null;
+  const upLast = upItem && isLoaded(upItem.exercise) ? lastTime(history, upItem.exercise.id) : null;
   return (
     <div className="animate-rise flex min-h-0 flex-1 flex-col items-center justify-center gap-5">
       <Ring value={remaining} total={total} label={paused ? "Paused" : step.label} big />
@@ -409,6 +468,7 @@ function RestView({
               Set {up.set} of {up.sets} · {up.seconds !== null ? `${up.seconds}s` : up.reps}
               {up.side ? ` · ${up.side}` : ""}
             </p>
+            {upLast && <p className="text-xs font-medium text-accent">Last: {formatWeights(upLast.weights)}</p>}
           </div>
         </div>
       )}
@@ -416,7 +476,19 @@ function RestView({
   );
 }
 
-function FinishView({ elapsed, setsDone, exercisesDone, exercises }: { elapsed: number; setsDone: number; exercisesDone: number; exercises: number }) {
+function FinishView({
+  elapsed,
+  setsDone,
+  exercisesDone,
+  exercises,
+  bests,
+}: {
+  elapsed: number;
+  setsDone: number;
+  exercisesDone: number;
+  exercises: number;
+  bests: { name: string; weight: number }[];
+}) {
   return (
     <div className="animate-rise flex flex-1 flex-col items-center justify-center text-center">
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-ink">
@@ -428,6 +500,44 @@ function FinishView({ elapsed, setsDone, exercisesDone, exercises }: { elapsed: 
         <Stat value={String(setsDone)} label="sets" />
         <Stat value={`${exercisesDone}/${exercises}`} label="moves" />
       </div>
+      {bests.length > 0 && (
+        <div className="mt-4 w-full space-y-2">
+          {bests.map((b) => (
+            <div key={b.name} className="flex items-center justify-between rounded-2xl bg-accent-soft px-4 py-3 text-left">
+              <span className="text-sm font-semibold">🏆 New best: {b.name}</span>
+              <span className="font-bold tabular-nums text-accent">{b.weight} lb</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WeightStepper({ value, onChange }: { value: number | null; onChange: (w: number | null) => void }) {
+  const step = (d: number) => onChange(Math.max(0, (value ?? 0) + d));
+  return (
+    <div className="flex items-center gap-2">
+      <button type="button" onClick={() => step(-5)} aria-label="5 pounds less" className="h-12 w-14 rounded-2xl border border-line bg-card text-xl font-bold active:scale-95">
+        −
+      </button>
+      <label className="flex h-12 flex-1 items-center justify-center gap-1 rounded-2xl border border-line bg-card">
+        <input
+          type="number"
+          inputMode="decimal"
+          min={0}
+          step={2.5}
+          placeholder="Weight"
+          value={value ?? ""}
+          onChange={(e) => onChange(e.target.value === "" ? null : Math.max(0, Number(e.target.value)))}
+          className="w-20 bg-transparent text-center text-2xl font-bold tabular-nums outline-none placeholder:text-base placeholder:font-medium placeholder:text-muted"
+          aria-label="Weight in pounds"
+        />
+        <span className="text-sm font-semibold text-muted">lb</span>
+      </label>
+      <button type="button" onClick={() => step(5)} aria-label="5 pounds more" className="h-12 w-14 rounded-2xl border border-line bg-card text-xl font-bold active:scale-95">
+        +
+      </button>
     </div>
   );
 }

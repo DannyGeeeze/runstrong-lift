@@ -22,7 +22,7 @@ import {
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
-import type { RunType } from "@/lib/types";
+import type { LiftLog, RunType } from "@/lib/types";
 
 const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 
@@ -103,12 +103,12 @@ function Today() {
     setState({ ...current, done });
   }
 
-  function complete(ids?: string[]) {
+  function complete(ids?: string[], weights?: LiftLog["weights"]) {
     if (!current) return;
     const w = current.workout;
     const picked = ids ?? [...current.done];
     const doneIds = picked.length > 0 ? picked : undefined;
-    storage.addLift(toLiftLog(w, newId(), doneIds));
+    storage.addLift(toLiftLog(w, newId(), doneIds, weights));
     storage.saveBlock(addToBlock(block, today, w.items.map((i) => ({ key: i.key, exerciseId: i.exercise.id }))));
     setSaved(w.title);
     setState(null);
@@ -249,7 +249,7 @@ function Today() {
 
         {current && (
           <>
-            <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} />
+            <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} history={history} />
             {current.workout.items.length > 0 && (
               <Button variant="primary" className="w-full py-4 text-base" onClick={() => setLive(true)}>
                 ▶ Start workout
@@ -265,9 +265,10 @@ function Today() {
               <LiveWorkout
                 workout={current.workout}
                 onClose={() => setLive(false)}
-                onFinish={(ids) => {
+                history={history}
+                onFinish={(ids, weights) => {
                   setLive(false);
-                  complete(ids);
+                  complete(ids, weights);
                 }}
               />
             )}

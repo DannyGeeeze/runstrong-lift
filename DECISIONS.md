@@ -100,3 +100,9 @@ These are choices I made where the brief left room. Each one says where it lives
     - **Pause** freezes the active timer and the workout clock.
     - **Finish screen** shows time, sets done and moves done before saving.
 52. **Hands-free timed sets.** Timed holds and pushes start a 3-2-1 countdown by themselves as soon as you reach them, then run and move on automatically. Rests do the same. Rep-based sets wait for you to tap **Done**. The only tap needed to begin is **Start** after the warm-up, which also unlocks sound on phones.
+
+## Weight logging (`lib/weights.ts`)
+
+53. **Which moves get a weight:** a move counts as loaded when its equipment includes a barbell, dumbbell, kettlebell, trap/safety bar, landmine, plate, cable, leg press, belt squat, sled, machine, med ball or weight vest. That's 135 of the exercises. "Bodyweight" deliberately doesn't count.
+54. **Logging:** in the live workout, loaded rep sets show a −5 / weight / +5 stepper above Done. You can also tap the number to type any weight. It's pre-filled with this session's previous set, otherwise last session's same set, otherwise last session's top set. Weights are saved in pounds with the session in lift history (`LiftLog.weights`), so export/import carries them.
+55. **Showing it:** exercise cards and the "Up next" card show "Last time: 95 lb" (or a range across sets). The finish screen calls out a 🏆 new best when you beat your heaviest logged weight for a move; the first time you log a move isn't counted as a best.

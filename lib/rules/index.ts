@@ -92,7 +92,7 @@ export function generateWorkout(input: GenerateInput): Workout {
 }
 
 /** Turn a completed workout into a history entry. */
-export function toLiftLog(w: Workout, id: string, doneIds?: string[]): LiftLog {
+export function toLiftLog(w: Workout, id: string, doneIds?: string[], weights?: LiftLog["weights"]): LiftLog {
   const items = doneIds ? w.items.filter((i) => doneIds.includes(i.exercise.id)) : w.items;
   const strengthItems = items.filter((i) => !isPlyo(i.exercise) && !isoKind(i.exercise));
   const plyoItems = items.filter((i) => isPlyo(i.exercise));
@@ -106,5 +106,6 @@ export function toLiftLog(w: Workout, id: string, doneIds?: string[]): LiftLog {
     hadPlyo: plyoItems.length > 0,
     plyoTypes: [...new Set(plyoItems.map((i) => i.exercise.plyo_type).filter((t): t is string => !!t))],
     catchUpFor: w.catchUpFor,
+    ...(weights && Object.keys(weights).length ? { weights } : {}),
   };
 }

@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { Workout } from "@/lib/rules";
+import type { LiftLog } from "@/lib/types";
+import { formatWeights, isLoaded, lastTime } from "@/lib/weights";
 import { ExerciseDemo } from "./ExerciseDemo";
 import { Card, Notice } from "./ui";
 
@@ -9,10 +11,12 @@ export function WorkoutCard({
   workout,
   done,
   onToggle,
+  history = [],
 }: {
   workout: Workout;
   done: Set<string>;
   onToggle: (id: string) => void;
+  history?: LiftLog[];
 }) {
   const [showWarmup, setShowWarmup] = useState(false);
   const [demo, setDemo] = useState<string | null>(null);
@@ -104,6 +108,11 @@ export function WorkoutCard({
                     {p.sets} × {p.reps}
                     <span className="text-muted"> · rest {p.rest}</span>
                   </p>
+                  {isLoaded(p.exercise) &&
+                    (() => {
+                      const last = lastTime(history, p.exercise.id);
+                      return last ? <p className="text-xs font-semibold text-accent">Last time: {formatWeights(last.weights)}</p> : null;
+                    })()}
                   {p.supersetWith && !pairedWithPrev && (
                     <p className="text-xs font-semibold uppercase tracking-wide text-accent">Superset with next</p>
                   )}
