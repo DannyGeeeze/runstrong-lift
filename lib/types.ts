@@ -12,7 +12,13 @@ export type SessionType =
   | "taper"
   | "return"
   | "touch-up"
+  | "upper"
+  | "core"
+  | "mobility"
   | "none";
+
+/** What to do on an easy or long-run day. The touch-up is the default. */
+export type EasyFocus = "touch-up" | "upper" | "core" | "mobility";
 
 export type Slot =
   | "A1"
@@ -25,7 +31,8 @@ export type Slot =
   | "D2"
   | "ISO"
   | "MOBILITY"
-  | "UPPER";
+  | "UPPER"
+  | "CORE";
 
 export type Intensity = "low" | "med" | "high";
 export type IsoKind = "overcoming" | "yielding" | "hold";

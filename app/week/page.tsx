@@ -18,6 +18,9 @@ const SESSION_LABEL: Record<LiftLog["session"], string> = {
   taper: "Race-day isos",
   return: "Return isos",
   "touch-up": "Touch-up",
+  upper: "Upper body",
+  core: "Core",
+  mobility: "Mobility",
   none: "None",
 };
 

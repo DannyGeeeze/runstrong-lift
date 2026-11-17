@@ -8,6 +8,9 @@ import { PATTERNS, type Pattern } from "./patterns";
 
 /** First match wins, so more specific patterns come first. */
 const RULES: [RegExp, string][] = [
+  [/dead-bug|hollow/, "dead-bug"],
+  [/bird-dog/, "bird-dog"],
+  [/greatest-stretch|couch-stretch/, "split-squat"],
   [/drop-jump|depth-jump|drop jump/, "drop-jump"],
   [/nordic/, "nordic"],
   [/copenhagen|side-plank|adductor|adduction/, "copenhagen"],
@@ -24,6 +27,7 @@ const RULES: [RegExp, string][] = [
   [/rdl|deadlift|hinge|good-morning|swing|back-extension|reverse-hyper|pull-through/, "hinge"],
   [/calf|achilles|soleus|toe|foot|ankle|arch|heel|balance|bosu/, "calf-raise"],
   [/squat|leg-press|belt|wall-sit/, "squat"],
+  [/front-plank|shoulder-tap|^plank/, "plank"],
   [/row|press|push|pull-up|chin|curl|fly|raise|plank|carry/, "row"],
 ];
 
@@ -39,12 +43,22 @@ const BY_SLOT: Record<string, string> = {
   ISO: "split-squat",
   MOBILITY: "knee-drive",
   UPPER: "row",
+  CORE: "plank",
 };
+
+/** Upper-body moves only match upper-body animations. */
+const UPPER_RULES: [RegExp, string][] = [
+  [/^(?!scap).*(push-up|bench-press|med-ball-bench)/, "push-up"],
+  [/^(?!.*rotation).*press/, "press"],
+  [/plank|crawl/, "plank"],
+];
 
 export function patternFor(e: Exercise): Pattern {
   const text = `${e.id} ${e.name}`.toLowerCase();
-  // Upper-body moves only match upper-body animations.
-  if (e.slot === "UPPER") return PATTERNS.row;
+  if (e.slot === "UPPER") {
+    for (const [re, id] of UPPER_RULES) if (re.test(e.id)) return PATTERNS[id];
+    return PATTERNS.row;
+  }
   for (const [re, id] of RULES) if (re.test(text)) return PATTERNS[id];
   return PATTERNS[BY_SLOT[e.slot] ?? "squat"];
 }

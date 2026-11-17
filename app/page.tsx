@@ -12,6 +12,7 @@ import { dayType, futureHardOverrides, RUN_TYPE_LABEL } from "@/lib/day";
 import {
   addToBlock,
   decideCatchUp,
+  EASY_SESSIONS,
   decideSession,
   generateWorkout,
   PHASE_LABEL,
@@ -22,9 +23,16 @@ import {
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
-import type { LiftLog, RunType } from "@/lib/types";
+import type { EasyFocus, LiftLog, RunType } from "@/lib/types";
 
 const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
+
+const EASY_OPTIONS: { value: EasyFocus; label: string }[] = [
+  { value: "touch-up", label: "Touch-up" },
+  { value: "upper", label: "Upper body" },
+  { value: "core", label: "Core" },
+  { value: "mobility", label: "Mobility" },
+];
 
 const LOGGED_LABEL: Record<string, string> = {
   full: "Full strength",
@@ -33,6 +41,9 @@ const LOGGED_LABEL: Record<string, string> = {
   taper: "Race-day isos",
   return: "Return isos",
   "touch-up": "Touch-up",
+  upper: "Upper body",
+  core: "Core",
+  mobility: "Mobility",
   none: "Nothing",
 };
 
@@ -59,6 +70,7 @@ function Today() {
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [live, setLive] = useState(false);
+  const [easyFocus, setEasyFocus] = useState<EasyFocus>("touch-up");
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
@@ -74,15 +86,17 @@ function Today() {
       block,
       profile,
       shortOnTime,
+      easyFocus,
       extraHardDays: futureHardOverrides(today, overrides),
     }),
-    [today, day.type, settings, races, history, block, profile, shortOnTime, overrides],
+    [today, day.type, settings, races, history, block, profile, shortOnTime, easyFocus, overrides],
   );
 
   const preview = decideSession(ctx);
-  const todayIsLift = !["touch-up", "none"].includes(preview.session);
+  const easyDay = preview.role === "easy" || preview.role === "long";
+  const todayIsLift = !EASY_SESSIONS.includes(preview.session) && preview.session !== "none";
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
-  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, mode]);
+  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, mode]);
   const current = state?.sig === sig ? state : null;
   const loggedToday = history.filter((h) => h.date === today);
 
@@ -227,6 +241,24 @@ function Today() {
           <Card className="py-1">
             <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time (20 min)" />
           </Card>
+        )}
+
+        {easyDay && mode === "today" && (
+          <div className="grid grid-cols-4 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
+            {EASY_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                aria-pressed={easyFocus === o.value}
+                onClick={() => setEasyFocus(o.value)}
+                className={`min-h-10 rounded-lg px-1 text-xs font-semibold transition-colors ${
+                  easyFocus === o.value ? "bg-accent text-accent-ink" : "text-muted"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
         )}
 
         {!current && (

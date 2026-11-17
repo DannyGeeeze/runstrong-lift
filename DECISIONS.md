@@ -116,3 +116,15 @@ These are choices I made where the brief left room. Each one says where it lives
     - **Countdowns** use `Text(timerInterval:)`, so they keep ticking on the lock screen while the app is asleep.
 58. **The bridge.** The web app drives the Live Activity through a local Capacitor plugin (`LiveActivityPlugin.swift`, registered in `MainViewController.swift`; JS in `lib/native.ts`). The live workout sends an update only when the step, the timer or the pause state changes. It ends the activity on exit, and on finish leaves a "Workout complete" card up for 5 minutes. In a browser every call does nothing.
 59. **The widget target** is added to the Xcode project by `scripts/ios-add-live-activity.rb`, which can be re-run safely, rather than by hand in Xcode.
+
+## Easy-day upper body, core and mobility (`lib/rules/sessions.ts`)
+
+60. **Easy and long days get a picker:** Touch-up (the default, as before), Upper body, Core or Mobility. All four stay optional. Workout, race and rest days are unchanged, and the pick has no effect on them.
+61. **None of them load the legs,** so they don't count toward the weekly 2 strength + 2 plyo caps and don't affect the 48h rule. Return week still swaps the touch-up for yielding isos, but leaves upper, core and mobility alone.
+62. **Templates** (~15-20 min):
+    - **Upper body:** a pull, a push, a shoulder/posture move and a carry or crawl. Pull and push are 3 x 8-10, leaving 2-3 reps in the tank.
+    - **Core:** an anti-extension move, an anti-rotation move, a side plank, then one more.
+    - **Mobility:** 5 hip/ankle moves, 2 easy sets each. This works even when mobility is turned off for Full sessions.
+63. **New exercises.** Core moves (dead bug, bird dog, planks, hollow hold, Pallof press, shoulder taps), three mobility moves, push-ups, band rows and band pull-aparts were added to the bank with `"source": "app"`, since they aren't from the coach's library. Band rows and push-ups mean minimal-equipment runners still get a pull and a push.
+64. **Equipment fixes:** pull-ups, scap pull-ups and dead hangs now need a pull-up bar. Single-arm and contralateral carries need dumbbells or a kettlebell. Z Press needs dumbbells or a barbell.
+65. **New animations:** overhead press, push-up, forearm plank, dead bug and bird dog. Upper-body moves now pick between row, press, push-up and plank instead of always showing a row.

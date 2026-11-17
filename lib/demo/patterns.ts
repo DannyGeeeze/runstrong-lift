@@ -247,8 +247,75 @@ const row: Pattern = {
   ],
 };
 
+
+// Easy-day upper body and core -----------------------------------------------
+
+const press: Pattern = {
+  id: "press",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(57.5, F, 90), [165, 15], [165, 15]), move: 0.6, hold: 0.25 },
+    { pose: P([58, 44.6], -2, L(59.5, F, 90), L(57.5, F, 90), [5, 5], [5, 5]), move: 0.7, hold: 0.3 },
+  ],
+};
+
+// Plank line: toes at (20, 76), body straight to the shoulders.
+const pushUp: Pattern = {
+  id: "push-up",
+  view: "side",
+  holdFrame: 0,
+  frames: [
+    { pose: P([52.7, 63.5], 69, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [180, 180], [180, 180]), move: 0.4, hold: 0.25 },
+    { pose: P([53.7, 67.4], 75.5, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [226, 140], [226, 140]), move: 0.45 },
+    { pose: P([54.7, 71.3], 82, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [250, 131], [250, 131]), move: 0.45, hold: 0.15 },
+    { pose: P([53.7, 67.4], 75.5, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [226, 140], [226, 140]), move: 0.4 },
+  ],
+};
+
+const plank: Pattern = {
+  id: "plank",
+  view: "side",
+  holdFrame: 0,
+  frames: [
+    { pose: P([54.6, 70.7], 81, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [180, 90], [180, 90]), move: 1.2, hold: 1 },
+    { pose: P([54.8, 69.8], 79, L(20, 76, 140, "u"), L(21, 76, 140, "u"), [180, 90], [180, 90]), move: 1.2, hold: 1 },
+  ],
+};
+
+// Lying on the back, head to the right. Legs in tabletop; opposite arm and leg reach out.
+const TABLE_A = L(28, 56, 0, "u");
+const TABLE_B = L(29, 56, 0, "u");
+const deadBug: Pattern = {
+  id: "dead-bug",
+  view: "side",
+  holdFrame: 0,
+  frames: [
+    { pose: P([45, 74], 90, TABLE_A, TABLE_B, [0, 0], [0, 0]), move: 0.8, hold: 0.2 },
+    { pose: P([45, 74], 90, L(11, 72, 270, "u"), TABLE_B, [0, 0], [80, 80]), move: 1.2, hold: 0.6 },
+    { pose: P([45, 74], 90, TABLE_A, TABLE_B, [0, 0], [0, 0]), move: 1.0, hold: 0.2 },
+    { pose: P([45, 74], 90, TABLE_A, L(11, 72, 270, "u"), [80, 80], [0, 0]), move: 1.2, hold: 0.6 },
+  ],
+};
+
+// On hands and knees, facing right. Opposite arm and leg reach long.
+const KNEEL_A = L(23, 78, 270, "d");
+const KNEEL_B = L(24, 78, 270, "d");
+const birdDog: Pattern = {
+  id: "bird-dog",
+  view: "side",
+  holdFrame: 1,
+  frames: [
+    { pose: P([40, 60], 78, KNEEL_A, KNEEL_B, [180, 180], [180, 180]), move: 0.8, hold: 0.2 },
+    { pose: P([40, 60], 78, L(5, 60, 270, "d"), KNEEL_B, [180, 180], [88, 88]), move: 1.2, hold: 0.8 },
+    { pose: P([40, 60], 78, KNEEL_A, KNEEL_B, [180, 180], [180, 180]), move: 1.0, hold: 0.2 },
+    { pose: P([40, 60], 78, KNEEL_A, L(5, 60, 270, "d"), [88, 88], [180, 180]), move: 1.2, hold: 0.8 },
+  ],
+};
+
 export const PATTERNS: Record<string, Pattern> = Object.fromEntries(
-  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row].map(
+  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, deadBug, birdDog].map(
     (p) => [p.id, p],
   ),
 );

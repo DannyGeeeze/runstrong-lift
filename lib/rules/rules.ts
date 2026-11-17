@@ -7,7 +7,8 @@
  *  It does not choose exercises (see select.ts) or sets/reps (see sessions.ts).
  *
  *  Order of evaluation (each step records a human-readable rule for "why"):
- *    1. Day type: Easy/Long → optional touch-up only. Rest → nothing.
+ *    1. Day type: Easy/Long → optional touch-up, or (the runner's pick) an upper-body,
+ *       core or mobility session: none of them load the legs. Rest → nothing.
  *    2. Race-week role: Thursday race / tune-up, or 1st/2nd hard day before a
  *       non-Thursday race, or a plain workout day.
  *    3. Phase table → base session (Full, Full at half volume, Plyos + Isos, taper).
@@ -23,7 +24,7 @@
  */
 
 import { addDays, dayInWeek, diffDays, mondayOf, weekdayOf } from "../dates";
-import type { LiftLog, Phase, Race, RunType, SessionType, Settings } from "../types";
+import type { EasyFocus, LiftLog, Phase, Race, RunType, SessionType, Settings } from "../types";
 
 export type Role =
   | "thu-race" // Thursday race day
@@ -47,6 +48,8 @@ export interface RuleContext {
   /** Saved lift sessions, any order. */
   history: LiftLog[];
   shortOnTime?: boolean;
+  /** Easy/long days: which optional session the runner picked. Defaults to the touch-up. */
+  easyFocus?: EasyFocus;
   /** Extra known hard days (e.g. future dates the user marked as Workout/Race). */
   extraHardDays?: string[];
 }
@@ -115,6 +118,12 @@ export function sessionLabel(d: Pick<Decision, "session" | "half" | "plyos" | "s
       return "Return week: yielding isos only";
     case "touch-up":
       return "optional 10-min touch-up";
+    case "upper":
+      return "optional upper body";
+    case "core":
+      return "optional core";
+    case "mobility":
+      return "optional mobility";
     case "none":
       return "no lift";
   }
@@ -259,8 +268,9 @@ function baseFor(role: Role, ctx: RuleContext): Base {
   switch (role) {
     case "easy":
     case "long":
-      // No main lift on easy/long days; offer an optional touch-up.
-      return { session: "touch-up", half: false, optional: true };
+      // No main lift on easy/long days: an optional touch-up, or an upper-body,
+      // core or mobility session that leaves the legs alone.
+      return { session: ctx.easyFocus ?? "touch-up", half: false, optional: true };
     case "rest":
       return { session: "none", half: false, optional: false };
     case "thu-race":
@@ -293,6 +303,9 @@ export function weekCounts(history: LiftLog[], today: string) {
 // ---------------------------------------------------------------------------
 // Main entry
 // ---------------------------------------------------------------------------
+
+/** The optional easy-day sessions. None of them count toward the weekly strength or plyo caps. */
+export const EASY_SESSIONS: SessionType[] = ["touch-up", "upper", "core", "mobility"];
 
 function hasStrength(session: SessionType) {
   return session === "full" || session === "short";
@@ -358,7 +371,9 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   }
 
   // --- Step 6: modifiers -----------------------------------------------------
-  if (ctx.settings.returnWeek && session !== "none") {
+  // Upper body, core and mobility don't load the legs, so return week leaves them alone.
+  const legFree = session === "upper" || session === "core" || session === "mobility";
+  if (ctx.settings.returnWeek && session !== "none" && !legFree) {
     session = "return";
     strength = false;
     plyos = false;
@@ -410,7 +425,7 @@ export function decideCatchUp(
     return { blocked: `Can't make up yesterday's lift: ${next.label} is under 48h away.` };
   }
   const d = decideSession({ ...ctx, today: yesterday, dayType: yesterdayType }, ctx.today);
-  if (d.session === "none" || d.session === "touch-up") return null;
+  if (d.session === "none" || EASY_SESSIONS.includes(d.session)) return null;
   return {
     ...d,
     catchUpFor: yesterday,

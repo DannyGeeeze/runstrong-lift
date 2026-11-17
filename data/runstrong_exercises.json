@@ -12,9 +12,11 @@
    "D2": "abduction/adduction",
    "ISO": "isometric (from reels)",
    "MOBILITY": "hip mobility/control",
-   "UPPER": "upper body/postural (optional, max 1 per session)"
+   "UPPER": "upper body/postural (optional, max 1 per session)",
+   "CORE": "core/trunk (easy-day core sessions)"
   },
-  "plyo_tiers": "From his library: light < medium < ping (fast, reactive) / deep (big landings). Intensity mapping is an assumption."
+  "plyo_tiers": "From his library: light < medium < ping (fast, reactive) / deep (big landings). Intensity mapping is an assumption.",
+  "app_added": "Entries with source \"app\" were added by the app for easy-day Core and Mobility sessions; they are standard moves, not from the coach."
  },
  "featured": [
   {
@@ -5985,7 +5987,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "pull-up bar",
    "intensity": "med",
    "unilateral": false,
    "sets": 2,
@@ -6004,7 +6006,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "pull-up bar",
    "intensity": "med",
    "unilateral": false,
    "sets": 2,
@@ -6023,7 +6025,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "dumbbells or kettlebell",
    "intensity": "med",
    "unilateral": true,
    "sets": 2,
@@ -6042,7 +6044,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "pull-up bar",
    "intensity": "med",
    "unilateral": false,
    "sets": 2,
@@ -6137,7 +6139,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "dumbbells or kettlebell",
    "intensity": "med",
    "unilateral": true,
    "sets": 2,
@@ -6498,7 +6500,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "pull-up bar",
    "intensity": "med",
    "unilateral": false,
    "sets": 2,
@@ -6612,7 +6614,7 @@
    "plyo_type": null,
    "tier": null,
    "isometric": null,
-   "equipment": "bodyweight",
+   "equipment": "dumbbells or barbell",
    "intensity": "med",
    "unilateral": false,
    "sets": 2,
@@ -6622,6 +6624,221 @@
    ],
    "video_url": "https://www.therunstrongcoach.com/exercise-browse-upper-body",
    "source": "runstrong-library"
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "dead-bug",
+   "name": "Dead bug",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "30 s",
+   "cue": "Low back pressed into the floor. Reach long and slow, breathe out as you extend."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "bird-dog",
+   "name": "Bird dog",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "6/side",
+   "rest": "30 s",
+   "cue": "Hips stay level, like a glass of water on your back. Pause 2 s at full reach."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "front-plank",
+   "name": "Front plank",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "sets": 3,
+   "reps": "30 s",
+   "rest": "30 s",
+   "cue": "Squeeze glutes, ribs down, straight line from head to heels."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "side-plank",
+   "name": "Side plank",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "20-30 s/side",
+   "rest": "30 s",
+   "cue": "Hips high and stacked. Push the floor away."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "hollow-hold",
+   "name": "Hollow hold",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "sets": 3,
+   "reps": "20 s",
+   "rest": "30 s",
+   "cue": "Low back flat on the floor. Bend the knees if it arches."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "id": "pallof-press",
+   "name": "Pallof press",
+   "slot": "CORE",
+   "equipment": "band",
+   "unilateral": true,
+   "sets": 3,
+   "reps": "8/side",
+   "rest": "30 s",
+   "cue": "Press straight out and do not let the band twist you. Slow return."
+  },
+  {
+   "session_types": [
+    "core"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "med",
+   "id": "plank-shoulder-tap",
+   "name": "Plank shoulder tap",
+   "slot": "CORE",
+   "equipment": "bodyweight",
+   "sets": 3,
+   "reps": "10/side",
+   "rest": "30 s",
+   "cue": "Feet wide, hips still. Tap slowly."
+  },
+  {
+   "session_types": [
+    "mobility",
+    "touch-up"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "slot": "MOBILITY",
+   "equipment": "bodyweight",
+   "sets": 2,
+   "rest": "20 s",
+   "id": "worlds-greatest-stretch",
+   "name": "World’s greatest stretch",
+   "unilateral": true,
+   "reps": "5/side",
+   "cue": "Long lunge, elbow to instep, then rotate and reach to the sky."
+  },
+  {
+   "session_types": [
+    "mobility",
+    "touch-up"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "slot": "MOBILITY",
+   "equipment": "bodyweight",
+   "sets": 2,
+   "rest": "20 s",
+   "id": "couch-stretch",
+   "name": "Couch stretch",
+   "unilateral": true,
+   "reps": "30 s/side",
+   "cue": "Back knee against a wall or couch, squeeze the glute, tall chest. Feel the front of the hip."
+  },
+  {
+   "session_types": [
+    "mobility",
+    "touch-up"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "slot": "MOBILITY",
+   "equipment": "bodyweight",
+   "sets": 2,
+   "rest": "20 s",
+   "id": "knee-to-wall-ankle",
+   "name": "Knee-to-wall ankle mobility",
+   "unilateral": true,
+   "reps": "10/side",
+   "cue": "Heel stays down. Drive the knee over the toes to touch the wall."
+  },
+  {
+   "slot": "UPPER",
+   "session_types": [
+    "full"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "id": "band-row",
+   "name": "Band row",
+   "sets": 3,
+   "reps": "10-12",
+   "cue": "Tall chest, pull elbows back to your ribs, squeeze the shoulder blades."
+  },
+  {
+   "slot": "UPPER",
+   "session_types": [
+    "full"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "id": "band-pull-apart",
+   "name": "Band pull-apart",
+   "sets": 2,
+   "reps": "15",
+   "cue": "Arms straight, pull the band to your chest, shoulders down."
+  },
+  {
+   "id": "push-up",
+   "name": "Push-up",
+   "slot": "UPPER",
+   "session_types": [
+    "full"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "bodyweight",
+   "sets": 3,
+   "reps": "8-12",
+   "cue": "Straight line head to heels, elbows at about 45 degrees. Hands on a bench if needed."
   }
  ]
 }
