@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { RecoveryCard } from "@/components/RecoveryCard";
 import { RunRow } from "@/components/RunList";
 import { LiveWorkout } from "@/components/LiveWorkout";
 import { WorkoutCard } from "@/components/WorkoutCard";
@@ -59,7 +60,7 @@ export default function TodayPage() {
 
 function Today() {
   const data = useStore();
-  const { settings, races, history, overrides, block, profile } = data;
+  const { settings, races, history, overrides, block, profile, recovery } = data;
   const runsState = useRuns(settings.mockMode);
   const { runs, source, status, loading, error } = runsState;
   const today = todayLocal();
@@ -332,6 +333,18 @@ function Today() {
           </>
         )}
       </div>
+
+      {!loading && (
+        <RecoveryCard
+          key={day.type}
+          today={today}
+          todayType={day.type}
+          yesterdayType={yesterday.type}
+          races={races}
+          recovery={recovery}
+          settings={settings}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 // localStorage for a database later means rewriting only this file.
 
 import type { Profile } from "./profile";
-import type { BlockPicks, LiftLog, Race, RunType, Settings } from "./types";
+import type { BlockPicks, LiftLog, Race, RecoveryLog, RunType, Settings } from "./types";
 
 export const DEFAULT_SETTINGS: Settings = {
   phase: "early",
@@ -13,6 +13,8 @@ export const DEFAULT_SETTINGS: Settings = {
   enablePower: false,
   enableMobility: false,
   mockMode: false,
+  hasBoots: true,
+  hasSauna: true,
 };
 
 export interface AppData {
@@ -20,6 +22,8 @@ export interface AppData {
   settings: Settings;
   races: Race[];
   history: LiftLog[];
+  /** Compression boots and sauna sessions. */
+  recovery: RecoveryLog[];
   block: BlockPicks | null;
   /** Manual run-type overrides keyed by date. */
   overrides: Record<string, RunType>;
@@ -48,7 +52,7 @@ export function activeKey(): string {
 }
 
 function empty(): AppData {
-  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], block: null, overrides: {}, profile: null, testMode: false };
+  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], recovery: [], block: null, overrides: {}, profile: null, testMode: false };
 }
 
 function read(): AppData {
@@ -85,6 +89,7 @@ function normalize(input: Partial<AppData>): AppData {
     settings: { ...DEFAULT_SETTINGS, ...(input.settings ?? {}) },
     races: Array.isArray(input.races) ? input.races : [],
     history: Array.isArray(input.history) ? input.history : [],
+    recovery: Array.isArray(input.recovery) ? input.recovery : [],
     block: input.block ?? null,
     overrides: input.overrides ?? {},
     profile: normalizeProfile(input.profile),
@@ -123,6 +128,14 @@ export const storage = {
 
   deleteLift(id: string) {
     update((d) => ({ ...d, history: d.history.filter((h) => h.id !== id) }));
+  },
+
+  addRecovery(log: RecoveryLog) {
+    update((d) => ({ ...d, recovery: [...d.recovery, log] }));
+  },
+
+  deleteRecovery(id: string) {
+    update((d) => ({ ...d, recovery: d.recovery.filter((r) => r.id !== id) }));
   },
 
   saveProfile(profile: Profile | null) {

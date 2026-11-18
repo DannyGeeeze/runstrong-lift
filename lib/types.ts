@@ -97,6 +97,9 @@ export interface Settings {
   enablePower: boolean;
   enableMobility: boolean;
   mockMode: boolean;
+  /** Recovery the runner has access to. */
+  hasBoots: boolean;
+  hasSauna: boolean;
 }
 
 export interface LiftLog {
@@ -120,4 +123,13 @@ export interface LiftLog {
 export interface BlockPicks {
   startedOn: string;
   picks: Record<string, string[]>;
+}
+
+export type RecoveryKind = "boots" | "sauna";
+
+/** A logged recovery session (compression boots or sauna). Stretching is assumed daily. */
+export interface RecoveryLog {
+  id: string;
+  date: string;
+  kind: RecoveryKind;
 }

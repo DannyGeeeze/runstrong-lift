@@ -113,6 +113,7 @@ export function trackSeasonScenario(today: string, real: AppData): AppData {
     settings: { ...real.settings, phase: "deep", returnWeek: false, mockMode: true },
     races,
     history,
+    recovery: [],
     block: null,
     overrides: {},
     profile: base

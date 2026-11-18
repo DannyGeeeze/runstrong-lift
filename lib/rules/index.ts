@@ -13,6 +13,7 @@ import {
   type Prescription,
 } from "./sessions";
 
+export * from "./recovery";
 export * from "./rules";
 export * from "./select";
 export * from "./sessions";

@@ -161,6 +161,12 @@ function SettingsView() {
         <Toggle checked={settings.enableMobility} onChange={(v) => set("enableMobility", v)} label="Mobility moves" />
       </Card>
 
+      <SectionTitle>Recovery</SectionTitle>
+      <Card className="divide-y divide-line py-1">
+        <Toggle checked={settings.hasBoots} onChange={(v) => set("hasBoots", v)} label="I have compression boots" />
+        <Toggle checked={settings.hasSauna} onChange={(v) => set("hasSauna", v)} label="I have a sauna" />
+      </Card>
+
       <SectionTitle>Exercise block</SectionTitle>
       <Card className="space-y-3">
         {block ? (

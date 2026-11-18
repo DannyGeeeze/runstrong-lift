@@ -4,7 +4,7 @@ import { RunRow } from "@/components/RunList";
 import { Card, SectionTitle } from "@/components/ui";
 import { addDays, formatDay, todayLocal } from "@/lib/dates";
 import { dayType, RUN_TYPE_LABEL } from "@/lib/day";
-import { ROTATION_TYPES, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
+import { RECOVERY_LABEL, ROTATION_TYPES, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
 import { miles } from "@/lib/strava";
 import { storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
@@ -36,10 +36,13 @@ export default function WeekPage() {
 }
 
 function Week() {
-  const { settings, history, overrides, races } = useStore();
+  const { settings, history, overrides, races, recovery } = useStore();
   const { runs, loading, source } = useRuns(settings.mockMode);
   const today = todayLocal();
   const counts = weekCounts(history, today);
+  const recent = recovery.filter((r) => r.date > addDays(today, -7) && r.date <= today);
+  const boots = recent.filter((r) => r.kind === "boots").length;
+  const saunas = recent.filter((r) => r.kind === "sauna").length;
   const upperDone = new Set(history.filter((h) => h.date > addDays(today, -7) && h.date <= today).map((h) => h.upperFocus));
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
   const weekMiles = runs
@@ -70,6 +73,15 @@ function Week() {
             <Check key={f} done={upperDone.has(f)} label={UPPER_FOCUS_LABEL[f]} />
           ))}
         </div>
+        {(settings.hasBoots || settings.hasSauna) && (
+          <>
+            <p className="mb-2 mt-3 text-xs font-medium text-muted">Recovery this week</p>
+            <div className="flex flex-wrap gap-2">
+              {settings.hasBoots && <Check done={boots > 0} label={`Boots × ${boots}`} />}
+              {settings.hasSauna && <Check done={saunas > 0} label={`Sauna ${saunas}/${SAUNA_PER_WEEK}`} />}
+            </div>
+          </>
+        )}
       </Card>
 
       <SectionTitle>Day by day {source === "mock" && <span className="normal-case">(demo runs)</span>}</SectionTitle>
@@ -90,6 +102,20 @@ function Week() {
                   ))}
                 </div>
               )}
+              {recovery
+                .filter((r) => r.date === date)
+                .map((r) => (
+                  <div key={r.id} className="mt-2 flex items-center justify-between rounded-lg bg-card-2 px-3 py-2">
+                    <span className="text-sm font-medium">{RECOVERY_LABEL[r.kind]}</span>
+                    <button
+                      type="button"
+                      className="text-xs text-muted underline"
+                      onClick={() => confirm(`Delete this ${RECOVERY_LABEL[r.kind].toLowerCase()} session?`) && storage.deleteRecovery(r.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))}
               {lifts.map((l) => (
                 <div key={l.id} className="mt-2 flex items-center justify-between rounded-lg bg-accent-soft px-3 py-2">
                   <span className="text-sm font-medium text-accent">

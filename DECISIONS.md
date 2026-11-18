@@ -131,3 +131,11 @@ These are choices I made where the brief left room. Each one says where it lives
 64. **New exercises,** tagged `"source": "app"` since they aren't from the coach's library: push-ups, band rows and band pull-aparts; then curls (dumbbell, hammer, band), triceps extensions (dumbbell, band), close-grip push-ups, lateral raises (dumbbell, band), a band pulldown and a band overhead press. Every body-part day works with minimal equipment. The arm and shoulder add-ons are tagged `upper` only, so Full sessions never pick them.
 65. **Equipment fixes:** pull-ups, scap pull-ups and dead hangs now need a pull-up bar. Single-arm and contralateral carries need dumbbells or a kettlebell. Z Press needs dumbbells or a barbell.
 66. **New animations:** overhead press, push-up, forearm plank, curl, overhead triceps extension, lateral raise (front view) and pulldown (front view). Upper-body moves pick the closest one instead of always showing a row.
+
+## Recovery: compression boots and sauna (`lib/rules/recovery.ts`)
+
+68. **One suggestion a day, under the lift.** Stretching is assumed daily, so it isn't tracked. The Today screen suggests boots, sauna or nothing, with a one-line reason. The runner can switch, skip, or log both on the same day.
+69. **Boots after hard days.** Workout, race or long run → boots. The day before any race → boots and no sauna (sauna dehydrates and can leave you flat). If a hard day had no boots, the next day suggests them, like the lift catch-up.
+70. **Sauna on easy days,** for heat adaptation on the day with the least stress to stack on. Limits: max 3 in 7 days, not two days in a row, none the day before any race, none in the 2 days before an A or B race. Picking sauna anyway shows a heads-up with the reason. Every sauna shows the safety note (10-15 min, water before and after, get out if dizzy).
+71. **Rest days suggest nothing:** either is fine.
+72. **Settings → Recovery** says which ones the runner has (both on by default). Only those are suggested. Logged sessions show on the Week page (Boots × n, Sauna n/3) and can be deleted there.
