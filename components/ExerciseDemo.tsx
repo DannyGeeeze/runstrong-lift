@@ -330,7 +330,7 @@ function Box({ x, y, w, h }: { x: number; y: number; w: number; h: number }) {
   );
 }
 
-function PropBehind({ prop }: { prop: Prop }) {
+function PropBehind({ prop, sk }: { prop: Prop; sk: Skeleton }) {
   switch (prop.kind) {
     case "box":
       return <Box x={prop.x} y={prop.y} w={prop.w} h={prop.h} />;
@@ -343,9 +343,38 @@ function PropBehind({ prop }: { prop: Prop }) {
       );
     case "bandFoot":
       return <Box x={prop.to[0] - 3} y={prop.to[1] - 6} w={5} h={GROUND - prop.to[1] + 6} />;
+    case "shape":
+      return (
+        <g>
+          <polygon points={pts(prop.points)} fill="var(--border)" />
+          <polygon points={pts(prop.points)} fill="#000" opacity="0.08" stroke="#fff" strokeOpacity="0.12" strokeWidth="0.6" strokeLinejoin="round" />
+        </g>
+      );
+    case "pad": {
+      const a = sk.legA[2];
+      return <Box x={a[0] - 7} y={GROUND - 2.5} w={15} h={2.5} />;
+    }
+    case "ballFeet": {
+      // Sits on the floor under the heels and rolls as they move.
+      const a = sk.legB[2];
+      const r = (GROUND - a[1]) / 2 + 0.6;
+      return <Ball at={[a[0] + 1, GROUND - r]} r={r} color="#4f7cac" />;
+    }
     default:
       return null;
   }
+}
+
+/** A shaded sphere. */
+function Ball({ at, r, color }: { at: Vec; r: number; color: string }) {
+  return (
+    <g>
+      <circle cx={r2(at[0])} cy={r2(at[1])} r={r2(r)} fill={color} />
+      <circle cx={r2(at[0] + r * 0.12)} cy={r2(at[1] + r * 0.14)} r={r2(r * 0.92)} fill="#000" opacity="0.22" />
+      <circle cx={r2(at[0] - r * 0.05)} cy={r2(at[1] - r * 0.05)} r={r2(r * 0.85)} fill={color} />
+      <circle cx={r2(at[0] - r * 0.35)} cy={r2(at[1] - r * 0.38)} r={r2(r * 0.32)} fill="#fff" opacity="0.3" />
+    </g>
+  );
 }
 
 function PropFront({ prop, sk }: { prop: Prop; sk: Skeleton }) {
@@ -354,6 +383,17 @@ function PropFront({ prop, sk }: { prop: Prop; sk: Skeleton }) {
       return <PlateEnd at={[sk.shoulderA[0] - 2, sk.shoulderA[1] + 1]} r={6.5} />;
     case "barHands":
       return <PlateEnd at={sk.armA[2]} r={6.5} />;
+    case "medBall": {
+      const h = mid(sk.armA[2], sk.armB[2]);
+      const s = mid(sk.shoulderA, sk.shoulderB);
+      // Just past the hands, away from the shoulders.
+      const d = dist(h, s) || 1;
+      return <Ball at={[h[0] + ((h[0] - s[0]) / d) * 3, h[1] + ((h[1] - s[1]) / d) * 3]} r={4} color="#3a3d42" />;
+    }
+    case "plateKnees": {
+      const k = sk.legA[1];
+      return <PlateEnd at={[k[0] - 2, k[1] - 3.5]} r={4.5} />;
+    }
     case "bandFoot": {
       const a = sk.legB[2];
       return (
@@ -446,7 +486,7 @@ export function Scene({
       </defs>
       <rect x="0" y="-14" width="120" height="104" fill={`url(#${uid}bg)`} />
       <Floor sk={sk} gid={`${uid}fl`} />
-      {pattern.props?.map((p, i) => <PropBehind key={i} prop={p} />)}
+      {pattern.props?.map((p, i) => <PropBehind key={i} prop={p} sk={sk} />)}
       {trail && (
         <polyline
           points={pts(trail)}

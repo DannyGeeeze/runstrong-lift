@@ -6,23 +6,46 @@ import { isoKind } from "../exercises";
 import type { Exercise } from "../types";
 import { PATTERNS, type Pattern } from "./patterns";
 
-/** First match wins, so more specific patterns come first. */
+/** First match wins, so more specific patterns come first. Matched against "id name", lowercased. */
 const RULES: [RegExp, string][] = [
+  // Specific moves that the broad rules below would get wrong.
+  [/razor-curl|ghd-hamstring-curl|ghd-lean|nordic/, "nordic"],
+  [/back-extension|reverse-hyper(?!-hf)/, "back-extension"],
+  [/heel-elevated-goblet-squat/, "squat"],
+  [/clean-deadlift/, "hinge"],
+  [/touch-the-ceiling/, "jump"],
+  [/single-leg-deceleration/, "drop-jump"],
+  [/big-toe|short-foot|foot-tso|foot-plank|toe-abduction|toe-adduction/, "foot-work"],
+  // Plyos
   [/drop-jump|depth-jump|drop jump/, "drop-jump"],
-  [/nordic/, "nordic"],
+  [/split-squat-oscillation|split-exchange|ffess-oscillation/, "split-pogo"],
   [/copenhagen|side-plank|adductor|adduction/, "copenhagen"],
-  [/skater|lateral|slalom|side-to-side|shuffle|carioca|lateral-bound/, "lateral-bound"],
-  [/monster|band-walk|abduct|clam|hip-hike|lateral-walk/, "band-walk"],
-  [/bridge|thrust|ham-curl|hamstring|slider|physioball|leg-curl/, "bridge"],
+  [/skater|slalom|slant-board-hop|side-to-side|shuffle|carioca|(?<![a-z])lateral-(lunge|bound|hop)/, "lateral-bound"],
+  [/monster|band-walk|abduct|clam|hip-hike|lateral-walk|cossack/, "band-walk"],
+  // Hamstrings and hinges
+  [/single-leg.*rdl|single leg.*rdl|(^|\s)sl-.*rdl|landmine-single-leg|hip-airplane/, "sl-rdl"],
+  [/hamstring-curl|ham-curl|physioball|slider-hamstring|hamstring-slider|hamstring-impulse|hamstring-tantrum|walkout|hamstring-oscillation/, "ham-curl"],
+  [/bridge|thrust|hip-lift|hamstring-iso|hamstring-overcoming/, "bridge"],
+  [/hip-flexor|knee-drive|march|psoas|-hf|hf-|knee-up|hurdler|90-90|figure-4|external-rotation|internal-rotation|sit-up/, "knee-drive"],
+  // Balance, throws, carries
+  [/balance|bosu/, "balance"],
+  [/slam|scoop-toss|jackhammer|wall-ball/, "slam"],
+  [/carry|toe-walk|sled/, "carry"],
   [/pogo|ankle-hop|jump-rope|oscillation/, "pogo"],
   [/skip/, "skip"],
   [/hop|bound/, "hop"],
   [/jump|clean|snatch|jerk|throw/, "jump"],
+  // Lower-leg strength
   [/tib|dorsi|heel-walk|toe-raise/, "tib-raise"],
-  [/hip-flexor|knee-drive|march|psoas|-hf|hf-|knee-up/, "knee-drive"],
-  [/split|lunge|step|bulgarian|bss|spanish|single-leg-squat|pistol/, "split-squat"],
-  [/rdl|deadlift|hinge|good-morning|swing|back-extension|reverse-hyper|pull-through/, "hinge"],
-  [/calf|achilles|soleus|toe|foot|ankle|arch|heel|balance|bosu/, "calf-raise"],
+  [/soleus|seated|bent-knee|squatted/, "soleus-raise"],
+  [/single-leg.*calf|sl-calf|runner-stance|sprint-angle-single-leg/, "sl-calf"],
+  // Single-leg strength
+  [/step-up|step up/, "step-up"],
+  [/bulgarian|bss/, "bss"],
+  [/lunge/, "lunge"],
+  [/split|spanish|single-leg-squat|pistol/, "split-squat"],
+  [/rdl|deadlift|hinge|good-?morning|swing|kneeling-hip-extension|pull-through/, "hinge"],
+  [/calf|achilles|toe|foot|ankle|arch|heel/, "calf-raise"],
   [/squat|leg-press|belt|wall-sit/, "squat"],
   [/row|press|push|pull-up|chin|curl|fly|raise|plank|carry/, "row"],
 ];
@@ -41,15 +64,19 @@ const BY_SLOT: Record<string, string> = {
   UPPER: "row",
 };
 
-/** Upper-body moves only match upper-body animations. */
+/** Upper-body moves only match upper-body animations. Matched against the id. */
 const UPPER_RULES: [RegExp, string][] = [
   [/curl/, "curl"],
   [/triceps-extension/, "triceps-extension"],
-  [/lateral-raise/, "lateral-raise"],
-  [/^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down)$/, "pull-down"],
-  [/^(?!scap).*(push-up|bench-press|med-ball-bench)/, "push-up"],
-  [/^(?!.*rotation).*press/, "press"],
-  [/plank|crawl/, "plank"],
+  [/lateral-raise|pull-apart/, "lateral-raise"],
+  [/^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down|deadhang|scap-pull-up)$/, "pull-down"],
+  [/carry/, "carry"],
+  [/iyt|atyt|^wy$|w-on-bench|field-goal|snow-angel/, "prone-raise"],
+  [/back-extension/, "back-extension"],
+  [/slam|scoop|jackhammer/, "slam"],
+  [/scap-push-up|serratus|plank|crawl/, "plank"],
+  [/push-up|bench-press|med-ball-bench/, "push-up"],
+  [/press/, "press"],
 ];
 
 export function patternFor(e: Exercise): Pattern {

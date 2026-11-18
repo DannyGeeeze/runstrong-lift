@@ -18,10 +18,67 @@ describe("exercise demos", () => {
     expect(id("copenhagen")).toBe("copenhagen");
     expect(id("monster-walk")).toBe("band-walk");
     expect(id("pogo")).toBe("pogo");
-    expect(id("bulgarian-split-squat")).toBe("split-squat");
-    expect(id("sl-calf-raise")).toBe("calf-raise");
+    expect(id("bulgarian-split-squat")).toBe("bss");
+    expect(id("dumbbell-split-squat")).toBe("split-squat");
+    expect(id("sl-calf-raise")).toBe("sl-calf");
+    expect(id("bb-calf-raise")).toBe("calf-raise");
     expect(id("skater-bound")).toBe("lateral-bound");
-    expect(id("physioball-oscillation")).toBe("bridge");
+    expect(id("physioball-oscillation")).toBe("ham-curl");
+    expect(id("glute-hip-thrust")).toBe("bridge");
+  });
+
+  it("moves that used to get a wrong animation now get a fitting one", () => {
+    const id = (x: string) => patternFor(ALL_EXERCISES.find((e) => e.id === x)!).id;
+    const expected: Record<string, string> = {
+      "heel-elevated-goblet-squat": "squat",
+      "iyt-on-bench": "prone-raise",
+      "w-on-bench": "prone-raise",
+      "razor-curl": "nordic",
+      "ghd-razor-curl": "nordic",
+      "sled-push-pull": "carry",
+      "butterfly-hip-lifts": "bridge",
+      "split-squat-oscillations-deep-tier": "split-pogo",
+      "slider-rdl": "hinge",
+      "barbell-bench-press": "push-up",
+      "clean-deadlift": "hinge",
+      "single-leg-dumbbell-contralateral-rdl": "sl-rdl",
+      "dumbbell-farmer-carry": "carry",
+      "med-ball-slam": "slam",
+      "back-extension": "back-extension",
+      "seated-calf-raise": "soleus-raise",
+      "short-foot": "foot-work",
+      "toe-abduction-adduction": "foot-work",
+      "blind-bosu": "balance",
+      "dumbbell-step-up": "step-up",
+      "dumbbell-reverse-lunge": "lunge",
+      "hip-flexor-flutter-oscillations": "knee-drive",
+      deadhang: "pull-down",
+    };
+    for (const [ex, pattern] of Object.entries(expected)) expect(id(ex), ex).toBe(pattern);
+  });
+
+  it("no animation is shared by too many moves", () => {
+    const count: Record<string, number> = {};
+    for (const e of ALL_EXERCISES) count[patternFor(e).id] = (count[patternFor(e).id] ?? 0) + 1;
+    for (const [p, n] of Object.entries(count)) expect(n, p).toBeLessThanOrEqual(30);
+  });
+
+  it("which animation each exercise gets is locked in (update the snapshot on purpose)", () => {
+    const map = Object.fromEntries(ALL_EXERCISES.map((e) => [e.id, patternFor(e).id]));
+    expect(map).toMatchSnapshot();
+  });
+
+  it("every pose can be reached: no leg asked to stretch past its length", () => {
+    const reach = BONES.thigh + BONES.shin + 1.5;
+    for (const p of Object.values(PATTERNS)) {
+      p.frames.forEach((f, i) => {
+        const sk = solve(f.pose, p.view);
+        for (const [hip, leg] of [[sk.hipA, f.pose.a], [sk.hipB, f.pose.b]] as const) {
+          const d = Math.hypot(leg.ankle[0] - hip[0], leg.ankle[1] - hip[1]);
+          expect(d, `${p.id} frame ${i}`).toBeLessThanOrEqual(reach);
+        }
+      });
+    }
   });
 
   it("every animation frame is a valid figure with feet at or above the floor", () => {

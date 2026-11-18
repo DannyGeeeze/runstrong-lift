@@ -13,7 +13,17 @@ export type Prop =
   | { kind: "box"; x: number; y: number; w: number; h: number }
   | { kind: "bandFoot"; to: Vec }
   | { kind: "bandKnees" }
-  | { kind: "strap"; x: number };
+  | { kind: "strap"; x: number }
+  /** Physioball under the far foot; rolls with it. */
+  | { kind: "ballFeet" }
+  /** Medicine ball in the hands. */
+  | { kind: "medBall" }
+  /** Weight plate resting on the knees (seated calf raise). */
+  | { kind: "plateKnees" }
+  /** Balance pad under the near foot. */
+  | { kind: "pad" }
+  /** Any fixed piece of equipment, drawn like a box. */
+  | { kind: "shape"; points: Vec[] };
 
 export interface Frame {
   pose: Pose;
@@ -331,8 +341,192 @@ const pullDown: Pattern = {
   ],
 };
 
+
+// More patterns: split out of the big shared groups ---------------------------
+
+// Lying on the back, heels on a ball, hips up; curl the ball in and push it out.
+const hamCurl: Pattern = {
+  id: "ham-curl",
+  view: "side",
+  props: [{ kind: "ballFeet" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([50, 66], 248, L(83, 69, 30, "u"), L(82, 69, 30, "u"), [100, 92], [100, 92]), move: 0.7, hold: 0.25 },
+    { pose: P([53, 60], 236, L(70, 69, 45, "u"), L(69, 69, 45, "u"), [100, 92], [100, 92]), move: 0.7, hold: 0.25 },
+  ],
+};
+
+// Split stance, quick small bounces off both feet.
+const splitPogo: Pattern = {
+  id: "split-pogo",
+  view: "side",
+  holdFrame: 0,
+  frames: [
+    { pose: P([52, 49], 4, L(65, 78, 105), L(39, 77, 135, "d"), [150, 120], [215, 200]), move: 0.17 },
+    { pose: P([52, 44], 2, L(65, 75, 125), L(39, 73, 140, "d"), [160, 130], [205, 190]), move: 0.17 },
+  ],
+};
+
+const BSS_BENCH = { kind: "box" as const, x: 14, y: 64, w: 22, h: 16 };
+// Rear foot laces-down on a bench, front foot flat; sink straight down.
+const bss: Pattern = {
+  id: "bss",
+  view: "side",
+  props: [BSS_BENCH, { kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([52, 47], 6, L(61, F, 90), L(31, 61, 250, "d")), move: 0.6, hold: 0.25 },
+    { pose: P([49, 58], 12, L(61, F, 90), L(31, 61, 250, "d")), move: 1.0, hold: 0.2 },
+  ],
+};
+
+// Reverse lunge: step back, drop the back knee, step back up.
+const lunge: Pattern = {
+  id: "lunge",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: STAND, move: 0.6, hold: 0.25 },
+    { pose: P([51, 59], 6, L(62, F, 90), L(31, 77, 122, "d")), move: 0.8, hold: 0.2 },
+  ],
+};
+
+const STEP_BOX = { kind: "box" as const, x: 60, y: 64, w: 26, h: 16 };
+// Step up onto a box, drive the other knee up, step back down.
+const stepUp: Pattern = {
+  id: "step-up",
+  view: "side",
+  props: [STEP_BOX, { kind: "dumbbells" }],
+  holdFrame: 2,
+  frames: [
+    { pose: P([46, 44.6], 0, L(47.5, F, 90), L(45.5, F, 90)), move: 0.5, hold: 0.25 },
+    { pose: P([52, 46], 14, L(68, 63, 90), L(45.5, F, 90)), move: 0.5 },
+    { pose: P([67, 29], 2, L(68, 63, 90), L(76, 46, 100), [215, 200], [150, 120]), move: 0.6, hold: 0.3 },
+    { pose: P([52, 46], 14, L(68, 63, 90), L(45.5, F, 90)), move: 0.6 },
+  ],
+};
+
+// Hinge on one leg; the free leg rises behind in line with the back.
+const slRdl: Pattern = {
+  id: "sl-rdl",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 44.6], 2, L(59.5, F, 90), L(53, 72, 130, "f")), move: 0.7, hold: 0.25 },
+    { pose: P([53, 47], 80, L(59, F, 90), L(20, 47, 185, "d")), move: 1.1, hold: 0.25 },
+  ],
+};
+
+const SEAT = { kind: "box" as const, x: 24, y: 64, w: 26, h: 16 };
+// Seated, knees bent, plate on the knees: heels up and down (soleus).
+const soleusRaise: Pattern = {
+  id: "soleus-raise",
+  view: "side",
+  props: [SEAT, { kind: "plateKnees" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([42, 61], 4, L(61, F, 90), L(59, F, 90), [140, 175], [140, 175]), move: 0.6, hold: 0.25 },
+    { pose: P([42, 61], 4, L(62, 73, 150), L(60, 73, 150), [137, 172], [137, 172]), move: 0.6, hold: 0.4 },
+  ],
+};
+
+// Seated foot work: toes lift and press down.
+const footWork: Pattern = {
+  id: "foot-work",
+  view: "side",
+  props: [SEAT],
+  holdFrame: 0,
+  frames: [
+    { pose: P([42, 61], 4, L(61, F, 90), L(59, F, 90), [160, 150], [160, 150]), move: 0.6, hold: 0.4 },
+    { pose: P([42, 61], 4, L(61, F, 58), L(59, F, 90), [160, 150], [160, 150]), move: 0.5, hold: 0.4 },
+  ],
+};
+
+// One leg, other foot tucked behind, hand on a wall.
+const slCalf: Pattern = {
+  id: "sl-calf",
+  view: "side",
+  holdFrame: 1,
+  props: [{ kind: "shape", points: [[90, -4], [94, -6], [94, 78], [90, 80]] }],
+  frames: [
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(50, 66, 140, "f"), [100, 95], [180, 175]), move: 0.6, hold: 0.25 },
+    { pose: P([60, 38.6], 0, L(61, 73, 150), L(52, 60, 140, "f"), [97, 92], [180, 175]), move: 0.6, hold: 0.5 },
+  ],
+};
+
+// Standing on one leg on a pad, passing a ball around.
+const balance: Pattern = {
+  id: "balance",
+  view: "side",
+  props: [{ kind: "pad" }, { kind: "medBall" }],
+  holdFrame: 0,
+  frames: [
+    { pose: P([57, 45.5], 3, L(59.5, 77, 90), L(66, 64, 110), [140, 100], [140, 100]), move: 0.7, hold: 0.15 },
+    { pose: P([57, 45.5], -2, L(59.5, 77, 90), L(66, 64, 110), [35, 15], [35, 15]), move: 0.7, hold: 0.15 },
+    { pose: P([57, 45.5], 6, L(59.5, 77, 90), L(66, 64, 110), [170, 150], [170, 150]), move: 0.7, hold: 0.15 },
+  ],
+};
+
+// Farmer carry: tall walk with a weight in each hand.
+const carry: Pattern = {
+  id: "carry",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 0,
+  frames: [
+    { pose: P([58, 45.5], 0, L(66, F, 90), L(50, 77, 125), [180, 180], [180, 180]), move: 0.32 },
+    { pose: P([58, 44.6], 0, L(58.5, F, 90), L(62, 72, 110), [180, 180], [180, 180]), move: 0.32 },
+    { pose: P([58, 45.5], 0, L(50, 77, 125), L(66, F, 90), [180, 180], [180, 180]), move: 0.32 },
+    { pose: P([58, 44.6], 0, L(62, 72, 110), L(58.5, F, 90), [180, 180], [180, 180]), move: 0.32 },
+  ],
+};
+
+const PRONE_BENCH = { kind: "box" as const, x: 18, y: 54, w: 44, h: 26 };
+// Face down on a bench, arms hanging; raise them in line with the body (I / Y / T).
+const proneRaise: Pattern = {
+  id: "prone-raise",
+  view: "side",
+  props: [PRONE_BENCH],
+  holdFrame: 1,
+  frames: [
+    { pose: P([44, 50], 90, L(11, 52, 175, "d"), L(12, 53, 175, "d"), [178, 178], [178, 178]), move: 0.7, hold: 0.2 },
+    { pose: P([44, 50], 90, L(11, 52, 175, "d"), L(12, 53, 175, "d"), [92, 92], [88, 88]), move: 0.7, hold: 0.5 },
+  ],
+};
+
+// 45° back extension: hips on the pad, heels anchored; lower the chest and lift back to a straight line.
+const backExtension: Pattern = {
+  id: "back-extension",
+  view: "side",
+  props: [
+    // Hip pad under the front of the thighs, its post, and the heel plate.
+    { kind: "shape", points: [[56.5, 49], [49.5, 58], [52.7, 60.4], [59.7, 51.4]] },
+    { kind: "shape", points: [[50, 59], [54, 59], [54, 80], [50, 80]] },
+    { kind: "shape", points: [[26, 76], [42, 76], [42, 80], [26, 80]] },
+  ],
+  holdFrame: 0,
+  frames: [
+    { pose: P([55, 46], 37, L(34, 74, 145, "d"), L(33, 74, 145, "d"), [150, 60], [150, 60]), move: 0.8, hold: 0.4 },
+    { pose: P([55, 46], 132, L(34, 74, 145, "d"), L(33, 74, 145, "d"), [175, 95], [175, 95]), move: 0.9, hold: 0.2 },
+  ],
+};
+
+// Ball overhead on the toes, then slam it into the floor.
+const slam: Pattern = {
+  id: "slam",
+  view: "side",
+  props: [{ kind: "medBall" }],
+  holdFrame: 0,
+  frames: [
+    { pose: P([58, 40], -4, L(59.5, 74, 140), L(57.5, 74, 140), [10, 5], [10, 5]), move: 0.6, hold: 0.25 },
+    { pose: P([49, 56], 50, L(61, F, 90), L(59, F, 90), [130, 140], [130, 140]), move: 0.25, hold: 0.35 },
+  ],
+};
+
 export const PATTERNS: Record<string, Pattern> = Object.fromEntries(
-  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, curl, tricepsExtension, lateralRaise, pullDown].map(
+  [hamCurl, splitPogo, bss, lunge, stepUp, slRdl, soleusRaise, footWork, slCalf, balance, carry, proneRaise, backExtension, slam, squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, curl, tricepsExtension, lateralRaise, pullDown].map(
     (p) => [p.id, p],
   ),
 );
