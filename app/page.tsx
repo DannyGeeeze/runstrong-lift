@@ -141,6 +141,36 @@ function Today() {
     setState(null);
   }
 
+  const runCard = (
+    <>
+      <SectionTitle right={<span className="text-xs text-muted">Tap the kind of run</span>}>Today&apos;s run</SectionTitle>
+      <Card>
+        {loading ? (
+          <p className="text-sm text-muted">Loading runs…</p>
+        ) : day.runs.length ? (
+          <div className="divide-y divide-line">
+            {day.runs.map((r) => (
+              <RunRow key={r.id} run={r} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted">No run yet today</p>
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {TYPES.map((t) => (
+            <Chip
+              key={t}
+              active={day.type === t}
+              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
+            >
+              {RUN_TYPE_LABEL[t]}
+            </Chip>
+          ))}
+        </div>
+      </Card>
+    </>
+  );
+
   return (
     <div>
       <header className="flex items-end justify-between gap-3">
@@ -191,6 +221,8 @@ function Today() {
           <Notice tone="warn">{error}</Notice>
         </div>
       )}
+
+      {!current && runCard}
 
       {!current && (
         <section className="mt-5 rounded-3xl border border-line bg-card p-5 shadow-sm">
@@ -300,21 +332,36 @@ function Today() {
       <div className="mt-4 space-y-3">
         {current && (
           <>
-            <button type="button" className="text-sm font-medium text-accent" onClick={() => setState(null)}>
-              ← Change
-            </button>
-            <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} history={history} />
+            <div className="flex items-center justify-between">
+              <button type="button" className="min-h-10 text-sm font-medium text-accent" onClick={() => setState(null)}>
+                ← Change
+              </button>
+              <button
+                type="button"
+                className="min-h-10 text-sm font-medium text-muted"
+                onClick={() => generate(current.workout.attempt + 1)}
+              >
+                ↻ Different moves
+              </button>
+            </div>
+            <WorkoutCard
+              workout={current.workout}
+              done={current.done}
+              onToggle={toggleDone}
+              history={history}
+              actions={
+                current.workout.items.length > 0 && (
+                  <Button variant="primary" className="w-full py-4 text-lg" onClick={() => setLive(true)}>
+                    ▶ Start workout
+                  </Button>
+                )
+              }
+            />
             {current.workout.items.length > 0 && (
-              <Button variant="primary" className="w-full py-4 text-base" onClick={() => setLive(true)}>
-                ▶ Start workout
+              <Button className="w-full" onClick={() => complete()}>
+                {current.done.size > 0 ? "Save what I did" : "Already did it? Mark complete"}
               </Button>
             )}
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={() => generate(current.workout.attempt + 1)}>Regenerate</Button>
-              <Button onClick={() => complete()} disabled={current.workout.items.length === 0}>
-                Mark complete
-              </Button>
-            </div>
             {live && (
               <LiveWorkout
                 workout={current.workout}
@@ -330,31 +377,8 @@ function Today() {
         )}
       </div>
 
-      <SectionTitle>Today&apos;s run</SectionTitle>
-      <Card>
-        {loading ? (
-          <p className="text-sm text-muted">Loading runs…</p>
-        ) : day.runs.length ? (
-          <div className="divide-y divide-line">
-            {day.runs.map((r) => (
-              <RunRow key={r.id} run={r} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted">No run yet today</p>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <Chip
-              key={t}
-              active={day.type === t}
-              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
-            >
-              {RUN_TYPE_LABEL[t]}
-            </Chip>
-          ))}
-        </div>
-      </Card>
+      {current && runCard}
+
 
       {/* Recovery is suggested with the workout: once it's generated or saved, or on a no-lift day. */}
       {!loading && (current || saved || (mode === "today" && preview.session === "none")) && (
