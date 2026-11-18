@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { generateWorkout, toLiftLog, type GenerateInput } from "@/lib/rules";
+import { generateWorkout, toLiftLog, UPPER_FOCUS_LABEL, UPPER_FOCUSES, type GenerateInput } from "@/lib/rules";
 import { patternFor } from "@/lib/demo/match";
 import { ALL_EXERCISES } from "@/lib/exercises";
 import { DEFAULT_SETTINGS } from "@/lib/storage";
 import type { Profile } from "@/lib/profile";
-import type { EasyFocus, Race, Slot } from "@/lib/types";
+import type { EasyFocus, LiftLog, Race, Slot, UpperFocus } from "@/lib/types";
 
 const WED = "2026-09-16";
 
@@ -61,20 +61,38 @@ describe("easy-day sessions", () => {
     expect(generateWorkout(input({ dayType: "workout", easyFocus: "upper" })).decision.session).toBe("full");
   });
 
-  it("upper body has a pull, a push, a shoulder move and a carry or crawl", () => {
-    const keys = generateWorkout(input({ easyFocus: "upper" })).items.map((i) => i.key);
-    expect(keys).toEqual(["upper:pull", "upper:push", "upper:shoulder", "upper:carry"]);
+  it("each body-part day has its own four moves", () => {
+    const keys = (upperFocus: UpperFocus) =>
+      generateWorkout(input({ easyFocus: "upper", upperFocus })).items.map((i) => i.key);
+    expect(keys("back")).toEqual(["upper-back:vertical", "upper-back:row", "upper-back:biceps", "upper-back:rear"]);
+    expect(keys("chest")).toEqual(["upper-chest:press", "upper-chest:press2", "upper-chest:triceps", "upper-chest:serratus"]);
+    expect(keys("shoulders")).toEqual([
+      "upper-shoulders:press", "upper-shoulders:lateral", "upper-shoulders:cuff", "upper-shoulders:stability",
+    ]);
   });
 
-  it("minimal equipment still gets a full upper-body session without gym gear", () => {
-    for (let attempt = 0; attempt < 8; attempt++) {
-      const w = generateWorkout(input({ easyFocus: "upper", profile: minimal, attempt }));
-      expect(w.items.map((i) => i.key)).toContain("upper:pull");
-      expect(w.items.map((i) => i.key)).toContain("upper:push");
-      for (const i of w.items) expect(i.exercise.equipment ?? "").not.toMatch(/barbell|dumbbell|cable|trap bar|landmine|pull-up bar|TRX/);
+  it("every body-part day is short and works with minimal equipment", () => {
+    for (const upperFocus of UPPER_FOCUSES) {
+      for (let attempt = 0; attempt < 8; attempt++) {
+        for (const profile of [undefined, minimal]) {
+          const w = generateWorkout(input({ upperFocus, profile, attempt }));
+          expect(w.items).toHaveLength(4);
+          expect(w.estMinutes).toBeLessThanOrEqual(25);
+          expect(w.title).toBe(UPPER_FOCUS_LABEL[upperFocus]);
+          if (profile)
+            for (const i of w.items)
+              expect(i.exercise.equipment ?? "", i.exercise.id).not.toMatch(/barbell|dumbbell|cable|trap bar|landmine|pull-up bar|TRX/);
+        }
+      }
     }
   });
 
+  it("arm and shoulder add-ons only show up on upper-body days, not in Full sessions", () => {
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const w = generateWorkout(input({ dayType: "workout", phase: "off", attempt }));
+      for (const i of w.items.filter((x) => x.slot === "UPPER")) expect(i.exercise.session_types).toContain("full");
+    }
+  });
   it("return week keeps upper body but still swaps the touch-up for isos", () => {
     const settings = { ...DEFAULT_SETTINGS, returnWeek: true };
     expect(generateWorkout(input({ settings })).decision.session).toBe("upper");
@@ -87,6 +105,11 @@ describe("easy-day sessions", () => {
     expect(id("push-up")).toBe("push-up");
     expect(id("seated-dumbbell-overhead-press")).toBe("press");
     expect(id("barbell-row")).toBe("row");
+    expect(id("dumbbell-curl")).toBe("curl");
+    expect(id("band-overhead-triceps-extension")).toBe("triceps-extension");
+    expect(id("dumbbell-lateral-raise")).toBe("lateral-raise");
+    expect(id("pull-up")).toBe("pull-down");
+    expect(id("close-grip-push-up")).toBe("push-up");
   });
 
   it("no core or hip-mobility sessions (done at practice)", () => {
@@ -114,5 +137,48 @@ describe("easy days before an A race", () => {
   it("the runner can still pick either one", () => {
     expect(generateWorkout(input({ races: [race("2026-09-19", "A")], easyFocus: "upper" })).decision.session).toBe("upper");
     expect(generateWorkout(input({ easyFocus: "touch-up" })).decision.session).toBe("touch-up");
+  });
+});
+
+describe("upper-body rotation", () => {
+  const log = (date: string, upperFocus?: UpperFocus): LiftLog => ({
+    id: date, date, session: "upper", volume: "full", exerciseIds: [], hadStrength: false, hadPlyo: false, plyoTypes: [],
+    ...(upperFocus ? { upperFocus } : {}),
+  });
+  const focus = (history: LiftLog[]) => generateWorkout(input({ history })).decision;
+
+  it("starts with back and says it hasn't been done", () => {
+    const d = focus([]);
+    expect(d.upperFocus).toBe("back");
+    expect(d.why).toMatch(/back & biceps is next, not done yet/);
+  });
+
+  it("goes to whatever hasn't been done yet, in order", () => {
+    expect(focus([log("2026-09-14", "back")]).upperFocus).toBe("chest");
+    expect(focus([log("2026-09-14", "chest")]).upperFocus).toBe("back");
+    expect(focus([log("2026-09-12", "back"), log("2026-09-14", "chest")]).upperFocus).toBe("shoulders");
+  });
+
+  it("once all three are done, picks the one done longest ago", () => {
+    const d = focus([log("2026-09-10", "back"), log("2026-09-12", "chest"), log("2026-09-14", "shoulders"), log("2026-09-08", "chest")]);
+    expect(d.upperFocus).toBe("back");
+    expect(d.why).toMatch(/back & biceps is next, last done 6 days ago/);
+  });
+
+  it("ignores today's own log, so the pick doesn't jump after you finish", () => {
+    expect(focus([log(WED, "back")]).upperFocus).toBe("back");
+  });
+
+  it("the runner can pick a body part, and it's saved with the lift", () => {
+    const w = generateWorkout(input({ upperFocus: "shoulders", history: [log("2026-09-14", "back")] }));
+    expect(w.decision.upperFocus).toBe("shoulders");
+    expect(w.decision.why).not.toMatch(/is next/);
+    expect(toLiftLog(w, "x").upperFocus).toBe("shoulders");
+  });
+
+  it("touch-up days don't get a body part", () => {
+    const w = generateWorkout(input({ easyFocus: "touch-up" }));
+    expect(w.decision.upperFocus).toBeUndefined();
+    expect(toLiftLog(w, "x").upperFocus).toBeUndefined();
   });
 });

@@ -284,8 +284,55 @@ const plank: Pattern = {
   ],
 };
 
+// Elbows stay at the sides; only the forearms move.
+const curl: Pattern = {
+  id: "curl",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(57.5, F, 90), [180, 175], [180, 175]), move: 0.7, hold: 0.15 },
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(57.5, F, 90), [175, 30], [175, 30]), move: 0.6, hold: 0.25 },
+  ],
+};
+
+// Upper arms point up; the weight goes down behind the head and back up.
+const tricepsExtension: Pattern = {
+  id: "triceps-extension",
+  view: "side",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 0,
+  frames: [
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(57.5, F, 90), [18, 18], [18, 18]), move: 0.6, hold: 0.2 },
+    { pose: P([58, 44.6], 0, L(59.5, F, 90), L(57.5, F, 90), [18, 215], [18, 215]), move: 0.8, hold: 0.15 },
+  ],
+};
+
+// Front view: arms rise out to the sides to shoulder height.
+const lateralRaise: Pattern = {
+  id: "lateral-raise",
+  view: "front",
+  props: [{ kind: "dumbbells" }],
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 44.6], 0, L(54, F, 270, "l"), L(62, F, 90, "r"), [190, 185], [170, 175]), move: 0.7, hold: 0.15 },
+    { pose: P([58, 44.6], 0, L(54, F, 270, "l"), L(62, F, 90, "r"), [265, 260], [95, 100]), move: 0.6, hold: 0.3 },
+  ],
+};
+
+// Front view: arms straight overhead, then elbows pulled down to the ribs.
+const pullDown: Pattern = {
+  id: "pull-down",
+  view: "front",
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 44.6], 0, L(54, F, 270, "l"), L(62, F, 90, "r"), [340, 345], [20, 15]), move: 0.7, hold: 0.15 },
+    { pose: P([58, 44.6], 0, L(54, F, 270, "l"), L(62, F, 90, "r"), [205, 350], [155, 10]), move: 0.6, hold: 0.3 },
+  ],
+};
+
 export const PATTERNS: Record<string, Pattern> = Object.fromEntries(
-  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank].map(
+  [squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, curl, tricepsExtension, lateralRaise, pullDown].map(
     (p) => [p.id, p],
   ),
 );

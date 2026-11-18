@@ -3,7 +3,7 @@
 import { isPlyo, isoKind } from "../exercises";
 import type { Profile } from "../profile";
 import type { BlockPicks, LiftLog, Settings } from "../types";
-import { decideSession, weekCounts, type Decision, type RuleContext } from "./rules";
+import { decideSession, UPPER_FOCUS_LABEL, weekCounts, type Decision, type RuleContext } from "./rules";
 import { currentBlock } from "./select";
 import {
   buildItems,
@@ -79,6 +79,7 @@ export function generateWorkout(input: GenerateInput): Workout {
   let title = TITLES[decision.session];
   if (decision.session === "full" && decision.half) title = "Full strength, half volume";
   if (decision.session === "plyos-isos" && !decision.plyos) title = "Isos only";
+  if (decision.session === "upper" && decision.upperFocus) title = UPPER_FOCUS_LABEL[decision.upperFocus];
 
   return {
     date: input.today,
@@ -107,6 +108,7 @@ export function toLiftLog(w: Workout, id: string, doneIds?: string[], weights?: 
     hadPlyo: plyoItems.length > 0,
     plyoTypes: [...new Set(plyoItems.map((i) => i.exercise.plyo_type).filter((t): t is string => !!t))],
     catchUpFor: w.catchUpFor,
+    ...(w.decision.upperFocus ? { upperFocus: w.decision.upperFocus } : {}),
     ...(weights && Object.keys(weights).length ? { weights } : {}),
   };
 }

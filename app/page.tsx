@@ -17,13 +17,15 @@ import {
   generateWorkout,
   PHASE_LABEL,
   toLiftLog,
+  UPPER_FOCUS_LABEL,
+  UPPER_FOCUSES,
   type GenerateInput,
   type Workout,
 } from "@/lib/rules";
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
-import type { EasyFocus, LiftLog, RunType } from "@/lib/types";
+import type { EasyFocus, LiftLog, RunType, UpperFocus } from "@/lib/types";
 
 const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 
@@ -69,6 +71,8 @@ function Today() {
   // Easy days default to upper body (touch-up the week before an A race); tapping overrides it.
   const [easyPick, setEasyPick] = useState<EasyFocus | undefined>(undefined);
   const easyFocus = easyPick;
+  // Upper-body days rotate body parts (the one done longest ago); tapping overrides it.
+  const [upperFocus, setUpperFocus] = useState<UpperFocus | undefined>(undefined);
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
@@ -85,16 +89,17 @@ function Today() {
       profile,
       shortOnTime,
       easyFocus,
+      upperFocus,
       extraHardDays: futureHardOverrides(today, overrides),
     }),
-    [today, day.type, settings, races, history, block, profile, shortOnTime, easyFocus, overrides],
+    [today, day.type, settings, races, history, block, profile, shortOnTime, easyFocus, upperFocus, overrides],
   );
 
   const preview = decideSession(ctx);
   const easyDay = preview.role === "easy" || preview.role === "long";
   const todayIsLift = !EASY_SESSIONS.includes(preview.session) && preview.session !== "none";
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
-  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, mode]);
+  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, upperFocus, mode]);
   const current = state?.sig === sig ? state : null;
   const loggedToday = history.filter((h) => h.date === today);
 
@@ -224,7 +229,11 @@ function Today() {
       {loggedToday.length > 0 && (
         <div className="mb-3">
           <Notice tone="good">
-            Logged today: {loggedToday.map((l) => LOGGED_LABEL[l.session] + (l.volume === "half" ? " (half)" : "")).join(", ")}.
+            Logged today:{" "}
+            {loggedToday
+              .map((l) => (l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : LOGGED_LABEL[l.session]) + (l.volume === "half" ? " (half)" : ""))
+              .join(", ")}
+            .
           </Notice>
         </div>
       )}
@@ -254,6 +263,24 @@ function Today() {
                 }`}
               >
                 {o.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {preview.session === "upper" && mode === "today" && (
+          <div className="grid grid-cols-3 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
+            {UPPER_FOCUSES.map((f) => (
+              <button
+                key={f}
+                type="button"
+                aria-pressed={preview.upperFocus === f}
+                onClick={() => setUpperFocus(f)}
+                className={`min-h-10 rounded-lg px-1 text-sm font-semibold leading-tight transition-colors ${
+                  preview.upperFocus === f ? "bg-accent text-accent-ink" : "text-muted"
+                }`}
+              >
+                {UPPER_FOCUS_LABEL[f]}
               </button>
             ))}
           </div>

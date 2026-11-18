@@ -12,8 +12,11 @@
  *  Taper (Championship race day, optional): a few overcoming isos incl. calf/ankle.
  *  Return week: yielding isometrics only, 20-45 s holds.
  *  Touch-up: 2-3 low-intensity foot/calf/hip-flexor moves, ~10 min.
- *  Upper body (easy days, the runner's pick instead of the touch-up; no leg loading):
- *    a pull, a push, a shoulder/posture move and a carry or crawl.
+ *  Upper body (easy days; no leg loading): one body part per day, rotating so the
+ *    one done longest ago is next (see nextUpperFocus in rules.ts):
+ *      Back & biceps: vertical pull, row, curl, shoulder-blade move.
+ *      Chest & triceps: 2 presses or push-ups, triceps, serratus.
+ *      Shoulders: overhead press, lateral raise, rotator cuff, crawl or waiter carry.
  *    (No core or hip sessions: the team already does those at practice.)
  *
  *  Dosing: low sets, low reps, >70% effort, never to failure. Nordics max 3x3.
@@ -34,7 +37,7 @@ import {
   videoFor,
 } from "../exercises";
 import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsPlyoEmphasis, type Profile } from "../profile";
-import type { BlockPicks, Exercise, Phase, Slot } from "../types";
+import type { BlockPicks, Exercise, Phase, Slot, UpperFocus } from "../types";
 import type { Decision } from "./rules";
 import { pick } from "./select";
 
@@ -338,31 +341,59 @@ function buildTouchUp(ctx: Ctx): Prescription[] {
 // Easy-day upper body
 // ---------------------------------------------------------------------------
 
-const UPPER_GROUPS: { key: string; match: RegExp; sets: number; reps: string; rest: string }[] = [
-  { key: "pull", match: /row|pull-up|chin|pull-down/, sets: 3, reps: "8-10", rest: "60-90 s" },
-  { key: "push", match: /^(?!scap).*(press|push-up)/, sets: 3, reps: "8-10", rest: "60-90 s" },
-  { key: "shoulder", match: /external-rotation|atyt|iyt|^wy$|w-on-bench|snow-angel|field-goal|serratus|scap-push|pull-apart/, sets: 2, reps: "10", rest: "30 s" },
-  { key: "carry", match: /carry|crawl/, sets: 2, reps: "30 s", rest: "45 s" },
-];
+interface UpperGroup {
+  key: string;
+  match: RegExp;
+  sets: number;
+  reps: string;
+  rest: string;
+  /** Main lifts get the "leave reps in the tank" note. */
+  main?: boolean;
+}
+
+const SHOULDER_BLADE = /pull-apart|atyt|iyt|^wy$|w-on-bench|snow-angel/;
+
+/** One template per body part. Each is 4 moves, about 20 minutes. */
+const UPPER_DAYS: Record<UpperFocus, UpperGroup[]> = {
+  back: [
+    { key: "vertical", match: /^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down)$/, sets: 3, reps: "6-10", rest: "60-90 s", main: true },
+    { key: "row", match: /row/, sets: 3, reps: "8-10", rest: "60-90 s", main: true },
+    { key: "biceps", match: /curl/, sets: 2, reps: "10-12", rest: "45 s" },
+    { key: "rear", match: SHOULDER_BLADE, sets: 2, reps: "10", rest: "30 s" },
+  ],
+  chest: [
+    { key: "press", match: /bench-press|^push-up$|hand-pick-up-push-up/, sets: 3, reps: "8-10", rest: "60-90 s", main: true },
+    { key: "press2", match: /bench-press|^push-up$|hand-pick-up-push-up/, sets: 2, reps: "10-12", rest: "60 s" },
+    { key: "triceps", match: /triceps|close-grip/, sets: 2, reps: "10-12", rest: "45 s" },
+    { key: "serratus", match: /serratus|scap-push-up/, sets: 2, reps: "10", rest: "30 s" },
+  ],
+  shoulders: [
+    { key: "press", match: /overhead-press|overhead-dumbbell-press|^landmine-press$|^z-press$/, sets: 3, reps: "8-10", rest: "60-90 s", main: true },
+    { key: "lateral", match: /lateral-raise/, sets: 2, reps: "12", rest: "45 s" },
+    { key: "cuff", match: /external-rotation/, sets: 2, reps: "10", rest: "30 s" },
+    { key: "stability", match: /crawl|waiter-carry/, sets: 2, reps: "30 s", rest: "45 s" },
+  ],
+};
 
 /** Bodyweight-friendly unilateral reps get a "/side". */
 function perSide(e: Exercise, reps: string) {
+  if (/ s$/.test(reps)) return reps;
   return e.unilateral || /single-arm|single arm|contralateral|offset/.test(`${e.id} ${e.name}`.toLowerCase()) ? `${reps}/side` : reps;
 }
 
-function buildUpper(ctx: Ctx): Prescription[] {
-  const upper = fitProfile(ctx.pool.filter((e) => e.slot === "UPPER" && !isoKind(e)), ctx.profile);
+function buildUpper(ctx: Ctx, focus: UpperFocus): Prescription[] {
+  const upper = ctx.pool.filter((e) => e.slot === "UPPER" && !isoKind(e) && !/med-ball/.test(e.id));
   const out: Prescription[] = [];
-  for (const g of UPPER_GROUPS) {
-    const key = `upper:${g.key}`;
-    const e = choose(ctx, key, upper.filter((x) => g.match.test(x.id) && !/med-ball/.test(x.id)));
+  for (const g of UPPER_DAYS[focus]) {
+    const key = `upper-${focus}:${g.key}`;
+    const e = choose(ctx, key, fitProfile(upper.filter((x) => g.match.test(x.id) && !ctx.used.has(x.id)), ctx.profile));
     if (!e) continue;
     out.push({
       ...baseDose(e, key),
       sets: g.sets,
-      reps: g.key === "carry" ? g.reps : perSide(e, g.reps),
+      reps: perSide(e, g.reps),
       rest: g.rest,
-      note: g.key === "pull" || g.key === "push" ? "Easy day: leave 2-3 reps in the tank." : undefined,
+      note: g.main ? "Easy day: leave 2-3 reps in the tank." : undefined,
     });
   }
   return out;
@@ -390,7 +421,7 @@ export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
     case "touch-up":
       return buildTouchUp(ctx);
     case "upper":
-      return buildUpper(ctx);
+      return buildUpper(ctx, d.upperFocus ?? "back");
     case "none":
       return [];
   }

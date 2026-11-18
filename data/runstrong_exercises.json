@@ -15,7 +15,7 @@
    "UPPER": "upper body/postural (optional, max 1 per session)"
   },
   "plyo_tiers": "From his library: light < medium < ping (fast, reactive) / deep (big landings). Intensity mapping is an assumption.",
-  "app_added": "Entries with source \"app\" were added by the app for easy-day Upper body sessions (push-up, band row, band pull-apart); they are standard moves, not from the coach."
+  "app_added": "Entries with source \"app\" were added by the app for easy-day Upper body sessions (push-ups, band moves, curls, triceps extensions, lateral raises) so each body-part day works with minimal equipment; they are standard moves, not from the coach."
  },
  "featured": [
   {
@@ -6668,6 +6668,166 @@
    "sets": 3,
    "reps": "8-12",
    "cue": "Straight line head to heels, elbows at about 45 degrees. Hands on a bench if needed."
+  },
+  {
+   "id": "band-lat-pull-down",
+   "name": "Band lat pull-down",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "Anchor the band overhead. Pull elbows down to your ribs, chest up, no shrugging."
+  },
+  {
+   "id": "dumbbell-curl",
+   "name": "Dumbbell curl",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "Elbows pinned at your sides, palms up. Lower slowly, no swinging."
+  },
+  {
+   "id": "hammer-curl",
+   "name": "Hammer curl",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "Thumbs up, elbows at your sides. Lower slowly."
+  },
+  {
+   "id": "band-curl",
+   "name": "Band curl",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "12-15",
+   "cue": "Stand on the band, elbows at your sides. Squeeze at the top, lower slowly."
+  },
+  {
+   "id": "overhead-dumbbell-triceps-extension",
+   "name": "Overhead dumbbell triceps extension",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "One dumbbell in both hands overhead. Lower behind your head, elbows pointing up, then straighten."
+  },
+  {
+   "id": "band-overhead-triceps-extension",
+   "name": "Band overhead triceps extension",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "12-15",
+   "cue": "Band under your back foot, hands behind your head. Straighten your arms overhead, elbows stay in."
+  },
+  {
+   "id": "close-grip-push-up",
+   "name": "Close-grip push-up",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "bodyweight",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "8-12",
+   "cue": "Hands under your shoulders, elbows brush your ribs. Hands on a bench if needed."
+  },
+  {
+   "id": "dumbbell-lateral-raise",
+   "name": "Dumbbell lateral raise",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "12",
+   "cue": "Light weight. Raise out to the side to shoulder height, slight bend in the elbows, no shrugging."
+  },
+  {
+   "id": "band-lateral-raise",
+   "name": "Band lateral raise",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "12-15",
+   "cue": "Stand on the band. Raise out to the side to shoulder height, lower slowly."
+  },
+  {
+   "id": "band-overhead-press",
+   "name": "Band overhead press",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "band",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "Stand on the band, hands at your shoulders. Press straight up, ribs down."
   }
  ]
 }

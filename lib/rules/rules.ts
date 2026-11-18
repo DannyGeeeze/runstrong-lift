@@ -24,7 +24,7 @@
  */
 
 import { addDays, dayInWeek, diffDays, mondayOf, weekdayOf } from "../dates";
-import type { EasyFocus, LiftLog, Phase, Race, RunType, SessionType, Settings } from "../types";
+import type { EasyFocus, LiftLog, UpperFocus, Phase, Race, RunType, SessionType, Settings } from "../types";
 
 export type Role =
   | "thu-race" // Thursday race day
@@ -50,6 +50,8 @@ export interface RuleContext {
   shortOnTime?: boolean;
   /** Easy/long days: which optional session the runner picked. Defaults to the touch-up. */
   easyFocus?: EasyFocus;
+  /** Upper-body days: the body part the runner picked. Defaults to the one done longest ago. */
+  upperFocus?: UpperFocus;
   /** Extra known hard days (e.g. future dates the user marked as Workout/Race). */
   extraHardDays?: string[];
 }
@@ -78,6 +80,8 @@ export interface Decision {
   nextHard: (HardDay & { inDays: number }) | null;
   /** Strength / plyo sessions in the last 7 days (before today's). */
   weekCounts: { strength: number; plyo: number };
+  /** Upper-body days: which body part. */
+  upperFocus?: UpperFocus;
 }
 
 /** The optional easy-day sessions. Neither counts toward the weekly strength or plyo caps. */
@@ -299,6 +303,30 @@ export function weekCounts(history: LiftLog[], today: string) {
   };
 }
 
+/** Upper-body days rotate through these, in this order when there's a tie. */
+export const UPPER_FOCUSES: UpperFocus[] = ["back", "chest", "shoulders"];
+export const UPPER_FOCUS_LABEL: Record<UpperFocus, string> = {
+  back: "Back & biceps",
+  chest: "Chest & triceps",
+  shoulders: "Shoulders",
+};
+
+/** When each body part was last done before today ("" if never). */
+export function lastUpperDays(history: LiftLog[], today: string): Record<UpperFocus, string> {
+  const last = { back: "", chest: "", shoulders: "" } as Record<UpperFocus, string>;
+  for (const h of history) {
+    if (h.session !== "upper" || !h.upperFocus || h.date >= today) continue;
+    if (h.date > last[h.upperFocus]) last[h.upperFocus] = h.date;
+  }
+  return last;
+}
+
+/** The body part done longest ago (never done counts as longest), so a week gets to all three. */
+export function nextUpperFocus(history: LiftLog[], today: string): UpperFocus {
+  const last = lastUpperDays(history, today);
+  return [...UPPER_FOCUSES].sort((a, b) => last[a].localeCompare(last[b]))[0];
+}
+
 /** Easy days skip the upper-body lift this many days before an A race. */
 export const A_RACE_EASY_DAYS = 7;
 
@@ -399,6 +427,20 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
     rules.push("short on time: 20-min session");
   }
 
+  // Upper body: the body part you've gone longest without, unless you picked one.
+  let upperFocus: UpperFocus | undefined;
+  if (session === "upper") {
+    upperFocus = ctx.upperFocus ?? nextUpperFocus(ctx.history, ctx.today);
+    if (!ctx.upperFocus) {
+      const last = lastUpperDays(ctx.history, ctx.today)[upperFocus];
+      const ago = last ? diffDays(last, ctx.today) : 0;
+      rules.push(
+        `${UPPER_FOCUS_LABEL[upperFocus].toLowerCase()} is next, ` +
+          (last ? `last done ${ago} day${ago === 1 ? "" : "s"} ago` : "not done yet"),
+      );
+    }
+  }
+
   const final = sessionLabel({ session, half, plyos, strength });
   const [first, ...rest] = rules;
   const why =
@@ -418,6 +460,7 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
     warnings,
     nextHard,
     weekCounts: { strength: counts.strength, plyo: counts.plyo },
+    ...(upperFocus ? { upperFocus } : {}),
   };
 }
 

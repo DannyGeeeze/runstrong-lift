@@ -4,7 +4,7 @@ import { RunRow } from "@/components/RunList";
 import { Card, SectionTitle } from "@/components/ui";
 import { addDays, formatDay, todayLocal } from "@/lib/dates";
 import { dayType, RUN_TYPE_LABEL } from "@/lib/day";
-import { ROTATION_TYPES, weekCounts } from "@/lib/rules";
+import { ROTATION_TYPES, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
 import { miles } from "@/lib/strava";
 import { storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
@@ -40,6 +40,7 @@ function Week() {
   const { runs, loading, source } = useRuns(settings.mockMode);
   const today = todayLocal();
   const counts = weekCounts(history, today);
+  const upperDone = new Set(history.filter((h) => h.date > addDays(today, -7) && h.date <= today).map((h) => h.upperFocus));
   const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
   const weekMiles = runs
     .filter((r) => r.date > addDays(today, -7))
@@ -61,6 +62,12 @@ function Week() {
         <div className="flex flex-wrap gap-2">
           {ROTATION_TYPES.map((t) => (
             <Check key={t} done={counts.plyoTypes.includes(t)} label={PLYO_LABEL[t]} />
+          ))}
+        </div>
+        <p className="mb-2 mt-3 text-xs font-medium text-muted">Upper body this week</p>
+        <div className="flex flex-wrap gap-2">
+          {UPPER_FOCUSES.map((f) => (
+            <Check key={f} done={upperDone.has(f)} label={UPPER_FOCUS_LABEL[f]} />
           ))}
         </div>
       </Card>
@@ -86,7 +93,7 @@ function Week() {
               {lifts.map((l) => (
                 <div key={l.id} className="mt-2 flex items-center justify-between rounded-lg bg-accent-soft px-3 py-2">
                   <span className="text-sm font-medium text-accent">
-                    {SESSION_LABEL[l.session]}
+                    {l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : SESSION_LABEL[l.session]}
                     {l.volume === "half" ? " (half)" : ""} · {l.exerciseIds.length} moves
                   </span>
                   <button

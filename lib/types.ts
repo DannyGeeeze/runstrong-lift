@@ -18,6 +18,9 @@ export type SessionType =
 /** What to do on an easy or long-run day. The touch-up is the default. */
 export type EasyFocus = "touch-up" | "upper";
 
+/** Which body part an upper-body day works. They rotate: the one done longest ago is next. */
+export type UpperFocus = "back" | "chest" | "shoulders";
+
 export type Slot =
   | "A1"
   | "A2"
@@ -107,6 +110,8 @@ export interface LiftLog {
   plyoTypes: string[];
   /** Set when this was a next-morning catch-up for the previous day's workout. */
   catchUpFor?: string;
+  /** Upper-body days: which body part it was. */
+  upperFocus?: UpperFocus;
   /** Weights lifted (lb), per exercise id, one entry per set (null = set done without a weight). */
   weights?: Record<string, (number | null)[]>;
 }

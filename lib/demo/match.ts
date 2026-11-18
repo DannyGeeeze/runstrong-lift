@@ -43,6 +43,10 @@ const BY_SLOT: Record<string, string> = {
 
 /** Upper-body moves only match upper-body animations. */
 const UPPER_RULES: [RegExp, string][] = [
+  [/curl/, "curl"],
+  [/triceps-extension/, "triceps-extension"],
+  [/lateral-raise/, "lateral-raise"],
+  [/^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down)$/, "pull-down"],
   [/^(?!scap).*(push-up|bench-press|med-ball-bench)/, "push-up"],
   [/^(?!.*rotation).*press/, "press"],
   [/plank|crawl/, "plank"],
