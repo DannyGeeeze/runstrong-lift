@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPOT_OPTIONS } from "@/lib/profile";
-import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
+import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { formatDay, todayLocal } from "@/lib/dates";
 import { blockEnds, PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import { storage } from "@/lib/storage";
@@ -70,12 +70,20 @@ function SettingsView() {
     }
   }
 
+  const stravaLine = !status
+    ? "Checking…"
+    : !status.configured
+      ? "Not set up"
+      : status.connected
+        ? `Connected${status.athlete ? ` as ${status.athlete}` : ""}`
+        : "Not connected";
+
   return (
     <div>
       <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
 
       <SectionTitle right={<Link href="/welcome" className="text-xs font-semibold text-accent">Redo setup</Link>}>
-        Your profile
+        You
       </SectionTitle>
       <Card>
         {profile ? (
@@ -83,146 +91,236 @@ function SettingsView() {
             <dt className="text-muted">Event</dt>
             <dd>{EVENT_OPTIONS.filter((o) => profile.events.includes(o.value)).map((o) => o.label).join(", ")} · {profile.weeklyMiles} mi/wk</dd>
             <dt className="text-muted">Lifting</dt>
-            <dd>{EXPERIENCE_OPTIONS.find((o) => o.value === profile.experience)?.label}</dd>
-            <dt className="text-muted">Gear</dt>
-            <dd>{EQUIPMENT_OPTIONS.find((o) => o.value === profile.equipment)?.label}</dd>
+            <dd>{EXPERIENCE_OPTIONS.find((o) => o.value === profile.experience)?.label} · {EQUIPMENT_OPTIONS.find((o) => o.value === profile.equipment)?.label} · {profile.sessionMinutes} min</dd>
             <dt className="text-muted">Goals</dt>
             <dd>{GOAL_OPTIONS.filter((g) => profile.goals.includes(g.value)).map((g) => g.label).join(", ") || "None"}</dd>
             <dt className="text-muted">Focus</dt>
             <dd>{SPOT_OPTIONS.filter((s) => profile.troubleSpots.includes(s.value)).map((s) => s.label).join(", ") || "Nothing cranky"}</dd>
-            <dt className="text-muted">Sessions</dt>
-            <dd>{profile.sessionMinutes} min</dd>
           </dl>
         ) : (
           <Link href="/welcome" className="text-sm font-semibold text-accent">Set up your profile</Link>
         )}
       </Card>
 
-      <SectionTitle>Season phase</SectionTitle>
-      <Card className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
-          {PHASES.map((p) => (
-            <Chip key={p} active={settings.phase === p} onClick={() => set("phase", p)}>
-              {PHASE_LABEL[p]}
-            </Chip>
-          ))}
+      <SectionTitle>Training</SectionTitle>
+      <Card className="divide-y divide-line py-0">
+        <div className="py-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-sm font-medium">Season phase</p>
+            {suggestion.phase !== settings.phase ? (
+              <button type="button" className="text-xs font-semibold text-accent" onClick={() => set("phase", suggestion.phase)}>
+                Suggested: {PHASE_LABEL[suggestion.phase]} · Use it
+              </button>
+            ) : (
+              <span className="text-xs text-muted">Matches your races</span>
+            )}
+          </div>
+          <Segmented
+            cols={2}
+            options={PHASES.map((p) => ({ value: p, label: PHASE_LABEL[p] }))}
+            value={settings.phase}
+            onChange={(p) => set("phase", p)}
+          />
+          <p className="mt-2 text-xs text-muted">{PHASE_HINT[settings.phase]}</p>
         </div>
-        <p className="text-sm text-muted">
-          Suggested: <span className="font-semibold text-ink">{PHASE_LABEL[suggestion.phase]}</span>
-          {suggestion.phase !== settings.phase && (
-            <button type="button" className="ml-1 font-semibold text-accent" onClick={() => set("phase", suggestion.phase)}>
-              Use it
-            </button>
-          )}
-        </p>
-      </Card>
-
-      <SectionTitle>Race week</SectionTitle>
-      <Card className="space-y-4">
-        <div>
+        <div className="py-4">
           <p className="text-sm font-medium">Tune-up workout before a Thursday race</p>
-          <div className="mt-2 flex gap-2">
-            <Chip active={settings.tuneUpDay === "mon"} onClick={() => set("tuneUpDay", "mon")}>Monday</Chip>
-            <Chip active={settings.tuneUpDay === "tue"} onClick={() => set("tuneUpDay", "tue")}>Tuesday</Chip>
-          </div>
+          <Segmented
+            cols={2}
+            options={[
+              { value: "mon", label: "Monday" },
+              { value: "tue", label: "Tuesday" },
+            ]}
+            value={settings.tuneUpDay}
+            onChange={(d) => set("tuneUpDay", d)}
+          />
         </div>
-        <div>
+        <div className="py-4">
           <p className="text-sm font-medium">Workout days in weeks with no race</p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {DAYS.map((d) => (
-              <Chip
-                key={d}
-                active={settings.workoutDays.includes(d)}
-                onClick={() =>
-                  set(
-                    "workoutDays",
-                    settings.workoutDays.includes(d) ? settings.workoutDays.filter((x) => x !== d) : [...settings.workoutDays, d],
-                  )
-                }
-              >
-                {d[0].toUpperCase() + d.slice(1)}
-              </Chip>
-            ))}
+          <div className="mt-2 grid grid-cols-7 gap-1">
+            {DAYS.map((d) => {
+              const on = settings.workoutDays.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  aria-pressed={on}
+                  aria-label={d}
+                  onClick={() => set("workoutDays", on ? settings.workoutDays.filter((x) => x !== d) : [...settings.workoutDays, d])}
+                  className={`min-h-10 rounded-lg text-sm font-semibold transition-colors ${on ? "bg-accent text-accent-ink" : "bg-card-2 text-muted"}`}
+                >
+                  {d[0].toUpperCase() + d.slice(1, 2)}
+                </button>
+              );
+            })}
           </div>
         </div>
-      </Card>
-
-      <SectionTitle>Sessions</SectionTitle>
-      <Card className="divide-y divide-line py-1">
-        <Toggle checked={settings.returnWeek} onChange={(v) => set("returnWeek", v)} label="Return week (after a break)" />
-        <Toggle checked={settings.enablePower} onChange={(v) => set("enablePower", v)} label="Power moves" />
-        <Toggle checked={settings.enableMobility} onChange={(v) => set("enableMobility", v)} label="Mobility moves" />
+        <div className="py-2">
+          <Toggle
+            checked={settings.returnWeek}
+            onChange={(v) => set("returnWeek", v)}
+            label="Return week"
+            hint="Coming back from a break: easy holds only."
+          />
+          <Toggle
+            checked={settings.enablePower}
+            onChange={(v) => set("enablePower", v)}
+            label="Power moves"
+            hint="Adds an explosive move to full sessions."
+          />
+          <Toggle
+            checked={settings.enableMobility}
+            onChange={(v) => set("enableMobility", v)}
+            label="Mobility moves"
+            hint="Adds a mobility move to full sessions."
+          />
+        </div>
       </Card>
 
       <SectionTitle>Recovery</SectionTitle>
-      <Card className="divide-y divide-line py-1">
-        <Toggle checked={settings.hasBoots} onChange={(v) => set("hasBoots", v)} label="I have compression boots" />
-        <Toggle checked={settings.hasSauna} onChange={(v) => set("hasSauna", v)} label="I have a sauna" />
+      <Card className="py-2">
+        <Toggle checked={settings.hasBoots} onChange={(v) => set("hasBoots", v)} label="Compression boots" hint="I have them" />
+        <Toggle checked={settings.hasSauna} onChange={(v) => set("hasSauna", v)} label="Sauna" hint="I have access to one" />
       </Card>
 
-      <SectionTitle>Exercise block</SectionTitle>
-      <Card className="space-y-3">
-        {block ? (
-          <p className="text-sm text-muted">
-            Rotates {formatDay(blockEnds(block))}
-          </p>
-        ) : (
-          <p className="text-sm text-muted">Starts with your first session</p>
-        )}
-        {block && (
-          <Button onClick={() => confirm("Start a new block with fresh picks?") && storage.saveBlock(null)}>Start new block now</Button>
-        )}
-      </Card>
-
-      <SectionTitle>Strava</SectionTitle>
-      <Card className="space-y-3">
-        {stravaError && <Notice tone="warn">{stravaError}</Notice>}
-        {!status ? (
-          <p className="text-sm text-muted">Checking…</p>
-        ) : !status.configured ? (
-          <p className="text-sm text-muted">Not set up</p>
-        ) : status.connected ? (
-          <div className="flex items-center justify-between">
-            <p className="text-sm">Connected{status.athlete ? ` as ${status.athlete}` : ""}.</p>
-            <Button onClick={disconnect}>Disconnect</Button>
+      <SectionTitle>Runs</SectionTitle>
+      <Card className="py-2">
+        {stravaError && (
+          <div className="py-2">
+            <Notice tone="warn">{stravaError}</Notice>
           </div>
-        ) : (
-          <a href="/api/strava/login" className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink">
-            Connect Strava
-          </a>
         )}
-        <Toggle checked={settings.mockMode} onChange={(v) => set("mockMode", v)} label="Demo runs" />
-      </Card>
-
-      <SectionTitle>Test mode</SectionTitle>
-      <Card className="flex items-center justify-between">
-        <span className="text-sm font-medium">{data.testMode ? "Mid track season (on)" : "Mid track season"}</span>
-        {data.testMode ? (
-          <Button onClick={() => storage.exitTestMode()}>Exit</Button>
-        ) : (
-          <Button onClick={() => storage.enterTestMode(trackSeasonScenario(today, data))}>Try it</Button>
-        )}
-      </Card>
-
-      <SectionTitle>Your data</SectionTitle>
-      <Card className="space-y-3">
-        <div className="flex gap-2">
-          <Button onClick={exportData}>Export JSON</Button>
-          <Button onClick={() => fileRef.current?.click()}>Import JSON</Button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={(e) => {
-              const f = e.target.files?.[0];
-              if (f && confirm("Importing replaces everything stored on this device. Continue?")) importData(f);
-              e.target.value = "";
-            }}
-          />
+        <div className="flex min-h-12 items-center justify-between gap-3 py-2">
+          <span>
+            <span className="block text-sm font-medium">Strava</span>
+            <span className="block text-xs text-muted">{stravaLine}</span>
+          </span>
+          {status?.configured &&
+            (status.connected ? (
+              <Button className="min-h-9 py-1.5" onClick={disconnect}>Disconnect</Button>
+            ) : (
+              <a href="/api/strava/login" className="inline-flex min-h-9 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink">
+                Connect
+              </a>
+            ))}
         </div>
-        {importMsg && <Notice tone={importMsg.ok ? "good" : "warn"}>{importMsg.text}</Notice>}
+        <Toggle checked={settings.mockMode} onChange={(v) => set("mockMode", v)} label="Demo runs" hint="Use sample runs instead of Strava." />
       </Card>
+
+      <SectionTitle>More</SectionTitle>
+      <Card className="divide-y divide-line py-0">
+        <Row
+          label="Exercise block"
+          hint={
+            block
+              ? `Moves stay the same so you can progress. New picks on ${formatDay(blockEnds(block))}.`
+              : "Moves stay the same for 4 weeks so you can progress."
+          }
+          action={
+            block && (
+              <button
+                type="button"
+                className="text-sm font-semibold text-accent"
+                onClick={() => confirm("Start a new block with fresh picks?") && storage.saveBlock(null)}
+              >
+                New picks
+              </button>
+            )
+          }
+        />
+        <Row
+          label="Test mode"
+          hint={data.testMode ? "On: mid track season. Your real data is safe." : "Try the app mid track season."}
+          action={
+            <button
+              type="button"
+              className="text-sm font-semibold text-accent"
+              onClick={() => (data.testMode ? storage.exitTestMode() : storage.enterTestMode(trackSeasonScenario(today, data)))}
+            >
+              {data.testMode ? "Exit" : "Try it"}
+            </button>
+          }
+        />
+        <Row
+          label="Backup"
+          hint="Your data lives on this device."
+          action={
+            <div className="flex gap-3">
+              <button type="button" className="text-sm font-semibold text-accent" onClick={exportData}>
+                Export
+              </button>
+              <button type="button" className="text-sm font-semibold text-accent" onClick={() => fileRef.current?.click()}>
+                Import
+              </button>
+            </div>
+          }
+        />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f && confirm("Importing replaces everything stored on this device. Continue?")) importData(f);
+            e.target.value = "";
+          }}
+        />
+      </Card>
+      {importMsg && (
+        <div className="mt-2">
+          <Notice tone={importMsg.ok ? "good" : "warn"}>{importMsg.text}</Notice>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const PHASE_HINT: Record<Phase, string> = {
+  off: "No races soon: the biggest sessions, with two plyos and an upper-body move.",
+  early: "Races starting: full strength sessions around your workouts.",
+  deep: "Racing most weeks: lifting fits around meets.",
+  championship: "Big races ahead: lighter plyos + isos instead of full strength.",
+};
+
+function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  cols,
+}: {
+  options: { value: T; label: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  cols: number;
+}) {
+  return (
+    <div className={`mt-2 grid gap-1 rounded-xl bg-card-2 p-1 ${cols === 2 ? "grid-cols-2" : "grid-cols-4"}`}>
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          aria-pressed={value === o.value}
+          onClick={() => onChange(o.value)}
+          className={`min-h-10 rounded-lg px-1 text-sm font-semibold transition-colors ${
+            value === o.value ? "bg-card text-ink shadow-sm ring-1 ring-line" : "text-muted"
+          }`}
+        >
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function Row({ label, hint, action }: { label: string; hint: string; action?: ReactNode }) {
+  return (
+    <div className="flex min-h-14 items-center justify-between gap-4 py-3">
+      <span>
+        <span className="block text-sm font-medium">{label}</span>
+        <span className="block text-xs text-muted">{hint}</span>
+      </span>
+      {action && <span className="shrink-0">{action}</span>}
     </div>
   );
 }
