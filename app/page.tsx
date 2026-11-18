@@ -192,12 +192,6 @@ function Today() {
         </div>
       )}
 
-      {catchUp && "blocked" in catchUp && !current && (
-        <div className="mt-4">
-          <Notice tone="warn">{catchUp.blocked}</Notice>
-        </div>
-      )}
-
       {!current && (
         <section className="mt-5 rounded-3xl border border-line bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
@@ -209,13 +203,20 @@ function Today() {
             </Link>
           </div>
 
-          <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight">{heroTitle}</h2>
-          {canLift && hero.estMinutes > 0 && (
+          {loading ? (
+            <div className="mt-3 space-y-2" aria-hidden>
+              <div className="h-8 w-2/3 animate-pulse rounded-lg bg-card-2" />
+              <div className="h-4 w-1/3 animate-pulse rounded bg-card-2" />
+            </div>
+          ) : (
+            <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight">{heroTitle}</h2>
+          )}
+          {!loading && canLift && hero.estMinutes > 0 && (
             <p className="mt-1 text-sm font-medium text-muted">
               ~{hero.estMinutes} min · {hero.items.length} moves{active.optional ? " · optional" : ""}
             </p>
           )}
-          <p className="mt-3 text-sm leading-relaxed text-muted">{active.why}</p>
+          {!loading && <p className="mt-3 text-sm leading-relaxed text-muted">{active.why}</p>}
           {preview.session === "touch-up" && mode === "today" && profile?.goals.includes("healthy") && (
             <div className="mt-3">
               <Notice tone="good">Recommended for staying healthy</Notice>
@@ -233,7 +234,7 @@ function Today() {
             </div>
           )}
 
-          {canLift ? (
+          {canLift || loading ? (
             <Button
               variant="primary"
               className={`mt-5 w-full py-5 text-lg ${loading ? "animate-pulse" : ""}`}
@@ -246,7 +247,7 @@ function Today() {
             <p className="mt-4 text-base font-semibold">{raceDay ? "No lifting on race day." : "Nothing to lift today."}</p>
           )}
 
-          {hasOptions && (
+          {!loading && hasOptions && (
             <div className="mt-5 space-y-2 border-t border-line pt-4">
               {easyDay && mode === "today" && (
                 <div className="grid grid-cols-2 gap-1 rounded-xl bg-card-2 p-1">
@@ -292,6 +293,7 @@ function Today() {
               )}
             </div>
           )}
+          {!loading && catchUp && "blocked" in catchUp && <p className="mt-4 text-xs text-muted">{catchUp.blocked}</p>}
         </section>
       )}
 
