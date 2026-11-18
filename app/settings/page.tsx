@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPOT_OPTIONS } from "@/lib/profile";
 import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { formatDay, todayLocal } from "@/lib/dates";
-import { blockEnds, PHASE_LABEL, suggestPhase } from "@/lib/rules";
+import { blockEnds, PHASE_HINT, PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import { storage } from "@/lib/storage";
 import { trackSeasonScenario } from "@/lib/mock";
 import { useHydrated, useStore } from "@/lib/useStore";
@@ -276,12 +276,6 @@ function SettingsView() {
   );
 }
 
-const PHASE_HINT: Record<Phase, string> = {
-  off: "No races soon: the biggest sessions, with two plyos and an upper-body move.",
-  early: "Races starting: full strength sessions around your workouts.",
-  deep: "Racing most weeks: lifting fits around meets.",
-  championship: "Big races ahead: lighter plyos + isos instead of full strength.",
-};
 
 function Segmented<T extends string>({
   options,

@@ -100,6 +100,14 @@ export const PHASE_LABEL: Record<Phase, string> = {
   championship: "Championship",
 };
 
+/** One line on what each phase means for lifting (Settings and onboarding). */
+export const PHASE_HINT: Record<Phase, string> = {
+  off: "No races soon: the biggest sessions, with two plyos and an upper-body move.",
+  early: "Races starting: full strength sessions around your workouts.",
+  deep: "Racing most weeks: lifting fits around meets.",
+  championship: "Big races ahead: lighter plyos + isos instead of full strength.",
+};
+
 const ROLE_LABEL: Record<Role, string> = {
   "thu-race": "Thursday race day",
   "thu-tuneup": "tune-up workout before Thursday's race",

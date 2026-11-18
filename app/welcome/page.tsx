@@ -16,7 +16,7 @@ import {
   type Profile,
   type TroubleSpot,
 } from "@/lib/profile";
-import { generateWorkout, PHASE_LABEL, suggestPhase } from "@/lib/rules";
+import { generateWorkout, PHASE_HINT, PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import type { Phase, Race, Weekday } from "@/lib/types";
@@ -230,7 +230,7 @@ function Onboarding() {
 
       <div key={current.key} className="animate-rise flex-1 pt-6">
         {current.key === "hello" && (
-          <Step title="Let's build your lifting around your running.">
+          <Step title="Let's build your lifting around your running." note="A few quick questions, about a minute.">
             <input
               className="w-full rounded-2xl border border-line bg-card px-4 py-3.5 text-lg"
               placeholder="First name"
@@ -251,7 +251,10 @@ function Onboarding() {
         {current.key === "miles" && (
           <Step title="Miles per week?">
             <div className="rounded-3xl border border-line bg-card px-5 py-8 text-center">
-              <p className="text-6xl font-bold tabular-nums tracking-tight text-accent">{a.weeklyMiles}</p>
+              <p className="text-6xl font-bold tabular-nums tracking-tight text-accent">
+                {a.weeklyMiles}
+                <span className="ml-1.5 text-lg font-semibold tracking-normal text-muted">mi / week</span>
+              </p>
               <input
                 type="range"
                 min={10}
@@ -262,6 +265,10 @@ function Onboarding() {
                 className="mt-6 w-full accent-[var(--accent)]"
                 aria-label="Weekly miles"
               />
+              <div className="mt-1 flex justify-between text-xs text-muted">
+                <span>10</span>
+                <span>90</span>
+              </div>
             </div>
           </Step>
         )}
@@ -363,16 +370,19 @@ function Onboarding() {
                   <span className="text-2xl" aria-hidden>{o.icon}</span>
                   <span className="mt-1 block font-semibold">{PHASE_LABEL[o.value]}</span>
                   {suggestion.phase === o.value && data.races.length > 0 && (
-                    <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-good" aria-label="Suggested" />
+                    <span className="absolute right-2 top-2 rounded-full bg-good-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-good">
+                      Suggested
+                    </span>
                   )}
                 </button>
               ))}
             </div>
-            <Question label="Goal race">
+            <p className="mt-3 text-sm text-muted">{PHASE_HINT[a.phase]}</p>
+            <Question label="Goal race (optional)">
               <div className="grid grid-cols-[1fr_auto] gap-2">
                 <input
                   className="min-w-0 rounded-2xl border border-line bg-card px-4 py-3"
-                  placeholder="Optional"
+                  placeholder="e.g. State meet"
                   value={a.goalRaceName}
                   onChange={(e) => set("goalRaceName", e.target.value)}
                 />
@@ -385,19 +395,36 @@ function Onboarding() {
                   aria-label="Goal race date"
                 />
               </div>
+              {!current.ready && <p className="mt-1.5 text-xs text-warn">Add both a name and a date, or leave both empty.</p>}
             </Question>
-            <div className="mt-6">
-              <BigChip on={a.returnWeek} onClick={() => set("returnWeek", !a.returnWeek)}>
-                Coming back from a break
-              </BigChip>
-            </div>
+            <button
+              type="button"
+              onClick={() => set("returnWeek", !a.returnWeek)}
+              aria-pressed={a.returnWeek}
+              className={`mt-6 flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition ${
+                a.returnWeek ? "border-accent bg-accent-soft" : "border-line bg-card"
+              }`}
+            >
+              <span className="flex-1">
+                <span className="block font-semibold">Coming back from a break</span>
+                <span className="block text-xs text-muted">Starts you on easy holds for a week.</span>
+              </span>
+              <span
+                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 text-xs font-bold ${
+                  a.returnWeek ? "border-accent bg-accent text-accent-ink" : "border-line"
+                }`}
+                aria-hidden
+              >
+                {a.returnWeek ? "✓" : ""}
+              </span>
+            </button>
           </Step>
         )}
 
         {current.key === "plan" && profile && <PlanReveal profile={profile} phase={a.phase} sample={sample} goalRace={goalRace} />}
       </div>
 
-      {!current.auto && (
+      {(!current.auto || current.ready) && (
         <div className="sticky bottom-0 -mx-4 -mb-6 mt-6 bg-gradient-to-t from-bg via-bg to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-6">
           <button
             type="button"
@@ -434,7 +461,8 @@ function PlanReveal({
       <div className="mt-6 space-y-3">
         <div className="rounded-3xl bg-accent p-5 text-accent-ink">
           <p className="text-2xl font-bold">{PHASE_LABEL[phase]}</p>
-          {goalRace && <p className="mt-1 text-sm opacity-90">Goal: {goalRace.name}</p>}
+          <p className="mt-1 text-sm opacity-90">{PHASE_HINT[phase]}</p>
+          {goalRace && <p className="mt-2 text-sm font-semibold">Goal: {goalRace.name}</p>}
         </div>
 
         {goals.length > 0 && (
@@ -449,23 +477,25 @@ function PlanReveal({
 
         {sample && sample.items.length > 0 && (
           <div className="rounded-3xl border border-line bg-card p-4">
-            <div className="flex items-baseline justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted">A workout day might look like</p>
+            <div className="mt-1 flex items-baseline justify-between">
               <p className="font-semibold">{sample.title}</p>
               <span className="text-xs text-muted">~{sample.estMinutes} min</span>
             </div>
-            <ol className="mt-3 space-y-2">
-              {sample.items.map((i) => (
-                <li key={i.key} className="flex items-center gap-3 text-sm">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-card-2 text-[11px] font-bold text-muted">{i.slot}</span>
-                  <span className="flex-1">{i.exercise.name}</span>
-                  <span className="font-mono text-xs text-muted">
-                    {i.sets}×{i.reps.replace(" max push", "")}
+            <ol className="mt-3 divide-y divide-line">
+              {sample.items.map((i, n) => (
+                <li key={i.key} className="flex items-center gap-3 py-2 text-sm">
+                  <span className="w-4 shrink-0 text-xs font-bold tabular-nums text-muted">{n + 1}</span>
+                  <span className="min-w-0 flex-1 truncate">{i.exercise.name}</span>
+                  <span className="shrink-0 text-xs tabular-nums text-muted">
+                    {i.sets} × {i.reps.replace(" max push", "")}
                   </span>
                 </li>
               ))}
             </ol>
           </div>
         )}
+        <p className="px-1 text-sm text-muted">Each day, tell the app what kind of run you did and tap Generate workout.</p>
       </div>
     </div>
   );
