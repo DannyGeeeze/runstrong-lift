@@ -114,7 +114,7 @@ function Week() {
                       <LogChip
                         key={l.id}
                         tone="lift"
-                        label={`${l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : SESSION_LABEL[l.session]}${l.volume === "half" ? " (half)" : ""} · ${l.exerciseIds.length}`}
+                        label={`${l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : SESSION_LABEL[l.session]}${l.volume === "half" ? " (half)" : ""}${l.exerciseIds.length ? ` · ${l.exerciseIds.length} moves` : ""}`}
                         onDelete={() => confirm("Delete this lift from history?") && storage.deleteLift(l.id)}
                       />
                     ))}
