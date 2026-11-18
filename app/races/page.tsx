@@ -48,7 +48,7 @@ function Races() {
           <p className="text-xs font-semibold uppercase tracking-wider text-accent">Next race</p>
           <p className="mt-1 text-lg font-semibold">{next.name}</p>
           <p className="text-sm text-muted">
-            {formatDay(next.date)} · {next.distance} · priority {next.priority}
+            {formatDay(next.date)}{next.distance ? ` · ${next.distance}` : ""} · priority {next.priority}
           </p>
           <p className="mt-2 text-3xl font-bold text-accent">
             {diffDays(today, next.date) === 0 ? "Today" : `${diffDays(today, next.date)} days`}
@@ -67,7 +67,7 @@ function Races() {
         <Button
           variant="primary"
           className="mt-4 w-full"
-          onClick={() => setEditing({ id: newId(), date: nextMeetDay(today, profile?.raceDay ?? "thu"), name: "", distance: "5K", priority: "B" })}
+          onClick={() => setEditing({ id: newId(), date: nextMeetDay(today, profile?.raceDay ?? "thu"), name: "", priority: "B" })}
         >
           Add race
         </Button>
@@ -91,7 +91,7 @@ function RaceList({ races, onEdit, today }: { races: Race[]; onEdit: (r: Race) =
               <div>
                 <p className="font-medium">{r.name || "Untitled race"}</p>
                 <p className="text-xs text-muted">
-                  {formatDay(r.date)} · {r.distance}
+                  {formatDay(r.date)}{r.distance ? ` · ${r.distance}` : ""}
                   {r.date >= today ? ` · in ${diffDays(today, r.date)}d` : ""}
                   {weekdayOf(r.date) !== "thu" ? " · not Thursday" : ""}
                 </p>
@@ -130,10 +130,6 @@ function RaceForm({
       <label className="block text-sm">
         Name
         <input className={input} placeholder="League meet" value={r.name} onChange={(e) => setR({ ...r, name: e.target.value })} />
-      </label>
-      <label className="block text-sm">
-        Distance
-        <input className={input} placeholder="5K" value={r.distance} onChange={(e) => setR({ ...r, distance: e.target.value })} />
       </label>
       <div className="text-sm">
         Priority

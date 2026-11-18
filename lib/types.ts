@@ -81,7 +81,8 @@ export interface Race {
   id: string;
   date: string;
   name: string;
-  distance: string;
+  /** Optional; nothing in the rules uses it. */
+  distance?: string;
   priority: RacePriority;
 }
 
