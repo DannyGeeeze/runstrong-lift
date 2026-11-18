@@ -25,9 +25,10 @@ export function WorkoutCard({
   const [demo, setDemo] = useState<string | null>(null);
   const { decision, items } = workout;
 
-  // A note every move shares (e.g. "Easy day: leave 2-3 reps in the tank") is shown once, up top.
-  const notes = items.map((p) => p.note);
-  const sharedNote = items.length > 1 && notes[0] && notes.every((n) => n === notes[0]) ? notes[0] : undefined;
+  // A note on two or more moves (e.g. "Easy day: leave 2-3 reps in the tank") is shown once, up top.
+  const noteCount = new Map<string, number>();
+  for (const p of items) if (p.note) noteCount.set(p.note, (noteCount.get(p.note) ?? 0) + 1);
+  const sharedNote = [...noteCount].find(([, n]) => n >= 2)?.[0];
   const doneCount = items.filter((p) => done.has(p.exercise.id)).length;
 
   return (
