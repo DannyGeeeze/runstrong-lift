@@ -334,7 +334,8 @@ function Today() {
         )}
       </div>
 
-      {!loading && (
+      {/* Recovery is suggested with the workout: once it's generated or saved, or on a no-lift day. */}
+      {!loading && (current || saved || (mode === "today" && preview.session === "none")) && (
         <RecoveryCard
           key={day.type}
           today={today}

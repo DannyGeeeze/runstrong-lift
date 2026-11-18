@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Notice, SectionTitle } from "@/components/ui";
+import { Button, Card, Notice } from "@/components/ui";
 import { RECOVERY_LABEL, SAUNA_TIP, suggestRecovery, type RecoveryInput } from "@/lib/rules";
 import { newId, storage } from "@/lib/storage";
 import type { RecoveryKind } from "@/lib/types";
@@ -21,8 +21,8 @@ export function RecoveryCard(props: RecoveryInput) {
   const choices: (RecoveryKind | null)[] = [...s.options, null];
 
   return (
-    <div>
-      <SectionTitle>Recovery</SectionTitle>
+    <Card className="mt-3 space-y-3">
+      <p className="text-xs font-semibold uppercase tracking-wider text-accent">Recovery suggestion</p>
       <div className="space-y-3">
         {loggedToday.length > 0 && (
           <Notice tone="good">Done today: {loggedToday.map((r) => RECOVERY_LABEL[r.kind]).join(", ")}.</Notice>
@@ -57,6 +57,6 @@ export function RecoveryCard(props: RecoveryInput) {
           </Button>
         )}
       </div>
-    </div>
+    </Card>
   );
 }
