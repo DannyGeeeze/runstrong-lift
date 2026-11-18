@@ -108,6 +108,13 @@ function Today() {
 
   const nextRace = races.find((r) => r.date >= today);
 
+  // The hero card: what today's lift is, before you generate it.
+  const active = mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview;
+  const canLift = preview.session !== "none" || mode === "catchup";
+  const hero = generateWorkout({ ...ctx, decision: mode === "catchup" && catchUp && "session" in catchUp ? catchUp : undefined });
+  const heroTitle = canLift ? hero.title : raceDay ? "Race day" : "Rest day";
+  const hasOptions = (easyDay && mode === "today") || active.strength || (catchUp && "session" in catchUp);
+
   function generate(attempt = 0) {
     const decision = mode === "catchup" && catchUp && "session" in catchUp ? catchUp : undefined;
     const workout = generateWorkout({ ...ctx, attempt, decision });
@@ -185,130 +192,115 @@ function Today() {
         </div>
       )}
 
-      <SectionTitle right={<Link href="/settings" className="text-xs font-medium text-accent">{PHASE_LABEL[settings.phase]}</Link>}>
-        Today&apos;s run
-      </SectionTitle>
-      <Card>
-        {loading ? (
-          <p className="text-sm text-muted">Loading runs…</p>
-        ) : day.runs.length ? (
-          <div className="divide-y divide-line">
-            {day.runs.map((r) => (
-              <RunRow key={r.id} run={r} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-sm text-muted">No run yet today</p>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <Chip
-              key={t}
-              active={day.type === t}
-              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
-            >
-              {RUN_TYPE_LABEL[t]}
-            </Chip>
-          ))}
-        </div>
-      </Card>
-
-      {catchUp && "blocked" in catchUp && (
+      {catchUp && "blocked" in catchUp && !current && (
         <div className="mt-4">
           <Notice tone="warn">{catchUp.blocked}</Notice>
         </div>
       )}
-      {catchUp && "session" in catchUp && (
-        <Card className="mt-4">
-          <Toggle
-            checked={mode === "catchup"}
-            onChange={(v) => setMode(v ? "catchup" : "today")}
-            label="Lift this morning for yesterday"
-          />
-        </Card>
-      )}
 
-      <SectionTitle>Lift</SectionTitle>
-      {loggedToday.length > 0 && (
-        <div className="mb-3">
-          <Notice tone="good">
-            Logged today:{" "}
-            {loggedToday
-              .map((l) => (l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : LOGGED_LABEL[l.session]) + (l.volume === "half" ? " (half)" : ""))
-              .join(", ")}
-            .
-          </Notice>
-        </div>
-      )}
-      {saved && (
-        <div className="mb-3">
-          <Notice tone="good">Saved “{saved}” to your history.</Notice>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {(mode === "today" ? preview.strength : catchUp && "session" in catchUp && catchUp.strength) && (
-          <Card className="py-1">
-            <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time (20 min)" />
-          </Card>
-        )}
-
-        {easyDay && mode === "today" && (
-          <div className="grid grid-cols-2 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
-            {EASY_OPTIONS.map((o) => (
-              <button
-                key={o.value}
-                type="button"
-                aria-pressed={preview.session === o.value}
-                onClick={() => setEasyPick(o.value)}
-                className={`min-h-10 rounded-lg px-1 text-sm font-semibold transition-colors ${
-                  preview.session === o.value ? "bg-accent text-accent-ink" : "text-muted"
-                }`}
-              >
-                {o.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {preview.session === "upper" && mode === "today" && (
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-card p-1 ring-1 ring-line">
-            {UPPER_FOCUSES.map((f) => (
-              <button
-                key={f}
-                type="button"
-                aria-pressed={preview.upperFocus === f}
-                onClick={() => setUpperFocus(f)}
-                className={`min-h-10 rounded-lg px-1 text-sm font-semibold leading-tight transition-colors ${
-                  preview.upperFocus === f ? "bg-accent text-accent-ink" : "text-muted"
-                }`}
-              >
-                {UPPER_FOCUS_LABEL[f]}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {!current && (
-          <>
-            {preview.session === "touch-up" && mode === "today" && profile?.goals.includes("healthy") && (
-              <Notice tone="good">Recommended for staying healthy</Notice>
-            )}
-            <p className="text-sm text-muted">
-              <span className="font-medium text-ink">{(mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview).why}</span>
+      {!current && (
+        <section className="mt-5 rounded-3xl border border-line bg-card p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-wider text-accent">
+              {mode === "catchup" ? "Make-up lift" : "Today's lift"}
             </p>
-            {preview.session !== "none" || mode === "catchup" ? (
-              <Button variant="primary" className="w-full py-4 text-base" onClick={() => generate(0)} disabled={loading}>
-                Generate workout
-              </Button>
-            ) : (
-              <Notice>{raceDay ? "Race day. No lifting today." : "Rest day. Nothing to lift."}</Notice>
-            )}
-          </>
-        )}
+            <Link href="/settings" className="text-xs font-medium text-muted">
+              {PHASE_LABEL[settings.phase]}
+            </Link>
+          </div>
 
+          <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight">{heroTitle}</h2>
+          {canLift && hero.estMinutes > 0 && (
+            <p className="mt-1 text-sm font-medium text-muted">
+              ~{hero.estMinutes} min · {hero.items.length} moves{active.optional ? " · optional" : ""}
+            </p>
+          )}
+          <p className="mt-3 text-sm leading-relaxed text-muted">{active.why}</p>
+          {preview.session === "touch-up" && mode === "today" && profile?.goals.includes("healthy") && (
+            <div className="mt-3">
+              <Notice tone="good">Recommended for staying healthy</Notice>
+            </div>
+          )}
+          {(loggedToday.length > 0 || saved) && (
+            <div className="mt-3">
+              <Notice tone="good">
+                {saved
+                  ? `Saved “${saved}” to your history.`
+                  : `Logged today: ${loggedToday
+                      .map((l) => (l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : LOGGED_LABEL[l.session]) + (l.volume === "half" ? " (half)" : ""))
+                      .join(", ")}.`}
+              </Notice>
+            </div>
+          )}
+
+          {canLift ? (
+            <Button
+              variant="primary"
+              className={`mt-5 w-full py-5 text-lg ${loading ? "animate-pulse" : ""}`}
+              onClick={() => generate(0)}
+              disabled={loading}
+            >
+              {loading ? "Checking today's run…" : "Generate workout"}
+            </Button>
+          ) : (
+            <p className="mt-4 text-base font-semibold">{raceDay ? "No lifting on race day." : "Nothing to lift today."}</p>
+          )}
+
+          {hasOptions && (
+            <div className="mt-5 space-y-2 border-t border-line pt-4">
+              {easyDay && mode === "today" && (
+                <div className="grid grid-cols-2 gap-1 rounded-xl bg-card-2 p-1">
+                  {EASY_OPTIONS.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      aria-pressed={preview.session === o.value}
+                      onClick={() => setEasyPick(o.value)}
+                      className={`min-h-10 rounded-lg px-1 text-sm font-semibold transition-colors ${
+                        preview.session === o.value ? "bg-card text-ink shadow-sm ring-1 ring-line" : "text-muted"
+                      }`}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {preview.session === "upper" && mode === "today" && (
+                <div className="grid grid-cols-3 gap-1 rounded-xl bg-card-2 p-1">
+                  {UPPER_FOCUSES.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      aria-pressed={preview.upperFocus === f}
+                      onClick={() => setUpperFocus(f)}
+                      className={`min-h-10 rounded-lg px-1 text-sm font-semibold leading-tight transition-colors ${
+                        preview.upperFocus === f ? "bg-card text-ink shadow-sm ring-1 ring-line" : "text-muted"
+                      }`}
+                    >
+                      {UPPER_FOCUS_LABEL[f]}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {active.strength && <Toggle checked={shortOnTime} onChange={setShortOnTime} label="Short on time (20 min)" />}
+              {catchUp && "session" in catchUp && (
+                <Toggle
+                  checked={mode === "catchup"}
+                  onChange={(v) => setMode(v ? "catchup" : "today")}
+                  label="Lift this morning for yesterday"
+                />
+              )}
+            </div>
+          )}
+        </section>
+      )}
+
+      <div className="mt-4 space-y-3">
         {current && (
           <>
+            <button type="button" className="text-sm font-medium text-accent" onClick={() => setState(null)}>
+              ← Change
+            </button>
             <WorkoutCard workout={current.workout} done={current.done} onToggle={toggleDone} history={history} />
             {current.workout.items.length > 0 && (
               <Button variant="primary" className="w-full py-4 text-base" onClick={() => setLive(true)}>
@@ -335,6 +327,32 @@ function Today() {
           </>
         )}
       </div>
+
+      <SectionTitle>Today&apos;s run</SectionTitle>
+      <Card>
+        {loading ? (
+          <p className="text-sm text-muted">Loading runs…</p>
+        ) : day.runs.length ? (
+          <div className="divide-y divide-line">
+            {day.runs.map((r) => (
+              <RunRow key={r.id} run={r} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted">No run yet today</p>
+        )}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {TYPES.map((t) => (
+            <Chip
+              key={t}
+              active={day.type === t}
+              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
+            >
+              {RUN_TYPE_LABEL[t]}
+            </Chip>
+          ))}
+        </div>
+      </Card>
 
       {/* Recovery is suggested with the workout: once it's generated or saved, or on a no-lift day. */}
       {!loading && (current || saved || (mode === "today" && preview.session === "none")) && (
