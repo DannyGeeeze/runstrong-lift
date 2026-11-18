@@ -326,9 +326,14 @@ export function LiveWorkout({
             bests={newBests(history, weights).map((b) => ({ name: getExercise(b.id)?.name ?? b.id, weight: b.weight }))}
           />
         ) : step?.kind === "warmup" ? (
-          <div key={index} className="animate-rise flex flex-1 flex-col justify-center">
-            <p className="text-sm font-semibold uppercase tracking-wider text-accent">Warm-up</p>
-            <ul className="mt-4 space-y-3 text-lg">
+          <div key={index} className="animate-rise flex min-h-0 flex-1 flex-col overflow-y-auto pt-8">
+            <h1 className="text-3xl font-bold leading-tight tracking-tight">{workout.title}</h1>
+            <p className="mt-1 text-sm font-medium text-muted">
+              {workout.estMinutes > 0 && `~${workout.estMinutes} min · `}
+              {workout.items.length} moves
+            </p>
+            <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-accent">Warm-up first</p>
+            <ul className="mt-3 space-y-3 text-lg">
               {step.lines.map((l) => (
                 <li key={l} className="flex gap-3">
                   <span className="mt-2.5 h-2 w-2 shrink-0 rounded-full bg-accent" />
@@ -336,6 +341,18 @@ export function LiveWorkout({
                 </li>
               ))}
             </ul>
+            <p className="mt-8 text-xs font-semibold uppercase tracking-wider text-muted">Then</p>
+            <ol className="mt-2 divide-y divide-line rounded-2xl border border-line bg-card">
+              {workout.items.map((p, i) => (
+                <li key={p.key + p.exercise.id} className="flex items-baseline gap-3 px-4 py-2.5">
+                  <span className="w-4 shrink-0 text-sm font-bold tabular-nums text-muted">{i + 1}</span>
+                  <span className="min-w-0 flex-1 truncate font-medium">{p.exercise.name}</span>
+                  <span className="shrink-0 text-sm tabular-nums text-muted">
+                    {p.sets} × {p.reps}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </div>
         ) : step?.kind === "work" ? (
           <WorkView
@@ -460,13 +477,17 @@ function WorkView({
 
       <div className="mt-4 flex min-h-0 flex-1 flex-col">
         <p className="text-sm font-semibold uppercase tracking-wider text-muted">
-          Set {step.set} of {step.sets}
-          {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"} side</span>}
+          Move {step.item + 1} of {workout.items.length} · Set {step.set} of {step.sets}
+          {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"}</span>}
         </p>
         <h1 className="mt-0.5 text-2xl font-bold leading-tight">{p.exercise.name}</h1>
-        <p className={`mt-2 font-bold leading-none tracking-tight tabular-nums ${loaded ? "text-6xl" : "text-7xl"}`}>
+        <p className={`mt-2 flex items-baseline gap-2 font-bold leading-none tracking-tight tabular-nums ${loaded ? "text-6xl" : "text-7xl"}`}>
           {step.seconds !== null ? `${step.seconds}s` : step.reps}
+          {step.seconds === null && /^[\d\s–-]+$/.test(step.reps) && (
+            <span className="text-xl font-semibold tracking-normal text-muted">reps</span>
+          )}
         </p>
+        {p.note && <p className="mt-2 text-sm font-medium text-accent">{p.note}</p>}
         {loaded ? (
           <div className="mt-3">
             <WeightStepper value={draft} onChange={onDraft} />
