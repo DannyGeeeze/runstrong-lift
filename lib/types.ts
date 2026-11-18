@@ -13,6 +13,7 @@ export type SessionType =
   | "return"
   | "touch-up"
   | "upper"
+  | "long-isos"
   | "none";
 
 /** What to do on an easy or long-run day. The touch-up is the default. */
@@ -93,6 +94,7 @@ export interface Settings {
   /** Workout days used for weeks with no race (for the 48h rule). */
   workoutDays: Weekday[];
   /** Deep season Thursday race day: "Full at half volume" or "Plyos + Isos". */
+  /** No longer used: race days never have a lift. Kept so old saved settings still load. */
   deepRaceDay: "half" | "plyos-isos";
   returnWeek: boolean;
   enablePower: boolean;

@@ -7,8 +7,10 @@
  *  It does not choose exercises (see select.ts) or sets/reps (see sessions.ts).
  *
  *  Order of evaluation (each step records a human-readable rule for "why"):
- *    1. Day type: Easy/Long → optional upper-body lift (no leg loading), or the
- *       touch-up when an A race is within 7 days. The runner can switch. Rest → nothing.
+ *    1. Day type: Race → never a lift (the runner's rule, stricter than the coach's
+ *       race-day lifts). Easy → optional upper-body lift (no leg loading), or the
+ *       touch-up when an A race is within 7 days; the runner can switch.
+ *       Long → optional long-run isos (a few easy holds). Rest → nothing.
  *    2. Race-week role: Thursday race / tune-up, or 1st/2nd hard day before a
  *       non-Thursday race, or a plain workout day.
  *    3. Phase table → base session (Full, Full at half volume, Plyos + Isos, taper).
@@ -85,7 +87,7 @@ export interface Decision {
 }
 
 /** The optional easy-day sessions. Neither counts toward the weekly strength or plyo caps. */
-export const EASY_SESSIONS: SessionType[] = ["touch-up", "upper"];
+export const EASY_SESSIONS: SessionType[] = ["touch-up", "upper", "long-isos"];
 
 // ---------------------------------------------------------------------------
 // Labels
@@ -127,6 +129,8 @@ export function sessionLabel(d: Pick<Decision, "session" | "half" | "plyos" | "s
       return "optional 10-min touch-up";
     case "upper":
       return "optional upper body";
+    case "long-isos":
+      return "optional long-run isos (about 8 min)";
     case "none":
       return "no lift";
   }
@@ -234,28 +238,25 @@ type Base = Pick<Decision, "session" | "half" | "optional">;
 const FULL: Base = { session: "full", half: false, optional: false };
 const HALF: Base = { session: "full", half: true, optional: false };
 const PLYOS_ISOS: Base = { session: "plyos-isos", half: false, optional: false };
-const FEW_ISOS: Base = { session: "taper", half: false, optional: true };
+const NONE: Base = { session: "none", half: false, optional: false };
 
 /** Off-season has no race-week table in the coach's system; treat race weeks like Early. */
 function racePhase(phase: Phase): Exclude<Phase, "off"> {
   return phase === "off" ? "early" : phase;
 }
 
-/** My Thursday-race week (the default week). */
-function thursdayWeek(phase: Phase, role: "thu-race" | "thu-tuneup", deepRaceDay: "half" | "plyos-isos"): Base {
+/**
+ * The tune-up workout in a Thursday-race week. (The coach also lifts after the race
+ * itself; this app never lifts on race days, at the runner's request.)
+ */
+function thursdayTuneUp(phase: Phase): Base {
   const p = racePhase(phase);
-  const table = {
-    //              workout (tune-up) day     race day (lift after the race)
-    early: { "thu-tuneup": FULL, "thu-race": FULL },
-    deep: { "thu-tuneup": FULL, "thu-race": deepRaceDay === "half" ? HALF : PLYOS_ISOS },
-    championship: { "thu-tuneup": PLYOS_ISOS, "thu-race": FEW_ISOS },
-  } as const;
-  return table[p][role];
+  const table = { early: FULL, deep: FULL, championship: PLYOS_ISOS } as const;
+  return table[p];
 }
 
-/** Races on other days. Race day itself uses the same row as a Thursday race day. */
-function otherWeek(phase: Phase, role: "other-1st" | "other-2nd" | "other-race", deepRaceDay: "half" | "plyos-isos"): Base {
-  if (role === "other-race") return thursdayWeek(phase, "thu-race", deepRaceDay);
+/** The two hard days before a race on another weekday. */
+function otherWeek(phase: Phase, role: "other-1st" | "other-2nd"): Base {
   const p = racePhase(phase);
   const table = {
     //              1st hard day   2nd hard day
@@ -267,22 +268,26 @@ function otherWeek(phase: Phase, role: "other-1st" | "other-2nd" | "other-race",
 }
 
 function baseFor(role: Role, ctx: RuleContext): Base {
-  const deep = ctx.settings.deepRaceDay;
   switch (role) {
     case "easy":
-    case "long":
-      // No leg lift on easy/long days: an upper-body lift by default, or the touch-up
+      // No leg lift on easy days: an upper-body lift by default, or the touch-up
       // in the week before an A race. The runner can switch between the two.
       return { session: ctx.easyFocus ?? defaultEasyFocus(ctx.races, ctx.today), half: false, optional: true };
+    case "long":
+      // The coach's system says nothing about long-run days. The legs are already
+      // tired, so: a few easy holds, optional (recovery suggests boots).
+      return { session: "long-isos", half: false, optional: true };
     case "rest":
-      return { session: "none", half: false, optional: false };
+      return NONE;
     case "thu-race":
-    case "thu-tuneup":
-      return thursdayWeek(ctx.phase, role, deep);
     case "other-race":
+      // Never lift on race days.
+      return NONE;
+    case "thu-tuneup":
+      return thursdayTuneUp(ctx.phase);
     case "other-1st":
     case "other-2nd":
-      return otherWeek(ctx.phase, role, deep);
+      return otherWeek(ctx.phase, role);
     case "workout":
       // Workout with no race close by: Full, except Championship keeps it to Plyos + Isos.
       return ctx.phase === "championship" ? PLYOS_ISOS : FULL;
@@ -374,7 +379,7 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   const warnings: string[] = [];
 
   rules.push(`${phaseLabel}, ${roleLabel}: ${sessionLabel({ session, half, plyos, strength })}`);
-  const aRace = (role === "easy" || role === "long") && !ctx.easyFocus ? upcomingARace(ctx.races, ctx.today) : null;
+  const aRace = role === "easy" && !ctx.easyFocus ? upcomingARace(ctx.races, ctx.today) : null;
   if (aRace) rules.push(`${aRace.name} (A) in ${aRace.inDays} day${aRace.inDays === 1 ? "" : "s"}, so no upper-body lift`);
 
   // --- Step 4: 48h guard -----------------------------------------------------
@@ -475,6 +480,8 @@ export function decideCatchUp(
 ): (Decision & { catchUpFor: string }) | { blocked: string } | null {
   const yesterday = addDays(ctx.today, -1);
   if (yesterdayType !== "workout" && yesterdayType !== "race") return null;
+  // Never lift on race days, not even a make-up for yesterday.
+  if (ctx.dayType === "race" || ctx.races.some((r) => r.date === ctx.today)) return null;
   if (ctx.history.some((h) => h.date === yesterday || h.catchUpFor === yesterday)) return null;
 
   const next = nextHardDay(ctx.today, ctx.races, ctx.settings, ctx.extraHardDays);

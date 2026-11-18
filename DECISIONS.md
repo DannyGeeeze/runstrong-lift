@@ -13,15 +13,15 @@ These are choices I made where the brief left room. Each one says where it lives
    - any future date you mark as Workout or Race.
 3. **A workout earlier in a Thursday-race week counts as the tune-up**, even if it falls on a different day from the tune-up setting. That planned tune-up day then stops counting as another hard day.
 4. **1st vs 2nd workout before a non-Thursday race** depends on whether another planned hard day sits between today and the race.
-5. **The race-day lift for non-Thursday races** follows the same row as a Thursday race day. A lift after a race is allowed only if the next hard day is at least 48h away.
-6. **Deep season, Thursday race day** defaults to *Full at half volume*. Settings has a switch for *Plyos + Isos*.
-7. **Championship race day** gives an optional "a few isos" session (2 overcoming isos, one of them calf/ankle). It uses the bank's `taper` session type, which the brief doesn't mention.
+5. ~~**The race-day lift for non-Thursday races** follows the same row as a Thursday race day. A lift after a race is allowed only if the next hard day is at least 48h away.~~ *Replaced by 73: no lifts on race days.*
+6. ~~**Deep season, Thursday race day** defaults to *Full at half volume*. Settings has a switch for *Plyos + Isos*.~~ *Replaced by 73: no lifts on race days.*
+7. ~~**Championship race day** gives an optional "a few isos" session (2 overcoming isos, one of them calf/ankle). It uses the bank's `taper` session type, which the brief doesn't mention.~~ *Replaced by 73: no lifts on race days.*
 8. **Off-season with a race on the calendar** follows the Early season race-week rows, because the coach's tables don't cover off-season races. Off-season workout days get the full 7 slots + 1 UPPER.
 9. **A Championship workout with no race close by** is Plyos + Isos. In other phases it's Full.
 10. **Weekly caps run in order.** With 2 strength sessions already in the last 7 days, the session becomes Plyos + Isos. With 2 plyo sessions, plyos are removed. If both caps are hit, you get isos only. "Rolling 7 days" means today plus the 6 days before it.
 11. **Return week** turns any lift day (and the easy-day touch-up) into yielding isos.
 12. **Short on time** only applies when a Full session with strength is allowed. It never overrides the 48h rule or the weekly caps.
-13. **Next-morning catch-up** shows on a non-lift day when yesterday was a Workout or Race day with nothing logged, and only if the next hard day is at least 2 calendar days away.
+13. **Next-morning catch-up** shows on a non-lift day when yesterday was a Workout day with nothing logged, and only if the next hard day is at least 2 calendar days away.
 14. **The phase suggestion** works like this: an A race within 21 days suggests Championship. Races both in the last 6 weeks and in the next 3 suggest Deep. A race within 10 weeks suggests Early. Anything else suggests Off-season. You still pick the phase yourself.
 
 ## Sessions and dosing (`lib/rules/sessions.ts`)
@@ -139,3 +139,8 @@ These are choices I made where the brief left room. Each one says where it lives
 70. **Sauna on easy days,** for heat adaptation on the day with the least stress to stack on. Limits: max 3 in 7 days, not two days in a row, none the day before any race, none in the 2 days before an A or B race. Picking sauna anyway shows a heads-up with the reason. Every sauna shows the safety note (10-15 min, water before and after, get out if dizzy).
 71. **Rest days suggest nothing:** either is fine.
 72. **Settings → Recovery** says which ones the runner has (both on by default). Only those are suggested. Logged sessions show on the Week page (Boots × n, Sauna n/3) and can be deleted there.
+
+## Race days and long runs
+
+73. **Never lift on race days.** The runner's rule, stricter than the coach's (who lifts after Thursday races). Race days are always "no lift", in every phase. There's no catch-up lift on a race morning, and none the morning after a race. The "Deep season, race day lift" setting is gone. Race days still count as hard days for the 48h rule, and Recovery suggests boots.
+74. **Long-run days: optional long-run isos (~8 min).** The coach's system says nothing about long-run days. The legs are already tired from the long run, so the app adds almost no load: 3 easy holds (yielding isos, calf/ankle first), 2 x 30 s, 30 s rest. Holds are tendon-friendly and cost very little. Skipping it is fine. Upper body and the touch-up are now easy days only. Recovery suggests compression boots after a long run.

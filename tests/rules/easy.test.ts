@@ -31,12 +31,12 @@ const LEG_SLOTS: Slot[] = ["A1", "A2", "B1", "POWER", "C1"];
 describe("easy-day sessions", () => {
   it("defaults to an upper-body lift", () => {
     expect(generateWorkout(input()).decision.session).toBe("upper");
-    expect(generateWorkout(input({ dayType: "long" })).decision.session).toBe("upper");
+    expect(generateWorkout(input({ dayType: "long" })).decision.session).toBe("long-isos");
   });
 
   for (const focus of ["upper"] as EasyFocus[]) {
     it(`${focus}: optional, leaves the legs alone, and doesn't count toward the caps`, () => {
-      for (const dayType of ["easy", "long"] as const) {
+      for (const dayType of ["easy"] as const) {
         for (let attempt = 0; attempt < 6; attempt++) {
           const w = generateWorkout(input({ dayType, easyFocus: focus, attempt }));
           expect(w.decision.session).toBe(focus);
@@ -180,5 +180,28 @@ describe("upper-body rotation", () => {
     const w = generateWorkout(input({ easyFocus: "touch-up" }));
     expect(w.decision.upperFocus).toBeUndefined();
     expect(toLiftLog(w, "x").upperFocus).toBeUndefined();
+  });
+});
+
+describe("long-run days", () => {
+  it("a few optional easy holds: 3 isos, 2 x 30 s, no strength or plyos, under 10 min", () => {
+    for (let attempt = 0; attempt < 6; attempt++) {
+      const w = generateWorkout(input({ dayType: "long", attempt }));
+      expect(w.decision).toMatchObject({ session: "long-isos", optional: true, strength: false, plyos: false });
+      expect(w.title).toBe("Long-run isos");
+      expect(w.items).toHaveLength(3);
+      for (const i of w.items) {
+        expect(i.sets).toBe(2);
+        expect(i.reps).toMatch(/^30 s hold/);
+      }
+      expect(w.estMinutes).toBeLessThanOrEqual(10);
+      expect(toLiftLog(w, "x")).toMatchObject({ hadStrength: false, hadPlyo: false });
+    }
+  });
+
+  it("ignores the easy-day pick and the A-race touch-up switch", () => {
+    expect(generateWorkout(input({ dayType: "long", easyFocus: "upper" })).decision.session).toBe("long-isos");
+    const races: Race[] = [{ id: "a", date: "2026-09-19", name: "State", priority: "A" }];
+    expect(generateWorkout(input({ dayType: "long", races })).decision.session).toBe("long-isos");
   });
 });

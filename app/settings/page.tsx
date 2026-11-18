@@ -127,13 +127,6 @@ function SettingsView() {
           </div>
         </div>
         <div>
-          <p className="text-sm font-medium">Deep season, race day lift</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            <Chip active={settings.deepRaceDay === "half"} onClick={() => set("deepRaceDay", "half")}>Full at half volume</Chip>
-            <Chip active={settings.deepRaceDay === "plyos-isos"} onClick={() => set("deepRaceDay", "plyos-isos")}>Plyos + Isos</Chip>
-          </div>
-        </div>
-        <div>
           <p className="text-sm font-medium">Workout days in weeks with no race</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {DAYS.map((d) => (

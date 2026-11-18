@@ -12,6 +12,8 @@
  *  Taper (Championship race day, optional): a few overcoming isos incl. calf/ankle.
  *  Return week: yielding isometrics only, 20-45 s holds.
  *  Touch-up: 2-3 low-intensity foot/calf/hip-flexor moves, ~10 min.
+ *  Long-run isos (long-run days, optional): 3 easy holds, 2 x 30 s, calf/ankle first.
+ *  Race days: never a lift.
  *  Upper body (easy days; no leg loading): one body part per day, rotating so the
  *    one done longest ago is next (see nextUpperFocus in rules.ts):
  *      Back & biceps: vertical pull, row, curl, shoulder-blade move.
@@ -315,6 +317,14 @@ function buildReturn(ctx: Ctx): Prescription[] {
   );
 }
 
+/** Long-run day: 3 easy holds (calf/ankle first), 2 x 30 s. Tendon-friendly, no real load. */
+function buildLongIsos(ctx: Ctx): Prescription[] {
+  return pickIsos(ctx, "return", 3, ["yielding", "hold"]).map((e, i) => {
+    const p = yieldingDose(baseDose(e, `long-isos:iso${i + 1}`));
+    return { ...p, sets: 2, reps: `30 s hold${e.unilateral ? "/side" : ""}`, rest: "30 s", note: i === 0 ? "Easy holds after the long run. Skip it if your legs are toast." : undefined };
+  });
+}
+
 function buildTouchUp(ctx: Ctx): Prescription[] {
   const pool = (slot: Slot) => {
     const all = bySlot(ctx, slot, "touch-up");
@@ -422,6 +432,8 @@ export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
       return buildTouchUp(ctx);
     case "upper":
       return buildUpper(ctx, d.upperFocus ?? "back");
+    case "long-isos":
+      return buildLongIsos(ctx);
     case "none":
       return [];
   }
@@ -482,7 +494,7 @@ function workSeconds(p: Prescription): number {
 }
 
 export function estimateMinutes(d: Decision, items: Prescription[]): number {
-  const warm = { full: 5, short: 4, "plyos-isos": 4, taper: 2, return: 2, "touch-up": 2, upper: 3, none: 0 }[d.session];
+  const warm = { full: 5, short: 4, "plyos-isos": 4, taper: 2, return: 2, "touch-up": 2, upper: 3, "long-isos": 1, none: 0 }[d.session];
   const work = items.reduce((sum, p) => sum + p.sets * (workSeconds(p) + restSeconds(p.rest)), 0);
   const total = warm + work / 60;
   return Math.max(5, Math.round(total / 5) * 5);

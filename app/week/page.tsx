@@ -19,6 +19,7 @@ const SESSION_LABEL: Record<LiftLog["session"], string> = {
   return: "Return isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
+  "long-isos": "Long-run isos",
   none: "None",
 };
 

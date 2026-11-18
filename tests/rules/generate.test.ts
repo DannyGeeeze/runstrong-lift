@@ -81,11 +81,11 @@ describe("generated workouts", () => {
   });
 
   it("half volume halves the sets", () => {
-    const races = [{ id: "r", date: "2026-09-17", name: "Meet", distance: "5K", priority: "B" as const }];
-    const full = generateWorkout(input({ today: "2026-09-17", dayType: "race", phase: "early", races }));
-    const half = generateWorkout(
-      input({ today: "2026-09-17", dayType: "race", phase: "deep", races, settings: { ...DEFAULT_SETTINGS, deepRaceDay: "half" } }),
-    );
+    // Saturday race, early season: 1st hard day (Tue) = Full, 2nd (Thu) = Full at half volume.
+    const races = [{ id: "r", date: "2026-09-19", name: "Meet", priority: "B" as const }];
+    const full = generateWorkout(input({ today: "2026-09-15", dayType: "workout", phase: "early", races }));
+    const half = generateWorkout(input({ today: "2026-09-17", dayType: "workout", phase: "early", races }));
+    expect(full.decision.half).toBe(false);
     expect(half.decision.half).toBe(true);
     const total = (w: Workout) => w.items.reduce((s, i) => s + i.sets, 0);
     expect(total(half)).toBeLessThan(total(full));
@@ -195,9 +195,9 @@ describe("exercise bank", () => {
       const w = generateWorkout(input({ today: TUE, dayType, phase, ...over }));
       expect(w.items.length, `${dayType}/${phase}/${w.decision.session}`).toBeGreaterThanOrEqual(2);
     }
-    const taper = generateWorkout(input({ today: "2026-09-17", dayType: "race", phase: "championship" }));
-    expect(taper.decision.session).toBe("taper");
-    expect(taper.items.length).toBeGreaterThanOrEqual(2);
-    expect(taper.items.some((i) => isCalfAnkle(i.exercise))).toBe(true);
+    const long = generateWorkout(input({ today: TUE, dayType: "long", phase: "deep" }));
+    expect(long.decision.session).toBe("long-isos");
+    expect(long.items).toHaveLength(3);
+    expect(isCalfAnkle(long.items[0].exercise)).toBe(true);
   });
 });

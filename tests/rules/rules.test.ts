@@ -49,29 +49,30 @@ describe("Thursday-race week (default)", () => {
   const raceDay = (phase: Phase, deepRaceDay: "half" | "plyos-isos" = "half") =>
     decideSession(ctx({ today: THU, dayType: "race", phase, settings: { ...DEFAULT_SETTINGS, deepRaceDay } }));
 
-  it("Early: workout day = Full, race day = Full", () => {
+  it("tune-up day: Full in Early and Deep, Plyos + Isos in Championship", () => {
     const w = tuneUp("early");
     expect(w.role).toBe("thu-tuneup");
     expect(w).toMatchObject({ session: "full", half: false, strength: true, plyos: true });
-    const r = raceDay("early");
-    expect(r.role).toBe("thu-race");
-    expect(r).toMatchObject({ session: "full", half: false });
-  });
-
-  it("Deep: workout day = Full, race day = Full at half volume or Plyos + Isos", () => {
     expect(tuneUp("deep")).toMatchObject({ session: "full", half: false });
-    expect(raceDay("deep", "half")).toMatchObject({ session: "full", half: true });
-    expect(raceDay("deep", "plyos-isos")).toMatchObject({ session: "plyos-isos", strength: false });
-  });
-
-  it("Championship: workout day = Plyos + Isos, race day = nothing or a few isos", () => {
     expect(tuneUp("championship")).toMatchObject({ session: "plyos-isos", strength: false, plyos: true });
-    const r = raceDay("championship");
-    expect(r).toMatchObject({ session: "taper", optional: true, strength: false, plyos: false });
   });
 
-  it("names the rule in the why sentence", () => {
-    expect(raceDay("deep", "plyos-isos").why).toBe("Deep season, Thursday race day: Plyos + Isos.");
+  it("never a lift on race day, in any phase or setting", () => {
+    for (const phase of ["off", "early", "deep", "championship"] as Phase[]) {
+      for (const deepRaceDay of ["half", "plyos-isos"] as const) {
+        const r = raceDay(phase, deepRaceDay);
+        expect(r.role).toBe("thu-race");
+        expect(r).toMatchObject({ session: "none", strength: false, plyos: false });
+      }
+    }
+    expect(raceDay("deep").why).toBe("Deep season, Thursday race day: no lift.");
+  });
+
+  it("no catch-up lift on a race day, and none the morning after a race", () => {
+    const onRaceDay = decideCatchUp(ctx({ today: THU, dayType: "race", phase: "early" }), "workout");
+    expect(onRaceDay).toBeNull();
+    const dayAfter = decideCatchUp(ctx({ today: "2026-09-18", dayType: "easy", phase: "early" }), "race");
+    expect(dayAfter).toBeNull();
   });
 
   it("Tuesday tune-up warns it's right at the 48h limit; Monday doesn't", () => {
@@ -119,11 +120,10 @@ describe("Races on other days (Saturday race: 1st = Tue, 2nd = Thu)", () => {
     expect(day(THU, "championship")).toMatchObject({ session: "plyos-isos" });
   });
 
-  it("race day is a hard day; a lift after it is fine when the next hard day is 48h+ away", () => {
+  it("race day is a hard day with no lift", () => {
     const r = day(SAT, "early", "race");
     expect(r.role).toBe("other-race");
-    expect(r.session).toBe("full");
-    expect(r.nextHard!.inDays).toBeGreaterThanOrEqual(2);
+    expect(r.session).toBe("none");
   });
 });
 
@@ -134,11 +134,6 @@ describe("48h rule", () => {
     expect(d.session).toBe("plyos-isos");
     expect(d.strength).toBe(false);
     expect(d.why).toMatch(/under 48h/);
-  });
-
-  it("downgrades a race-day lift if the next hard workout is tomorrow", () => {
-    const d = decideSession(ctx({ today: SAT, dayType: "race", phase: "early", races: [satRace], extraHardDays: ["2026-09-20"] }));
-    expect(d.session).toBe("plyos-isos");
   });
 
   it("next-morning catch-up allowed only if the next hard run is 48h+ away", () => {
@@ -196,13 +191,13 @@ describe("weekly caps (2 strength + 2 plyo per rolling 7 days)", () => {
 });
 
 describe("easy / long / rest days", () => {
-  it.each(["easy", "long"] as const)("%s → optional upper body by default, no leg strength or plyos", (dayType) => {
+  it.each(["easy"] as const)("%s → optional upper body by default, no leg strength or plyos", (dayType) => {
     expect(decideSession(ctx({ today: WED, dayType, phase: "deep" }))).toMatchObject({
       session: "upper", optional: true, strength: false, plyos: false,
     });
   });
 
-  it.each(["easy", "long"] as const)("%s → touch-up when picked: 2-3 foot/calf/hip-flexor moves", (dayType) => {
+  it.each(["easy"] as const)("%s → touch-up when picked: 2-3 foot/calf/hip-flexor moves", (dayType) => {
     const d = decideSession(ctx({ today: WED, dayType, phase: "deep", easyFocus: "touch-up" }));
     expect(d).toMatchObject({ session: "touch-up", optional: true, strength: false, plyos: false });
     const w = generateWorkout(input({ today: WED, dayType, phase: "deep", easyFocus: "touch-up" }));

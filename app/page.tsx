@@ -43,6 +43,7 @@ const LOGGED_LABEL: Record<string, string> = {
   return: "Return isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
+  "long-isos": "Long-run isos",
   none: "Nothing",
 };
 
@@ -97,7 +98,8 @@ function Today() {
   );
 
   const preview = decideSession(ctx);
-  const easyDay = preview.role === "easy" || preview.role === "long";
+  const easyDay = preview.role === "easy";
+  const raceDay = preview.role === "thu-race" || preview.role === "other-race";
   const todayIsLift = !EASY_SESSIONS.includes(preview.session) && preview.session !== "none";
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
   const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, upperFocus, mode]);
@@ -300,7 +302,7 @@ function Today() {
                 Generate workout
               </Button>
             ) : (
-              <Notice>Rest day. Nothing to lift.</Notice>
+              <Notice>{raceDay ? "Race day. No lifting today." : "Rest day. Nothing to lift."}</Notice>
             )}
           </>
         )}
