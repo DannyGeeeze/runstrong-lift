@@ -24,11 +24,13 @@ import {
   toLiftLog,
   UPPER_FOCUS_LABEL,
   weekCounts,
+  weeklyMilesFor,
   UPPER_FOCUSES,
   type GenerateInput,
   type Workout,
 } from "@/lib/rules";
 import { newId, storage } from "@/lib/storage";
+import { METERS_PER_MILE } from "@/lib/strava";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
 import type { EasyFocus, LiftLog, RunType, UpperFocus } from "@/lib/types";
@@ -85,6 +87,10 @@ function Today() {
 
   const day = dayType(today, runs, overrides, races);
   const yesterday = dayType(addDays(today, -1), runs, overrides, races);
+  // Session size follows weekly mileage: the last 7 days of runs, or the setup answer.
+  const last7 = runs.filter((r) => r.date > addDays(today, -7) && r.date <= today);
+  const weeklyMiles = weeklyMilesFor(last7.reduce((sum, r) => sum + r.distanceM, 0) / METERS_PER_MILE, last7.length, profile?.weeklyMiles);
+  const weeklyMilesKey = weeklyMiles ? `${weeklyMiles.source}:${weeklyMiles.miles.toFixed(1)}` : "";
 
   const ctx: GenerateInput = useMemo(
     () => ({
@@ -99,9 +105,10 @@ function Today() {
       shortOnTime,
       easyFocus,
       upperFocus,
+      weeklyMiles,
       extraHardDays: futureHardOverrides(today, overrides),
     }),
-    [today, day.type, settings, races, history, block, profile, shortOnTime, easyFocus, upperFocus, overrides],
+    [today, day.type, settings, races, history, block, profile, shortOnTime, easyFocus, upperFocus, overrides, weeklyMilesKey],
   );
 
   const preview = decideSession(ctx);
@@ -111,7 +118,7 @@ function Today() {
   const raceDay = preview.role === "thu-race" || preview.role === "other-race";
   const todayIsLift = !EASY_SESSIONS.includes(preview.session) && preview.session !== "none";
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
-  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, upperFocus, mode]);
+  const sig = JSON.stringify([today, day.type, settings, races, profile, shortOnTime, easyFocus, upperFocus, mode, weeklyMilesKey]);
   const current = state?.sig === sig ? state : null;
   const loggedToday = history.filter((h) => h.date === today);
 

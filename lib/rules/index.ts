@@ -5,6 +5,7 @@ import type { Profile } from "../profile";
 import type { BlockPicks, LiftLog, Settings } from "../types";
 import { decideSession, UPPER_FOCUS_LABEL, weekCounts, type Decision, type RuleContext } from "./rules";
 import { currentBlock } from "./select";
+import { VOLUME_NOTE, volumeTier, type VolumeTier, type WeeklyMiles } from "./volume";
 import {
   buildItems,
   estimateMinutes,
@@ -17,6 +18,7 @@ export * from "./recovery";
 export * from "./rules";
 export * from "./select";
 export * from "./sessions";
+export * from "./volume";
 
 export interface Workout {
   date: string;
@@ -27,6 +29,8 @@ export interface Workout {
   items: Prescription[];
   estMinutes: number;
   catchUpFor?: string;
+  /** Set when weekly mileage made a Full session smaller than the coach's full dosing. */
+  volume?: { tier: Exclude<VolumeTier, "full">; miles: number; source: WeeklyMiles["source"]; note: string };
 }
 
 export interface GenerateInput extends RuleContext {
@@ -36,6 +40,8 @@ export interface GenerateInput extends RuleContext {
   profile?: Profile | null;
   /** 0 = first generate; Regenerate increments it. */
   attempt?: number;
+  /** Weekly mileage (last 7 days of runs, or the setup answer). Unknown = full volume. */
+  weeklyMiles?: WeeklyMiles | null;
   /** Use a precomputed decision (e.g. a catch-up) instead of deciding from ctx. */
   decision?: Decision & { catchUpFor?: string };
 }
@@ -57,6 +63,7 @@ export function generateWorkout(input: GenerateInput): Workout {
   const decision = input.decision ?? decideSession(input);
   const block = currentBlock(input.block, input.today);
   const { plyoTypes } = weekCounts(input.history, input.today);
+  const tier: VolumeTier = input.weeklyMiles ? volumeTier(input.weeklyMiles.miles) : "full";
 
   let items = buildItems(decision, {
     date: input.decision?.catchUpFor ?? input.today,
@@ -67,6 +74,7 @@ export function generateWorkout(input: GenerateInput): Workout {
     enableMobility: input.settings.enableMobility,
     plyoTypesThisWeek: plyoTypes,
     profile: input.profile,
+    volume: tier,
   });
 
   // Full sessions are ~45 min max: trim a set from the accessory slots until it fits.
@@ -93,6 +101,9 @@ export function generateWorkout(input: GenerateInput): Workout {
     items,
     estMinutes: decision.session === "none" ? 0 : estimateMinutes(decision, items),
     catchUpFor: input.decision?.catchUpFor,
+    ...(decision.session === "full" && tier !== "full" && input.weeklyMiles
+      ? { volume: { tier, miles: input.weeklyMiles.miles, source: input.weeklyMiles.source, note: VOLUME_NOTE[tier](input.weeklyMiles.miles) } }
+      : {}),
   };
 }
 

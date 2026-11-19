@@ -152,3 +152,9 @@ These are choices I made where the brief left room. Each one says where it lives
 77. **Normal** is the regular rules.
 78. **Moving on is suggested, not automatic.** Each stage records the day it started. After 7 days in Week off the app suggests Ramp week; after 7 days in Ramp week it suggests Normal. The suggestion shows on Today and in Settings with a one-tap switch. The runner can pick any stage at any time or change the start date. The old "Return week" toggle carries over as Week off starting the day the new version first loads.
 
+## Mileage and event (`lib/rules/volume.ts`, `lib/profile.ts`)
+
+79. **Session size follows weekly mileage, and only grows with it.** The runner's rule: lifting and mileage build together, and lifting does not drop at peak mileage. Under 20 mi/week, Full sessions are 2 sets of every loaded move. At 20-34, the main lift keeps 3 sets and the rest are 2. From 35 mi/week up, it's the coach's full dosing, the same at 50 or 80 miles. Isos keep their own dosing, and only Full sessions change (Plyos + Isos, Short, upper body and the rest don't). The workout card says when a session is lighter and why.
+80. **Where the mileage comes from:** the last 7 days of runs (Strava or demo) when there are any, otherwise the setup answer. Unknown mileage means full sessions, as before.
+81. **Event emphasis.** 800/mile runners get 2 plyos in every Full session (like the "faster kick" goal). Cross country and road runners: the calf move in Full sessions prefers an Achilles/calf hold, for tendon capacity under high volume. 1600/3200 is the default. The coach's caps (6 moves in season, 45 min, 2 strength a week) are unchanged.
+

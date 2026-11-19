@@ -44,6 +44,7 @@ export function WorkoutCard({
         )}
         <p className="mt-2 text-sm leading-relaxed text-muted">{decision.why}</p>
         {sharedNote && <p className="mt-2 text-sm font-medium text-ink">{sharedNote}</p>}
+        {workout.volume && <p className="mt-2 text-sm text-muted">{workout.volume.note}</p>}
         {decision.warnings.length > 0 && (
           <div className="mt-3 space-y-2">
             {decision.warnings.map((w) => (

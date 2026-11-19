@@ -101,8 +101,14 @@ export function matchesFocus(e: Exercise, spots: TroubleSpot[]): boolean {
   return spots.some((s) => SPOT_PATTERNS[s].test(text));
 }
 
+/** 2 plyos in every Full session: goals "faster kick" / "run efficiently", or an 800/mile runner. */
 export function wantsPlyoEmphasis(profile: Profile | null | undefined): boolean {
-  return !!profile && (profile.goals.includes("kick") || profile.goals.includes("economy"));
+  return !!profile && (profile.goals.includes("kick") || profile.goals.includes("economy") || profile.events.includes("mid"));
+}
+
+/** Cross country and road runners: the calf slot prefers Achilles/calf holds (tendon capacity for high volume). */
+export function wantsTendonEmphasis(profile: Profile | null | undefined): boolean {
+  return !!profile && (profile.events.includes("xc") || profile.events.includes("long"));
 }
 
 // ---------------------------------------------------------------------------

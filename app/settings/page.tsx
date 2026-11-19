@@ -4,13 +4,28 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPOT_OPTIONS } from "@/lib/profile";
 import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
-import { diffDays, formatDay, todayLocal } from "@/lib/dates";
-import { blockEnds, BREAK_STAGE_LABEL, PHASE_HINT, PHASE_LABEL, suggestBreakStage, suggestPhase } from "@/lib/rules";
+import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
+import { blockEnds, BREAK_STAGE_LABEL, PHASE_HINT, PHASE_LABEL, suggestBreakStage, suggestPhase, VOLUME_MILES, volumeTier, weeklyMilesFor } from "@/lib/rules";
+import { wantsPlyoEmphasis, wantsTendonEmphasis } from "@/lib/profile";
+import { METERS_PER_MILE } from "@/lib/strava";
 import { storage } from "@/lib/storage";
 import { trackSeasonScenario } from "@/lib/mock";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
-import type { BreakStage, Phase, Settings, Weekday } from "@/lib/types";
+import type { BreakStage, Phase, Run, Settings, Weekday } from "@/lib/types";
+
+/** Plain-language: how big Full sessions are right now, and why. */
+function volumeLine(runs: Run[], today: string, profileMiles: number): string {
+  const last7 = runs.filter((r) => r.date > addDays(today, -7) && r.date <= today);
+  const wm = weeklyMilesFor(last7.reduce((sum, r) => sum + r.distanceM, 0) / METERS_PER_MILE, last7.length, profileMiles);
+  if (!wm) return "";
+  const m = Math.round(wm.miles);
+  const from = wm.source === "runs" ? `${m} mi in the last 7 days` : `${m} mi/week (your setup answer)`;
+  const tier = volumeTier(wm.miles);
+  return tier === "full"
+    ? `${from}: full sessions. Session size grows with mileage and never drops at your peak.`
+    : `${from}: ${tier === "base" ? "lighter" : "building"} sessions. They grow to full at ${VOLUME_MILES.full} mi/week.`;
+}
 
 const PHASES: Phase[] = ["off", "early", "deep", "championship"];
 const BREAK_STAGES: BreakStage[] = ["off", "ramp", "normal"];
@@ -38,7 +53,7 @@ export default function SettingsPage() {
 function SettingsView() {
   const data = useStore();
   const { settings, races, block, profile } = data;
-  const { status, reload } = useRuns(settings.mockMode);
+  const { status, reload, runs } = useRuns(settings.mockMode);
   const today = todayLocal();
   const suggestion = suggestPhase(races, today);
   const [stravaError, setStravaError] = useState<string | null>(null);
@@ -109,6 +124,13 @@ function SettingsView() {
             <dt className="text-muted">Focus</dt>
             <dd>{SPOT_OPTIONS.filter((s) => profile.troubleSpots.includes(s.value)).map((s) => s.label).join(", ") || "Nothing cranky"}</dd>
           </dl>
+        ) : null}
+        {profile ? (
+          <p className="mt-3 border-t border-line pt-3 text-xs leading-relaxed text-muted">
+            {volumeLine(runs, today, profile.weeklyMiles)}
+            {wantsPlyoEmphasis(profile) && " Full sessions always get 2 plyos."}
+            {wantsTendonEmphasis(profile) && " XC/road: the calf move favors Achilles holds."}
+          </p>
         ) : (
           <Link href="/welcome" className="text-sm font-semibold text-accent">Set up your profile</Link>
         )}

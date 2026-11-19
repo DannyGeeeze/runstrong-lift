@@ -41,10 +41,11 @@ import {
   restFor,
   videoFor,
 } from "../exercises";
-import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsPlyoEmphasis, type Profile } from "../profile";
+import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsPlyoEmphasis, wantsTendonEmphasis, type Profile } from "../profile";
 import type { BlockPicks, Exercise, Phase, Slot, UpperFocus } from "../types";
 import type { Decision } from "./rules";
 import { pick } from "./select";
+import type { VolumeTier } from "./volume";
 
 /** Plyo categories that must each appear at least once per week. */
 export const ROTATION_TYPES = ["deep", "pogo", "single-leg-hop", "lateral"] as const;
@@ -76,8 +77,10 @@ export interface BuildOptions {
   enableMobility: boolean;
   /** Plyo categories already done in the last 7 days. */
   plyoTypesThisWeek: string[];
-  /** Onboarding answers: equipment, experience, trouble spots, goals. */
+  /** Onboarding answers: equipment, experience, trouble spots, goals, event. */
   profile?: Profile | null;
+  /** Full-session volume from weekly mileage (see volume.ts). Defaults to full. */
+  volume?: VolumeTier;
   pool?: Exercise[];
 }
 
@@ -184,6 +187,16 @@ function preferMissing(ctx: Ctx) {
   return (e: Exercise) => !!e.plyo_type && missing.includes(e.plyo_type);
 }
 
+/**
+ * Lower mileage, smaller sessions; it only ever grows. Base: 2 sets of everything.
+ * Build: the main lift keeps 3, the rest 2. Full: the coach's dosing. Isos keep their own dosing.
+ */
+function volumeDose(p: Prescription, tier: VolumeTier): Prescription {
+  if (tier === "full" || isoKind(p.exercise)) return p;
+  if (tier === "build" && p.slot === "B1") return p;
+  return { ...p, sets: Math.min(p.sets, 2) };
+}
+
 function buildFull(ctx: Ctx, d: Decision): Prescription[] {
   const offSeason = ctx.phase === "off";
   const lateralDue = missingPlyoTypes(ctx).includes("lateral");
@@ -213,13 +226,19 @@ function buildFull(ctx: Ctx, d: Decision): Prescription[] {
   const out: Prescription[] = [];
   for (const slot of slots) {
     const key = `full:${slot}`;
-    const e = choose(ctx, key, bySlot(ctx, slot, "full"), isPlyo({ slot } as Exercise) ? preferMissing(ctx) : preferFocus(ctx));
+    const prefer = isPlyo({ slot } as Exercise)
+      ? preferMissing(ctx)
+      : slot === "C2" && wantsTendonEmphasis(ctx.profile)
+        ? (e: Exercise) => !!isoKind(e) && isCalfAnkle(e)
+        : preferFocus(ctx);
+    const e = choose(ctx, key, bySlot(ctx, slot, "full"), prefer);
     if (!e) continue;
     let p = baseDose(e, key);
     if (slot === "B1") p = { ...p, sets: 3, reps: "3-5", note: "@ RPE 7: leave 3 reps in the tank." };
     if (isoKind(e) === "overcoming") p = overcomingDose(p);
     p = applyCaps(p);
     if (d.half) p = { ...p, sets: Math.max(1, Math.round(p.sets / 2)) };
+    p = volumeDose(p, ctx.volume ?? "full");
     out.push(p);
   }
   return out;
