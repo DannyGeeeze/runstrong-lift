@@ -24,23 +24,23 @@ export interface LiftWeek {
   plyo: number;
 }
 
-const W = 640;
-const BAR = 18;
+export const W = 640;
+export const BAR = 18;
 const isHard = (t: RunType) => t === "workout" || t === "race";
 
 /** An even axis top (so the halfway gridline is a whole number). */
-function niceMax(v: number, steps = [4, 6, 8, 10, 12, 14, 16, 20, 24, 30, 40, 50]) {
+export function niceMax(v: number, steps = [4, 6, 8, 10, 12, 14, 16, 20, 24, 30, 40, 50]) {
   return steps.find((s) => s >= v) ?? Math.ceil(v / 10) * 10;
 }
 
 /** Bar with a 4px rounded top, square at the baseline. */
-function barPath(x: number, y: number, w: number, h: number) {
+export function barPath(x: number, y: number, w: number, h: number) {
   const r = Math.min(4, h, w / 2);
   if (h <= 0) return "";
   return `M${x},${y + h} V${y + r} Q${x},${y} ${x + r},${y} H${x + w - r} Q${x + w},${y} ${x + w},${y + r} V${y + h} Z`;
 }
 
-function ChartCard({
+export function ChartCard({
   title,
   subtitle,
   legend,
@@ -76,7 +76,7 @@ function ChartCard({
   );
 }
 
-function Swatch({ color, label, shape = "bar" }: { color: string; label: string; shape?: "bar" | "dot" | "ring" | "dash" }) {
+export function Swatch({ color, label, shape = "bar" }: { color: string; label: string; shape?: "bar" | "dot" | "ring" | "dash" }) {
   return (
     <span className="inline-flex items-center gap-1.5">
       {shape === "bar" && <span className="h-3 w-2.5 rounded-t-[3px]" style={{ background: color }} />}
@@ -88,7 +88,7 @@ function Swatch({ color, label, shape = "bar" }: { color: string; label: string;
   );
 }
 
-function Tooltip({ x, children }: { x: number; children: ReactNode }) {
+export function Tooltip({ x, children }: { x: number; children: ReactNode }) {
   // x is a fraction of the chart width; keep the box inside the card.
   const left = `clamp(0px, calc(${(x * 100).toFixed(2)}% - 90px), calc(100% - 180px))`;
   return (

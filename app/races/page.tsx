@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LiftsBeforeRaces, SeasonMap } from "@/components/RaceCharts";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { addDays, dayInWeek, diffDays, formatDay, todayLocal } from "@/lib/dates";
 import { sampleRaces } from "@/lib/mock";
@@ -37,7 +38,7 @@ function countdown(days: number) {
 }
 
 function Races() {
-  const { races, profile } = useStore();
+  const { races, profile, history, settings } = useStore();
   const today = todayLocal();
   const [editing, setEditing] = useState<Race | null>(null);
   const [showPast, setShowPast] = useState(false);
@@ -88,6 +89,12 @@ function Races() {
             + Add race
           </Button>
         )}
+      </div>
+
+      {/* Desktop: the season at a glance. */}
+      <div className="mt-6 hidden gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
+        <SeasonMap races={races} today={today} phase={settings.phase} />
+        <LiftsBeforeRaces races={races} history={history} today={today} />
       </div>
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start lg:gap-8">
