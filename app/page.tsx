@@ -9,7 +9,7 @@ import { LiveWorkout } from "@/components/LiveWorkout";
 import { WeekPlan } from "@/components/WeekPlan";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { PLAN_SOURCE_LABEL, planDays, type PlanDay } from "@/lib/plan";
-import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
+import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
 import { dayType, futureHardOverrides, RUN_TYPE_LABEL } from "@/lib/day";
 import {
@@ -176,17 +176,7 @@ function Today() {
         ) : (
           <p className="text-sm text-muted">No run yet today</p>
         )}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <Chip
-              key={t}
-              active={day.type === t}
-              onClick={() => storage.setOverride(today, overrides[today] === t ? null : t)}
-            >
-              {RUN_TYPE_LABEL[t]}
-            </Chip>
-          ))}
-        </div>
+        <RunTypePicker value={day.type} onPick={(t) => storage.setOverride(today, overrides[today] === t ? null : t)} />
       </Card>
     </>
   );
@@ -199,7 +189,7 @@ function Today() {
           <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">{profile?.name ? `Hey, ${profile.name}` : "RunStrong Lift"}</h1>
         </div>
         {nextRace && (
-          <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line">
+          <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line lg:hidden">
             <span className="block font-semibold">
               {nextRace.name}
               {isSampleRace(nextRace) && <span className="ml-1.5 font-medium text-warn">Sample</span>}
@@ -231,6 +221,7 @@ function Today() {
       )}
       {status?.configured && !status.connected && !settings.mockMode && (
         <Card className="mt-4 space-y-3">
+          <p className="text-sm text-muted">Connect Strava so the app sees what kind of run you did. Or try it with sample runs.</p>
           <div className="flex gap-2">
             <a href="/api/strava/login" className="inline-flex min-h-11 items-center rounded-xl bg-accent px-4 text-sm font-semibold text-accent-ink">
               Connect Strava
@@ -498,13 +489,7 @@ function PlannedDay({
             {day.label && day.label !== "workout" ? ` (${day.label})` : ""}
           </span>
         </p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          {TYPES.map((t) => (
-            <Chip key={t} active={day.type === t} onClick={() => onSetType(t)}>
-              {RUN_TYPE_LABEL[t]}
-            </Chip>
-          ))}
-        </div>
+        <RunTypePicker value={day.type} onPick={onSetType} />
         <p className="mt-2 text-xs text-muted">Changing the run here saves it for that day, and the rest of the week re-plans.</p>
       </div>
       {w.decision.session === "none" ? (
@@ -515,6 +500,27 @@ function PlannedDay({
       ) : (
         <WorkoutCard workout={w} done={new Set()} onToggle={() => {}} history={history} />
       )}
+    </div>
+  );
+}
+
+/** The five run types as one row of equal buttons (no wrapping). */
+function RunTypePicker({ value, onPick }: { value: RunType; onPick: (t: RunType) => void }) {
+  return (
+    <div className="mt-3 grid grid-cols-5 gap-1 rounded-xl bg-card-2 p-1" role="group" aria-label="Kind of run">
+      {TYPES.map((t) => (
+        <button
+          key={t}
+          type="button"
+          aria-pressed={value === t}
+          onClick={() => onPick(t)}
+          className={`min-h-10 rounded-lg px-0.5 text-[13px] font-semibold transition-colors ${
+            value === t ? "bg-accent text-accent-ink shadow-sm" : "text-muted hover:text-ink"
+          }`}
+        >
+          {RUN_TYPE_LABEL[t]}
+        </button>
+      ))}
     </div>
   );
 }

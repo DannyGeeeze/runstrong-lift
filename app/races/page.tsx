@@ -86,7 +86,8 @@ function Races() {
   );
 
   return (
-    <div>
+    // Phones: charts go last (after the race lists); desktop: right under the header.
+    <div className="flex flex-col lg:block">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">Races</h1>
         {!isNew && (
@@ -111,11 +112,18 @@ function Races() {
         </div>
       )}
 
-      {/* Desktop: the season at a glance. */}
-      <div className="mt-6 hidden gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
-        <SeasonMap races={races} today={today} phase={settings.phase} />
-        <LiftsBeforeRaces races={races} history={history} today={today} />
-      </div>
+      {/* The season at a glance. */}
+      {/* Charts once there's a race to chart. The past-races chart joins once a race is behind you. */}
+      {races.length > 0 && (
+        <div
+          className={`order-last mt-6 grid gap-4 lg:order-none lg:items-start lg:gap-6 ${
+            past.length > 0 ? "lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]" : ""
+          }`}
+        >
+          <SeasonMap races={races} today={today} phase={settings.phase} />
+          {past.length > 0 && <LiftsBeforeRaces races={races} history={history} today={today} />}
+        </div>
+      )}
 
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start lg:gap-8">
       <div className="min-w-0 lg:sticky lg:top-0">

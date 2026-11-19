@@ -1,14 +1,25 @@
 "use client";
 
-// Desktop Races page charts. Plain SVG, sized close to 1:1 for their column so text stays readable.
+// Races page charts (phone and desktop). Plain SVG drawn at the box's real width (see useChartWidth),
+// so text stays readable on a phone. Hover with a mouse, tap with a finger.
 // Colors: the phase strip is an ordered one-hue ramp (--viz-phase-*), races use the hard-day
 // orange from the Week page, and lifting uses the Week page's strength/plyo colors.
 
-import { useState } from "react";
+import { useState, type PointerEvent } from "react";
 import { addDays, diffDays, formatDay, mondayOf } from "@/lib/dates";
 import { PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import type { LiftLog, Phase, Race, RacePriority } from "@/lib/types";
-import { barPath, ChartCard, Swatch, Tooltip } from "./WeekCharts";
+import { barPath, ChartCard, Swatch, Tooltip, useChartWidth } from "./WeekCharts";
+
+/** Mouse hover, or tap (again to close) on touch screens. */
+function hoverOrTap<T>(value: T, same: (h: T | null) => boolean, set: (fn: (h: T | null) => T | null) => void) {
+  return {
+    onPointerEnter: (e: PointerEvent) => {
+      if (e.pointerType === "mouse") set(() => value);
+    },
+    onClick: () => set((h) => (same(h) ? null : value)),
+  };
+}
 
 const PHASE_COLOR: Record<Phase, string> = {
   off: "var(--viz-phase-off)",
@@ -20,22 +31,26 @@ const PHASES: Phase[] = ["off", "early", "deep", "championship"];
 const PRIORITY_NAME: Record<RacePriority, string> = { A: "Goal race", B: "Key race", C: "Meet" };
 const RADIUS: Record<RacePriority, number> = { A: 8, B: 6, C: 4.5 };
 const short = (d: string) => formatDay(d).split(", ")[1] ?? d;
+type Hover = { kind: "race"; i: number } | { kind: "week"; i: number };
 
 // ---------------------------------------------------------------------------
 
 /** The season week by week: the phase the app would suggest, and every race on the calendar. */
-export function SeasonMap({ races, today, phase }: { races: Race[]; today: string; phase: Phase }) {
-  const [hover, setHover] = useState<{ kind: "race"; i: number } | { kind: "week"; i: number } | null>(null);
-  const VW = 680;
+export function SeasonMap({ races, today, phase, width }: { races: Race[]; today: string; phase: Phase; width?: number }) {
+  const [hover, setHover] = useState<Hover | null>(null);
+  const [box, measured] = useChartWidth(680);
+  const VW = width ?? measured;
+  // Phones: a shorter window (2 weeks back, at most 16) so each week stays wide enough to read.
+  const narrow = VW < 500;
   const H = 142;
   const left = 8;
   const right = 8;
 
   // From 4 weeks ago to a week past the last race (at least 8 weeks ahead), at most 26 weeks.
-  const start = addDays(mondayOf(today), -28);
+  const start = addDays(mondayOf(today), narrow ? -14 : -28);
   const lastRace = races.reduce((m, r) => (r.date > m ? r.date : m), today);
   const endMonday = mondayOf(addDays(lastRace > addDays(today, 56) ? lastRace : addDays(today, 56), 7));
-  const weekCount = Math.min(26, Math.max(12, diffDays(start, endMonday) / 7 + 1));
+  const weekCount = Math.min(narrow ? 16 : 26, Math.max(narrow ? 10 : 12, diffDays(start, endMonday) / 7 + 1));
   const weeks = Array.from({ length: weekCount }, (_, i) => addDays(start, i * 7));
   const end = addDays(start, weekCount * 7);
   const span = diffDays(start, end);
@@ -131,6 +146,7 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
       legend={legend}
       table={table}
     >
+      <div ref={box}>
       <svg viewBox={`0 0 ${VW} ${H}`} className="block w-full" role="img" aria-label="Season map: suggested phase by week and races" onMouseLeave={() => setHover(null)}>
         {/* Race row baseline */}
         <line x1={left} x2={VW - right} y1={ROW} y2={ROW} stroke="var(--border)" strokeWidth="1" />
@@ -160,7 +176,7 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
               fill="transparent"
               tabIndex={0}
               aria-label={`Week of ${short(m)}: ${PHASE_LABEL[weekPhase[i].phase]}`}
-              onMouseEnter={() => setHover({ kind: "week", i })}
+              {...hoverOrTap<Hover>({ kind: "week", i }, (h) => h?.kind === "week" && h.i === i, setHover)}
               onFocus={() => setHover({ kind: "week", i })}
               onBlur={() => setHover(null)}
             />
@@ -178,7 +194,7 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
         })}
         {/* Month-ish date labels every 2 weeks */}
         {weeks.map((m, i) =>
-          i % 2 === 0 ? (
+          i % (weekW * 2 < 48 ? 4 : 2) === 0 ? (
             <text key={m} x={x(m) + 2} y={H - 4} fontSize="10" fill="var(--muted)">
               {short(m)}
             </text>
@@ -193,8 +209,15 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
           return (
             <g key={r.id}>
               {r.priority === "A" && (
-                <text x={cx} y={ROW - rad - 8} textAnchor="middle" fontSize="10" fontWeight="600" fill="var(--text)">
-                  {r.name.length > 26 ? `${r.name.slice(0, 25)}…` : r.name}
+                <text
+                  x={cx < 70 ? cx - rad : cx > VW - 70 ? cx + rad : cx}
+                  y={ROW - rad - 8}
+                  textAnchor={cx < 70 ? "start" : cx > VW - 70 ? "end" : "middle"}
+                  fontSize="10"
+                  fontWeight="600"
+                  fill="var(--text)"
+                >
+                  {r.name.length > (narrow ? 22 : 26) ? `${r.name.slice(0, narrow ? 21 : 25)}…` : r.name}
                 </text>
               )}
               <circle
@@ -212,7 +235,7 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
                 fill="transparent"
                 tabIndex={0}
                 aria-label={`${r.name}, ${formatDay(r.date)}, ${PRIORITY_NAME[r.priority]}`}
-                onMouseEnter={() => setHover({ kind: "race", i })}
+                {...hoverOrTap<Hover>({ kind: "race", i }, (h) => h?.kind === "race" && h.i === i, setHover)}
                 onFocus={() => setHover({ kind: "race", i })}
                 onBlur={() => setHover(null)}
               />
@@ -225,6 +248,7 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
           </text>
         )}
       </svg>
+      </div>
       {tip}
     </ChartCard>
   );
@@ -233,14 +257,14 @@ export function SeasonMap({ races, today, phase }: { races: Race[]; today: strin
 // ---------------------------------------------------------------------------
 
 /** For each past race: strength and plyo sessions in the 7 days before it. */
-export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; history: LiftLog[]; today: string }) {
+export function LiftsBeforeRaces({ races, history, today, width }: { races: Race[]; history: LiftLog[]; today: string; width?: number }) {
   const [hover, setHover] = useState<number | null>(null);
-  const VW = 420;
+  const [box, measured] = useChartWidth(420);
+  const VW = width ?? measured;
   const H = 210;
   const top = 12;
   const plotH = 130;
   const left = 26;
-  const BAR = 14;
   const past = races
     .filter((r) => r.date < today)
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -253,6 +277,8 @@ export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; his
   const max = Math.max(2, ...rows.flatMap((r) => [r.strength, r.plyo]));
   const y = (n: number) => top + plotH - (n / max) * plotH;
   const band = rows.length ? (VW - left) / rows.length : VW - left;
+  const BAR = Math.max(8, Math.min(14, band * 0.28));
+  const nameChars = Math.max(4, Math.floor(band / 6));
 
   const legend = (
     <>
@@ -286,6 +312,7 @@ export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; his
   const h = hover !== null ? rows[hover] : null;
   return (
     <ChartCard title="Lifting before races" subtitle="Sessions in the 7 days before each past race" legend={legend} table={table}>
+      <div ref={box}>
       <svg viewBox={`0 0 ${VW} ${H}`} className="block w-full" role="img" aria-label="Strength and plyo sessions in the week before each past race" onMouseLeave={() => setHover(null)}>
         {Array.from({ length: max + 1 }, (_, t) => (
           <g key={t}>
@@ -297,7 +324,7 @@ export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; his
         ))}
         {rows.map((r, i) => {
           const cx = left + band * i + band / 2;
-          const name = r.race.name.length > 10 ? `${r.race.name.slice(0, 9)}…` : r.race.name;
+          const name = r.race.name.length > nameChars ? `${r.race.name.slice(0, nameChars - 1)}…` : r.race.name;
           return (
             <g key={r.race.id}>
               {hover === i && <rect x={left + band * i + 2} y={top} width={band - 4} height={plotH} rx="6" fill="var(--card-2)" />}
@@ -317,7 +344,7 @@ export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; his
                 fill="transparent"
                 tabIndex={0}
                 aria-label={`${r.race.name}: ${r.strength} strength, ${r.plyo} plyo in the week before`}
-                onMouseEnter={() => setHover(i)}
+                {...hoverOrTap<number>(i, (h) => h === i, setHover)}
                 onFocus={() => setHover(i)}
                 onBlur={() => setHover(null)}
               />
@@ -330,6 +357,7 @@ export function LiftsBeforeRaces({ races, history, today }: { races: Race[]; his
           </text>
         )}
       </svg>
+      </div>
       {h && hover !== null && (
         <Tooltip x={(left + band * hover + band / 2) / VW}>
           <p className="font-semibold">{h.race.name}</p>
