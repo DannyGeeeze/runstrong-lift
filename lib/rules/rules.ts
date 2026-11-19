@@ -17,7 +17,16 @@
  *    4. 48h guard: next hard run/race < 48h away → no strength (Plyos + Isos).
  *       Exactly 48h (two calendar days) → allowed with a warning.
  *    5. Weekly caps: max 2 strength + 2 plyo sessions per rolling 7 days.
- *    6. Modifiers: Return week → yielding isos only. Short on time → Short session.
+ *    6. Modifiers: Ramp week → Full sessions at lighter loads (2-3 x 8-12 @ RPE 5-6,
+ *       low/medium plyos). Short on time → Short session.
+ *
+ *  Break / return stages (Settings) sit on top of all of this:
+ *    - Week off: steps 1-6 don't apply. No hard runs are expected, so any day but a
+ *      race day can have one optional ~15-min session of yielding isos, spaced every
+ *      2-3 days (rest if the last session was yesterday).
+ *    - Ramp week: steps 1-6 apply as normal, then the lighter dosing above.
+ *    - Normal: the regular rules.
+ *    After 7 days in Week off or Ramp week the app suggests the next stage.
  *
  *  Time is handled at calendar-day granularity: "run first, then lift" means a
  *  lift happens on the afternoon of the run, so a hard day 1 calendar day away
@@ -26,7 +35,7 @@
  */
 
 import { addDays, dayInWeek, diffDays, mondayOf, weekdayOf } from "../dates";
-import type { EasyFocus, LiftLog, UpperFocus, Phase, Race, RunType, SessionType, Settings } from "../types";
+import type { BreakStage, EasyFocus, LiftLog, UpperFocus, Phase, Race, RunType, SessionType, Settings } from "../types";
 
 export type Role =
   | "thu-race" // Thursday race day
@@ -46,7 +55,7 @@ export interface RuleContext {
   dayType: RunType;
   phase: Phase;
   races: Race[];
-  settings: Pick<Settings, "tuneUpDay" | "workoutDays" | "deepRaceDay" | "returnWeek">;
+  settings: Pick<Settings, "tuneUpDay" | "workoutDays" | "deepRaceDay" | "breakStage"> & Partial<Pick<Settings, "breakStageSince">>;
   /** Saved lift sessions, any order. */
   history: LiftLog[];
   shortOnTime?: boolean;
@@ -84,6 +93,76 @@ export interface Decision {
   weekCounts: { strength: number; plyo: number };
   /** Upper-body days: which body part. */
   upperFocus?: UpperFocus;
+  /** Ramp week: lighter loads (2-3 x 8-12 @ RPE 5-6) and low/medium plyos only. */
+  ramp?: boolean;
+}
+
+// ---------------------------------------------------------------------------
+// Break / return stages
+// ---------------------------------------------------------------------------
+
+export const BREAK_STAGE_LABEL: Record<BreakStage, string> = {
+  off: "Week off",
+  ramp: "Ramp week",
+  normal: "Normal",
+};
+
+/** Days in Week off or Ramp week before the app suggests moving on. */
+export const BREAK_STAGE_DAYS = 7;
+/** Week off: at least this many days between optional sessions (so every 2-3 days). */
+export const WEEK_OFF_SPACING = 2;
+
+const NEXT_STAGE: Record<BreakStage, BreakStage | null> = { off: "ramp", ramp: "normal", normal: null };
+
+/** After 7 days in a stage, suggest the next one. The runner decides; nothing changes on its own. */
+export function suggestBreakStage(
+  settings: Pick<Settings, "breakStage" | "breakStageSince">,
+  today: string,
+): { next: BreakStage; days: number; message: string } | null {
+  const next = NEXT_STAGE[settings.breakStage];
+  if (!next || !settings.breakStageSince) return null;
+  const days = diffDays(settings.breakStageSince, today);
+  if (days < BREAK_STAGE_DAYS) return null;
+  const message =
+    settings.breakStage === "off"
+      ? `${days} days into your week off. Ready for a ramp week of lighter Full sessions?`
+      : `${days} days into your ramp week. Ready to go back to normal training?`;
+  return { next, days, message };
+}
+
+/** Most recent lift before `today` (any session), or null. */
+function lastLiftBefore(history: LiftLog[], today: string): string | null {
+  let last: string | null = null;
+  for (const h of history) if (h.session !== "none" && h.date < today && (!last || h.date > last)) last = h.date;
+  return last;
+}
+
+/** Week off: hard-day roles, phases, the 48h rule and the caps don't apply. */
+function decideWeekOff(ctx: RuleContext, role: Role): Decision {
+  const counts = weekCounts(ctx.history, ctx.today);
+  const base = {
+    half: false,
+    plyos: false,
+    strength: false,
+    role,
+    warnings: [] as string[],
+    nextHard: null,
+    weekCounts: { strength: counts.strength, plyo: counts.plyo },
+  };
+  if (role === "thu-race" || role === "other-race") {
+    const rule = "Week off, race day: no lift";
+    return { ...base, session: "none", optional: false, rules: [rule], why: `${rule}.` };
+  }
+  const last = lastLiftBefore(ctx.history, ctx.today);
+  const days = last ? diffDays(last, ctx.today) : null;
+  if (days !== null && days < WEEK_OFF_SPACING) {
+    const wait = WEEK_OFF_SPACING - days;
+    const rule = `Week off: rest today (last session ${days === 1 ? "yesterday" : `${days} days ago`}), next optional session ${wait === 1 ? "tomorrow" : `in ${wait} days`}`;
+    return { ...base, session: "none", optional: false, rules: [rule], why: `${rule}.` };
+  }
+  const since = days === null ? "first one of the break" : `last session ${days} days ago`;
+  const rule = `Week off: optional yielding isos, about 15 min (${since})`;
+  return { ...base, session: "return", optional: true, rules: [rule], why: `${rule}.` };
 }
 
 /** The optional easy-day sessions. Neither counts toward the weekly strength or plyo caps. */
@@ -132,7 +211,7 @@ export function sessionLabel(d: Pick<Decision, "session" | "half" | "plyos" | "s
     case "taper":
       return "a few isos (optional)";
     case "return":
-      return "Return week: yielding isos only";
+      return "Week off: yielding isos only";
     case "touch-up":
       return "optional 10-min touch-up";
     case "upper":
@@ -374,6 +453,7 @@ function hasPlyos(session: SessionType) {
  */
 export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): Decision {
   const role = roleFor(ctx);
+  if (ctx.settings.breakStage === "off") return decideWeekOff(ctx, role);
   const base = baseFor(role, ctx);
   const phaseLabel = PHASE_LABEL[ctx.phase];
   const roleLabel = ROLE_LABEL[role];
@@ -426,19 +506,14 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   }
 
   // --- Step 6: modifiers -----------------------------------------------------
-  // Upper body doesn't load the legs, so return week leaves it alone.
-  const legFree = session === "upper";
-  if (ctx.settings.returnWeek && session !== "none" && !legFree) {
-    session = "return";
-    strength = false;
-    plyos = false;
-    half = false;
-    rules.push("return week: yielding isos only");
-  } else if (ctx.shortOnTime && session === "full" && strength) {
+  if (ctx.shortOnTime && session === "full" && strength) {
     session = "short";
     half = false;
     rules.push("short on time: 20-min session");
   }
+  // Ramp week: same timing as normal, lighter dosing (applied when the session is built).
+  const ramp = ctx.settings.breakStage === "ramp" && (session === "full" || session === "short");
+  if (ramp) rules.push("ramp week: lighter loads, 2-3 x 8-12 @ RPE 5-6, low/medium plyos");
 
   // Upper body: the body part you've gone longest without, unless you picked one.
   let upperFocus: UpperFocus | undefined;
@@ -474,6 +549,7 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
     nextHard,
     weekCounts: { strength: counts.strength, plyo: counts.plyo },
     ...(upperFocus ? { upperFocus } : {}),
+    ...(ramp ? { ramp } : {}),
   };
 }
 
@@ -488,6 +564,8 @@ export function decideCatchUp(
 ): (Decision & { catchUpFor: string }) | { blocked: string } | null {
   const yesterday = addDays(ctx.today, -1);
   if (yesterdayType !== "workout" && yesterdayType !== "race") return null;
+  // Week off has no hard days, so nothing to make up.
+  if (ctx.settings.breakStage === "off") return null;
   // Never lift on race days, not even a make-up for yesterday.
   if (ctx.dayType === "race" || ctx.races.some((r) => r.date === ctx.today)) return null;
   if (ctx.history.some((h) => h.date === yesterday || h.catchUpFor === yesterday)) return null;

@@ -189,7 +189,8 @@ describe("exercise bank", () => {
       ["workout", "championship", {}],
       ["easy", "deep", {}],
       ["workout", "early", { shortOnTime: true }],
-      ["workout", "early", { settings: { ...DEFAULT_SETTINGS, returnWeek: true } }],
+      ["workout", "early", { settings: { ...DEFAULT_SETTINGS, breakStage: "off" } }],
+      ["workout", "early", { settings: { ...DEFAULT_SETTINGS, breakStage: "ramp" } }],
     ];
     for (const [dayType, phase, over] of sessions) {
       const w = generateWorkout(input({ today: TUE, dayType, phase, ...over }));

@@ -45,7 +45,7 @@ const TITLES: Record<Decision["session"], string> = {
   short: "Short strength (20 min)",
   "plyos-isos": "Plyos + Isos",
   taper: "Race-day isos",
-  return: "Return week isos",
+  return: "Week-off isos",
   "touch-up": "10-min touch-up",
   upper: "Upper body",
   "long-isos": "Long-run isos",
@@ -80,6 +80,7 @@ export function generateWorkout(input: GenerateInput): Workout {
 
   let title = TITLES[decision.session];
   if (decision.session === "full" && decision.half) title = "Full strength, half volume";
+  if (decision.ramp) title = decision.session === "short" ? "Short ramp-week session" : "Ramp-week strength";
   if (decision.session === "plyos-isos" && !decision.plyos) title = "Isos only";
   if (decision.session === "upper" && decision.upperFocus) title = UPPER_FOCUS_LABEL[decision.upperFocus];
 

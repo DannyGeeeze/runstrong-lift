@@ -10,7 +10,10 @@
  *  Plyos + Isos: 1-2 low/medium plyos, then 3-4 isometrics
  *    (overcoming: 3-5 s max pushes x5), including one calf/ankle.
  *  Taper (Championship race day, optional): a few overcoming isos incl. calf/ankle.
- *  Return week: yielding isometrics only, 20-45 s holds.
+ *  Week off ("return"): optional, ~15 min, yielding isometrics only, 20-45 s holds,
+ *    2-3 sets: one Achilles/calf iso, one hip/hamstring iso, and one more.
+ *  Ramp week: Full (or Short) with no high-intensity moves, loaded moves at
+ *    2-3 x 8-12 @ RPE 5-6; plyos low/medium only.
  *  Touch-up: 2-3 low-intensity foot/calf/hip-flexor moves, ~10 min.
  *  Long-run isos (long-run days, optional): 3 easy holds, 2 x 30 s, calf/ankle first.
  *  Race days: never a lift.
@@ -257,6 +260,16 @@ function buildShort(ctx: Ctx, d: Decision): Prescription[] {
   return out;
 }
 
+function isoPool(ctx: Ctx, session: string, kinds: ("overcoming" | "yielding" | "hold")[]): Exercise[] {
+  return fitProfile(
+    ctx.pool.filter((e) => {
+      const k = isoKind(e);
+      return !!k && kinds.includes(k) && e.session_types.includes(session) && e.slot !== "UPPER" && allowedInPhase(e, ctx.phase);
+    }),
+    ctx.profile,
+  );
+}
+
 /** Pick `count` isometrics for a session tag, the first one calf/ankle, spreading slots. */
 function pickIsos(
   ctx: Ctx,
@@ -264,16 +277,7 @@ function pickIsos(
   count: number,
   kinds: ("overcoming" | "yielding" | "hold")[],
 ): Exercise[] {
-  const isos = fitProfile(ctx.pool.filter((e) => {
-    const k = isoKind(e);
-    return (
-      !!k &&
-      kinds.includes(k) &&
-      e.session_types.includes(session) &&
-      e.slot !== "UPPER" &&
-      allowedInPhase(e, ctx.phase)
-    );
-  }), ctx.profile);
+  const isos = isoPool(ctx, session, kinds);
   const preferKind = both((e: Exercise) => isoKind(e) === kinds[0], preferFocus(ctx))!;
   const chosen: Exercise[] = [];
   const first = choose(ctx, `${session}:iso1`, isos.filter(isCalfAnkle), preferKind);
@@ -311,10 +315,33 @@ function buildTaper(ctx: Ctx): Prescription[] {
   );
 }
 
+/** Hip and hamstring slots: posterior chain, hip flexors, adductors/abductors. */
+const HIP_HAM_SLOTS: Slot[] = ["C1", "D1", "D2"];
+
+/**
+ * Week off: one Achilles/calf iso, one hip/hamstring iso, one more from another slot.
+ * Yielding holds, 20-45 s, 3 sets (2 when done one side at a time). About 15 minutes.
+ */
 function buildReturn(ctx: Ctx): Prescription[] {
-  return pickIsos(ctx, "return", 3, ["yielding", "hold"]).map((e, i) =>
-    yieldingDose(baseDose(e, `return:iso${i + 1}`)),
-  );
+  const pool = isoPool(ctx, "return", ["yielding", "hold"]);
+  const prefer = both((e: Exercise) => isoKind(e) === "yielding", preferFocus(ctx));
+  const chosen: Exercise[] = [];
+  const add = (key: string, candidates: Exercise[]) => {
+    const e = choose(ctx, key, candidates, prefer);
+    if (e) chosen.push(e);
+  };
+  add("return:calf", pool.filter(isCalfAnkle));
+  add("return:hip", pool.filter((e) => HIP_HAM_SLOTS.includes(e.slot)));
+  const usedSlots = new Set(chosen.map((c) => c.slot));
+  add("return:iso3", pool.filter((e) => !usedSlots.has(e.slot)).length ? pool.filter((e) => !usedSlots.has(e.slot)) : pool);
+  return chosen.map((e, i) => {
+    const p = yieldingDose(baseDose(e, `return:iso${i + 1}`));
+    return {
+      ...p,
+      sets: e.unilateral ? 2 : 3,
+      note: i === 0 ? "Week off: easy holds, about 15 min. Optional: skip it if you'd rather rest." : undefined,
+    };
+  });
 }
 
 /** Long-run day: 3 easy holds (calf/ankle first), 2 x 30 s. Tendon-friendly, no real load. */
@@ -409,6 +436,18 @@ function buildUpper(ctx: Ctx, focus: UpperFocus): Prescription[] {
   return out;
 }
 
+/** Ramp week: loaded moves at 2-3 x 8-12 @ RPE 5-6. Plyos and isos keep their own dosing. */
+export function rampDose(p: Prescription): Prescription {
+  if (isPlyo(p.exercise) || isoKind(p.exercise)) return p;
+  return {
+    ...p,
+    sets: Math.min(3, Math.max(2, p.sets)),
+    reps: p.exercise.unilateral ? "8-12/side" : "8-12",
+    rest: p.supersetWith ? p.rest : "60-90 s",
+    note: "Ramp week: @ RPE 5-6, lighter than usual. Stop with 4-5 reps left.",
+  };
+}
+
 export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
   const ctx: Ctx = { ...opts, used: new Set(), pool: opts.pool ?? ALL_EXERCISES };
   // POWER/MOBILITY only when turned on; UPPER only via the Full and Upper builders.
@@ -417,11 +456,13 @@ export function buildItems(d: Decision, opts: BuildOptions): Prescription[] {
       (e.slot !== "POWER" || opts.enablePower) &&
       (e.slot !== "MOBILITY" || opts.enableMobility),
   );
+  // Ramp week: nothing high-intensity (so plyos are low/medium), lighter dosing on loaded moves.
+  if (d.ramp) ctx.pool = ctx.pool.filter((e) => e.intensity !== "high");
   switch (d.session) {
     case "full":
-      return buildFull(ctx, d);
+      return d.ramp ? buildFull(ctx, d).map(rampDose) : buildFull(ctx, d);
     case "short":
-      return buildShort(ctx, d);
+      return d.ramp ? buildShort(ctx, d).map(rampDose) : buildShort(ctx, d);
     case "plyos-isos":
       return buildPlyosIsos(ctx, d);
     case "taper":

@@ -1,6 +1,7 @@
 // The ONE storage module. Everything the app persists goes through here, so swapping
 // localStorage for a database later means rewriting only this file.
 
+import { todayLocal } from "./dates";
 import type { Profile } from "./profile";
 import type { BlockPicks, LiftLog, Race, RecoveryLog, RunType, Settings } from "./types";
 
@@ -9,7 +10,8 @@ export const DEFAULT_SETTINGS: Settings = {
   tuneUpDay: "tue",
   workoutDays: ["tue", "fri"],
   deepRaceDay: "half",
-  returnWeek: false,
+  breakStage: "normal",
+  breakStageSince: "",
   enablePower: false,
   enableMobility: false,
   mockMode: false,
@@ -86,7 +88,7 @@ function write(data: AppData) {
 function normalize(input: Partial<AppData>): AppData {
   return {
     version: 1,
-    settings: { ...DEFAULT_SETTINGS, ...(input.settings ?? {}) },
+    settings: normalizeSettings(input.settings),
     races: Array.isArray(input.races) ? input.races : [],
     history: Array.isArray(input.history) ? input.history : [],
     recovery: Array.isArray(input.recovery) ? input.recovery : [],
@@ -95,6 +97,20 @@ function normalize(input: Partial<AppData>): AppData {
     profile: normalizeProfile(input.profile),
     testMode: false,
   };
+}
+
+/** The old "Return week" on/off became the Week off stage, starting the day it's first loaded. */
+export function normalizeSettings(raw: unknown): Settings {
+  const old = (raw && typeof raw === "object" ? raw : {}) as Partial<Settings> & { returnWeek?: boolean };
+  const { returnWeek, ...rest } = old;
+  const settings: Settings = { ...DEFAULT_SETTINGS, ...rest };
+  // Look at what was saved, not the merged defaults: older data has no stage at all.
+  if (!["off", "ramp", "normal"].includes(old.breakStage as string)) {
+    settings.breakStage = returnWeek ? "off" : "normal";
+    settings.breakStageSince = returnWeek ? todayLocal() : "";
+  }
+  if (typeof settings.breakStageSince !== "string") settings.breakStageSince = "";
+  return settings;
 }
 
 /** Older profiles stored a single `event`; they now hold a list. */

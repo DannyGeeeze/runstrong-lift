@@ -215,9 +215,9 @@ describe("easy / long / rest days", () => {
 });
 
 describe("modifiers", () => {
-  it("return week → yielding isos only, 20-45 s holds", () => {
+  it("week off → yielding isos only, 20-45 s holds", () => {
     const w = generateWorkout(
-      input({ today: MON, dayType: "workout", phase: "early", settings: { ...DEFAULT_SETTINGS, tuneUpDay: "mon", returnWeek: true } }),
+      input({ today: MON, dayType: "workout", phase: "early", settings: { ...DEFAULT_SETTINGS, tuneUpDay: "mon", breakStage: "off" } }),
     );
     expect(w.decision.session).toBe("return");
     expect(w.items.length).toBeGreaterThanOrEqual(3);

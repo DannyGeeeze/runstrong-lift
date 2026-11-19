@@ -19,7 +19,7 @@ import {
 import { generateWorkout, PHASE_HINT, PHASE_LABEL, suggestPhase } from "@/lib/rules";
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
-import type { Phase, Race, Weekday } from "@/lib/types";
+import type { BreakStage, Phase, Race, Weekday } from "@/lib/types";
 
 export default function WelcomePage() {
   const hydrated = useHydrated();
@@ -44,6 +44,12 @@ const PHASE_OPTIONS: { value: Phase; icon: string }[] = [
   { value: "championship", icon: "🏆" },
 ];
 
+const BREAK_OPTIONS: { value: BreakStage; label: string; hint: string }[] = [
+  { value: "normal", label: "Training normally", hint: "The regular plan." },
+  { value: "off", label: "Taking a week off", hint: "Optional easy holds every 2-3 days." },
+  { value: "ramp", label: "Coming back from a break", hint: "A ramp week of lighter Full sessions." },
+];
+
 const RACE_DISTANCE: Record<EventFocus, string> = { xc: "5K", distance: "3200m", mid: "1600m", long: "10K" };
 
 interface Answers {
@@ -62,7 +68,7 @@ interface Answers {
   phase: Phase;
   goalRaceName: string;
   goalRaceDate: string;
-  returnWeek: boolean;
+  breakStage: BreakStage;
 }
 
 function toggle<T>(list: T[], v: T): T[] {
@@ -93,7 +99,7 @@ function Onboarding() {
     phase: p ? data.settings.phase : suggestion.phase,
     goalRaceName: existingA?.name ?? "",
     goalRaceDate: existingA?.date ?? "",
-    returnWeek: data.settings.returnWeek,
+    breakStage: data.settings.breakStage,
   }));
   const set = <K extends keyof Answers>(k: K, v: Answers[K]) => setA((prev) => ({ ...prev, [k]: v }));
 
@@ -158,7 +164,10 @@ function Onboarding() {
     phase: a.phase,
     tuneUpDay: a.tuneUpDay,
     workoutDays: a.workoutDays,
-    returnWeek: a.returnWeek,
+    breakStage: a.breakStage,
+    // Keep the start date if the stage didn't change; a new stage starts today.
+    breakStageSince:
+      a.breakStage === data.settings.breakStage ? data.settings.breakStageSince : a.breakStage === "normal" ? "" : today,
   };
 
   const goalRace: Race | null =
@@ -397,27 +406,34 @@ function Onboarding() {
               </div>
               {!current.ready && <p className="mt-1.5 text-xs text-warn">Add both a name and a date, or leave both empty.</p>}
             </Question>
-            <button
-              type="button"
-              onClick={() => set("returnWeek", !a.returnWeek)}
-              aria-pressed={a.returnWeek}
-              className={`mt-6 flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition ${
-                a.returnWeek ? "border-accent bg-accent-soft" : "border-line bg-card"
-              }`}
-            >
-              <span className="flex-1">
-                <span className="block font-semibold">Coming back from a break</span>
-                <span className="block text-xs text-muted">Starts you on easy holds for a week.</span>
-              </span>
-              <span
-                className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md border-2 text-xs font-bold ${
-                  a.returnWeek ? "border-accent bg-accent text-accent-ink" : "border-line"
-                }`}
-                aria-hidden
-              >
-                {a.returnWeek ? "✓" : ""}
-              </span>
-            </button>
+            <Question label="Time off">
+              <div className="space-y-2">
+                {BREAK_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => set("breakStage", o.value)}
+                    aria-pressed={a.breakStage === o.value}
+                    className={`flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition ${
+                      a.breakStage === o.value ? "border-accent bg-accent-soft" : "border-line bg-card"
+                    }`}
+                  >
+                    <span className="flex-1">
+                      <span className="block font-semibold">{o.label}</span>
+                      <span className="block text-xs text-muted">{o.hint}</span>
+                    </span>
+                    <span
+                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 text-xs font-bold ${
+                        a.breakStage === o.value ? "border-accent bg-accent text-accent-ink" : "border-line"
+                      }`}
+                      aria-hidden
+                    >
+                      {a.breakStage === o.value ? "✓" : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </Question>
           </Step>
         )}
 

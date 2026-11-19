@@ -93,10 +93,12 @@ describe("easy-day sessions", () => {
       for (const i of w.items.filter((x) => x.slot === "UPPER")) expect(i.exercise.session_types).toContain("full");
     }
   });
-  it("return week keeps upper body but still swaps the touch-up for isos", () => {
-    const settings = { ...DEFAULT_SETTINGS, returnWeek: true };
-    expect(generateWorkout(input({ settings })).decision.session).toBe("upper");
-    expect(generateWorkout(input({ easyFocus: "touch-up", settings })).decision.session).toBe("return");
+  it("week off swaps both easy-day choices for its own optional isos; ramp week leaves them alone", () => {
+    const off = { ...DEFAULT_SETTINGS, breakStage: "off" as const };
+    expect(generateWorkout(input({ settings: off })).decision.session).toBe("return");
+    expect(generateWorkout(input({ easyFocus: "touch-up", settings: off })).decision.session).toBe("return");
+    const ramp = { ...DEFAULT_SETTINGS, breakStage: "ramp" as const };
+    expect(generateWorkout(input({ settings: ramp })).decision.session).toBe("upper");
   });
 
   it("new moves get fitting animations", () => {

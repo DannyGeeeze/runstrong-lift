@@ -2,6 +2,7 @@
 
 export type RunType = "easy" | "long" | "workout" | "race" | "rest";
 export type Phase = "off" | "early" | "deep" | "championship";
+export type BreakStage = "off" | "ramp" | "normal";
 export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
 /** Session types match the `session_types` tags in data/runstrong_exercises.json. */
@@ -96,7 +97,10 @@ export interface Settings {
   /** Deep season Thursday race day: "Full at half volume" or "Plyos + Isos". */
   /** No longer used: race days never have a lift. Kept so old saved settings still load. */
   deepRaceDay: "half" | "plyos-isos";
-  returnWeek: boolean;
+  /** Time off: "off" = week off (optional yielding isos every 2-3 days), "ramp" = lighter Full sessions, "normal" = regular rules. */
+  breakStage: BreakStage;
+  /** Day the current break stage started (YYYY-MM-DD); "" when normal. Used to suggest the next stage after 7 days. */
+  breakStageSince: string;
   enablePower: boolean;
   enableMobility: boolean;
   mockMode: boolean;

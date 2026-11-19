@@ -16,7 +16,9 @@ import {
   EASY_SESSIONS,
   decideSession,
   generateWorkout,
+  BREAK_STAGE_LABEL,
   PHASE_LABEL,
+  suggestBreakStage,
   toLiftLog,
   UPPER_FOCUS_LABEL,
   UPPER_FOCUSES,
@@ -40,7 +42,7 @@ const LOGGED_LABEL: Record<string, string> = {
   short: "Short strength",
   "plyos-isos": "Plyos + Isos",
   taper: "Race-day isos",
-  return: "Return isos",
+  return: "Week-off isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
   "long-isos": "Long-run isos",
@@ -98,7 +100,9 @@ function Today() {
   );
 
   const preview = decideSession(ctx);
-  const easyDay = preview.role === "easy";
+  // Week off replaces the easy-day choice with its own optional holds.
+  const easyDay = preview.role === "easy" && settings.breakStage !== "off";
+  const breakNext = suggestBreakStage(settings, today);
   const raceDay = preview.role === "thu-race" || preview.role === "other-race";
   const todayIsLift = !EASY_SESSIONS.includes(preview.session) && preview.session !== "none";
   const catchUp = !todayIsLift ? decideCatchUp(ctx, loading ? undefined : yesterday.type) : null;
@@ -222,6 +226,21 @@ function Today() {
         </div>
       )}
 
+      {breakNext && !current && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-accent-soft px-3 py-2.5 text-sm">
+          <span>{breakNext.message}</span>
+          <button
+            type="button"
+            className="shrink-0 font-semibold text-accent"
+            onClick={() =>
+              storage.saveSettings({ ...settings, breakStage: breakNext.next, breakStageSince: breakNext.next === "normal" ? "" : today })
+            }
+          >
+            Switch
+          </button>
+        </div>
+      )}
+
       {!current && runCard}
 
       {!current && (
@@ -231,7 +250,7 @@ function Today() {
               {mode === "catchup" ? "Make-up lift" : "Today's lift"}
             </p>
             <Link href="/settings" className="text-xs font-medium text-muted">
-              {PHASE_LABEL[settings.phase]}
+              {settings.breakStage !== "normal" ? BREAK_STAGE_LABEL[settings.breakStage] : PHASE_LABEL[settings.phase]}
             </Link>
           </div>
 

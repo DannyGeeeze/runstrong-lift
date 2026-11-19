@@ -4,15 +4,21 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPOT_OPTIONS } from "@/lib/profile";
 import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
-import { formatDay, todayLocal } from "@/lib/dates";
-import { blockEnds, PHASE_HINT, PHASE_LABEL, suggestPhase } from "@/lib/rules";
+import { diffDays, formatDay, todayLocal } from "@/lib/dates";
+import { blockEnds, BREAK_STAGE_LABEL, PHASE_HINT, PHASE_LABEL, suggestBreakStage, suggestPhase } from "@/lib/rules";
 import { storage } from "@/lib/storage";
 import { trackSeasonScenario } from "@/lib/mock";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
-import type { Phase, Settings, Weekday } from "@/lib/types";
+import type { BreakStage, Phase, Settings, Weekday } from "@/lib/types";
 
 const PHASES: Phase[] = ["off", "early", "deep", "championship"];
+const BREAK_STAGES: BreakStage[] = ["off", "ramp", "normal"];
+const BREAK_HINT: Record<BreakStage, string> = {
+  off: "No hard runs. An optional 15-min session of easy holds every 2-3 days, on any day.",
+  ramp: "The week after: Full sessions at lighter loads (2-3 x 8-12 @ RPE 5-6), easier plyos. Normal 48h rules.",
+  normal: "Regular training rules.",
+};
 const DAYS: Weekday[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 
 const STRAVA_ERRORS: Record<string, string> = {
@@ -45,6 +51,10 @@ function SettingsView() {
   }, []);
 
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) => storage.saveSettings({ ...settings, [key]: value });
+  /** Picking a stage starts its 7-day count today; Normal clears it. */
+  const setStage = (stage: BreakStage) =>
+    storage.saveSettings({ ...settings, breakStage: stage, breakStageSince: stage === "normal" ? "" : today });
+  const breakNext = suggestBreakStage(settings, today);
 
   async function disconnect() {
     await fetch("/api/strava/logout", { method: "POST" });
@@ -155,13 +165,42 @@ function SettingsView() {
             })}
           </div>
         </div>
-        <div className="py-2">
-          <Toggle
-            checked={settings.returnWeek}
-            onChange={(v) => set("returnWeek", v)}
-            label="Return week"
-            hint="Coming back from a break: easy holds only."
+        <div className="py-4">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-sm font-medium">Break / return</p>
+            {settings.breakStage !== "normal" && settings.breakStageSince && (
+              <span className="text-xs text-muted">Day {Math.max(1, diffDays(settings.breakStageSince, today) + 1)}</span>
+            )}
+          </div>
+          <Segmented
+            cols={3}
+            options={BREAK_STAGES.map((b) => ({ value: b, label: BREAK_STAGE_LABEL[b] }))}
+            value={settings.breakStage}
+            onChange={setStage}
           />
+          <p className="mt-2 text-xs text-muted">{BREAK_HINT[settings.breakStage]}</p>
+          {settings.breakStage !== "normal" && (
+            <label className="mt-2 flex items-center justify-between gap-3 text-xs text-muted">
+              Started on
+              <input
+                type="date"
+                max={today}
+                value={settings.breakStageSince}
+                onChange={(e) => e.target.value && set("breakStageSince", e.target.value)}
+                className="rounded-lg border border-line bg-card-2 px-2 py-1.5 text-sm text-ink"
+              />
+            </label>
+          )}
+          {breakNext && (
+            <div className="mt-3 rounded-xl bg-accent-soft px-3 py-2.5 text-sm">
+              <p>{breakNext.message}</p>
+              <button type="button" className="mt-1 font-semibold text-accent" onClick={() => setStage(breakNext.next)}>
+                Switch to {BREAK_STAGE_LABEL[breakNext.next]}
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="py-2">
           <Toggle
             checked={settings.enablePower}
             onChange={(v) => set("enablePower", v)}
@@ -289,7 +328,7 @@ function Segmented<T extends string>({
   cols: number;
 }) {
   return (
-    <div className={`mt-2 grid gap-1 rounded-xl bg-card-2 p-1 ${cols === 2 ? "grid-cols-2" : "grid-cols-4"}`}>
+    <div className={`mt-2 grid gap-1 rounded-xl bg-card-2 p-1 ${cols === 2 ? "grid-cols-2" : cols === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
       {options.map((o) => (
         <button
           key={o.value}

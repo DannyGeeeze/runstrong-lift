@@ -19,7 +19,7 @@ These are choices I made where the brief left room. Each one says where it lives
 8. **Off-season with a race on the calendar** follows the Early season race-week rows, because the coach's tables don't cover off-season races. Off-season workout days get the full 7 slots + 1 UPPER.
 9. **A Championship workout with no race close by** is Plyos + Isos. In other phases it's Full.
 10. **Weekly caps run in order.** With 2 strength sessions already in the last 7 days, the session becomes Plyos + Isos. With 2 plyo sessions, plyos are removed. If both caps are hit, you get isos only. "Rolling 7 days" means today plus the 6 days before it.
-11. **Return week** turns any lift day (and the easy-day touch-up) into yielding isos.
+11. ~~**Return week** turns any lift day (and the easy-day touch-up) into yielding isos.~~ Replaced by 75-78.
 12. **Short on time** only applies when a Full session with strength is allowed. It never overrides the 48h rule or the weekly caps.
 13. **Next-morning catch-up** shows on a non-lift day when yesterday was a Workout day with nothing logged, and only if the next hard day is at least 2 calendar days away.
 14. **The phase suggestion** works like this: an A race within 21 days suggests Championship. Races both in the last 6 weeks and in the next 3 suggest Deep. A race within 10 weeks suggests Early. Anything else suggests Off-season. You still pick the phase yourself.
@@ -67,7 +67,7 @@ These are choices I made where the brief left room. Each one says where it lives
     - **Goals "kick" or "economy":** Full sessions always get A2, so 2 plyos, still capped at 6 moves.
     - **Goal "healthy":** the easy-day touch-up is labeled "Recommended" on Today.
     - **20-minute sessions:** "Short on time" starts switched on.
-    - Answers also fill in phase, tune-up day, workout days and return week in Settings. A goal race is added as an A race.
+    - Answers also fill in phase, tune-up day, workout days and the break stage (75) in Settings. A goal race is added as an A race.
 38. **Every profile filter relaxes rather than leaving a slot empty.** First it drops the experience filter, then the equipment filter. The coach's Short template uses its own picks when they fit, and otherwise the nearest Full option for that slot.
 39. **The profile only changes which exercises fill a slot.** The coach's timing rules (48h, weekly caps, phase tables) are never changed by onboarding answers.
 40. **Rep text cleanup:** where a library entry repeats its set count inside reps (e.g. "2-3 x 20-45 s hold"), the count is dropped from reps, since `sets` already holds it.
@@ -121,7 +121,7 @@ These are choices I made where the brief left room. Each one says where it lives
 
 60. **Easy and long days default to an upper-body lift.** In the 7 days before an A race they default to the touch-up instead, and the reason says so ("State (A) in 4 days, so no upper-body lift"). B and C races don't change it. The runner can still switch between the two. Workout, race and rest days are unchanged.
 61. **No core or hip sessions.** The team already does core and hip work at practice, so the app doesn't add them. (Core and Mobility options were built and then removed for this reason. A "suggest whatever you haven't done this week" rotation was also removed once upper body became the default.)
-62. **Upper body doesn't load the legs,** so it doesn't count toward the weekly 2 strength + 2 plyo caps and doesn't affect the 48h rule. In a return week the touch-up still becomes yielding isos, but upper body stays.
+62. **Upper body doesn't load the legs,** so it doesn't count toward the weekly 2 strength + 2 plyo caps and doesn't affect the 48h rule. In a week off (75) both easy-day choices become the week-off isos; in a ramp week (76) upper body is unchanged.
 63. **Upper body is split by body part (~20 min, 4 moves each):**
     - Back & biceps: a vertical pull (pull-up or pulldown), a row, a curl and a shoulder-blade move.
     - Chest & triceps: two presses or push-ups, a triceps move and a serratus move.
@@ -144,3 +144,11 @@ These are choices I made where the brief left room. Each one says where it lives
 
 73. **Never lift on race days.** The runner's rule, stricter than the coach's (who lifts after Thursday races). Race days are always "no lift", in every phase. There's no catch-up lift on a race morning, and none the morning after a race. The "Deep season, race day lift" setting is gone. Race days still count as hard days for the 48h rule, and Recovery suggests boots.
 74. **Long-run days: optional long-run isos (~8 min).** The coach's system says nothing about long-run days. The legs are already tired from the long run, so the app adds almost no load: 3 easy holds (yielding isos, calf/ankle first), 2 x 30 s, 30 s rest. Holds are tendon-friendly and cost very little. Skipping it is fine. Upper body and the touch-up are now easy days only. Recovery suggests compression boots after a long run.
+
+## Time off: Break / return (`lib/rules/rules.ts`, `lib/rules/sessions.ts`)
+
+75. **Week off.** Settings → Break / return → Week off. No hard runs are expected, so the hard-day rules (race-week roles, phase tables, the 48h rule, the weekly caps) don't apply. Any day except a race day can have one optional session, spaced every 2-3 days: if the last lift was yesterday, today is rest and the reason says when the next one is. The session is about 15 minutes of yielding isos only: one Achilles/calf iso, one hip/hamstring iso (posterior chain, hip flexor or adductor slot) and one more, 20-45 s holds, 3 sets (2 when done one side at a time). Easy-day upper body and the touch-up are replaced by it. No next-morning catch-up. Never on race days (73).
+76. **Ramp week (the week after).** The normal rules decide when to lift and what kind of session it is. Full and Short sessions are then built lighter: no high-intensity moves at all (so plyos are low/medium and no Nordics, which can't be done for 8-12), and every loaded move is 2-3 sets of 8-12 @ RPE 5-6. Plyos and isos keep their usual dosing. Upper body, Plyos + Isos, and the 48h rule and caps are unchanged.
+77. **Normal** is the regular rules.
+78. **Moving on is suggested, not automatic.** Each stage records the day it started. After 7 days in Week off the app suggests Ramp week; after 7 days in Ramp week it suggests Normal. The suggestion shows on Today and in Settings with a one-tap switch. The runner can pick any stage at any time or change the start date. The old "Return week" toggle carries over as Week off starting the day the new version first loads.
+

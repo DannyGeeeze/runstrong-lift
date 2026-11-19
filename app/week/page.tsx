@@ -17,7 +17,7 @@ const SESSION_LABEL: Record<LiftLog["session"], string> = {
   short: "Short strength",
   "plyos-isos": "Plyos + Isos",
   taper: "Race-day isos",
-  return: "Return isos",
+  return: "Week-off isos",
   "touch-up": "Touch-up",
   upper: "Upper body",
   "long-isos": "Long-run isos",
