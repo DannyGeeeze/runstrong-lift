@@ -201,6 +201,11 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
         <text x={left - 6} y={top + plotH + 16} dy="0.32em" textAnchor="end" fontSize="9" fill="var(--muted)">
           lift
         </text>
+        {total === 0 && (
+          <text x={(W + left) / 2} y={top + plotH / 2} textAnchor="middle" fontSize="12" fill="var(--muted)">
+            No runs in the last 14 days. Connect Strava or turn on demo runs in Settings.
+          </text>
+        )}
       </svg>
       {h && hover !== null && (
         <Tooltip x={(left + band * hover + band / 2) / W}>
