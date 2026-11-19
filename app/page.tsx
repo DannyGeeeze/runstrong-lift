@@ -6,7 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import { RecoveryCard } from "@/components/RecoveryCard";
 import { RunRow } from "@/components/RunList";
 import { LiveWorkout } from "@/components/LiveWorkout";
+import { WeekPlan } from "@/components/WeekPlan";
 import { WorkoutCard } from "@/components/WorkoutCard";
+import { PLAN_SOURCE_LABEL, planDays, type PlanDay } from "@/lib/plan";
 import { Button, Card, Chip, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
 import { dayType, futureHardOverrides, RUN_TYPE_LABEL } from "@/lib/day";
@@ -73,6 +75,8 @@ function Today() {
   const [state, setState] = useState<{ sig: string; workout: Workout; done: Set<string> } | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [live, setLive] = useState(false);
+  // Desktop planning: which day of the week plan is open (today by default).
+  const [planDate, setPlanDate] = useState(today);
   // Easy days default to upper body (touch-up the week before an A race); tapping overrides it.
   const [easyPick, setEasyPick] = useState<EasyFocus | undefined>(undefined);
   const easyFocus = easyPick;
@@ -113,6 +117,8 @@ function Today() {
 
   const nextRace = races.find((r) => r.date >= today);
   const week = weekCounts(history, today);
+  const plan = useMemo(() => planDays(ctx, overrides), [ctx, overrides]);
+  const planned = planDate !== today ? plan.find((d) => d.date === planDate) : undefined;
 
   // The hero card: what today's lift is, before you generate it.
   const active = mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview;
@@ -228,6 +234,12 @@ function Today() {
         </div>
       )}
 
+      {!loading && (
+        <div className="hidden lg:block">
+          <WeekPlan plan={plan} selected={planned ? planDate : today} onSelect={setPlanDate} />
+        </div>
+      )}
+
       <div className="lg:mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8">
       <div className="min-w-0">
       {breakNext && !current && (
@@ -247,6 +259,7 @@ function Today() {
 
       {!current && <div className="lg:hidden">{runCard}</div>}
 
+      <div className={planned ? "lg:hidden" : ""}>
       {!current && (
         <section className="mt-5 rounded-3xl border border-line bg-card p-5 shadow-sm">
           <div className="flex items-center justify-between">
@@ -373,8 +386,9 @@ function Today() {
               onToggle={toggleDone}
               history={history}
               actions={
+                // The guided player is for doing the workout, on a phone. Desktop is for planning.
                 current.workout.items.length > 0 && (
-                  <Button variant="primary" className="w-full py-4 text-lg" onClick={() => setLive(true)}>
+                  <Button variant="primary" className="w-full py-4 text-lg lg:hidden" onClick={() => setLive(true)}>
                     ▶ Start workout
                   </Button>
                 )
@@ -399,6 +413,9 @@ function Today() {
           </>
         )}
       </div>
+
+      </div>
+      {planned && <PlannedDay day={planned} onBack={() => setPlanDate(today)} onSetType={(t) => storage.setOverride(planned.date, overrides[planned.date] === t ? null : t)} history={history} />}
 
       {current && <div className="lg:hidden">{runCard}</div>}
       </div>
@@ -439,3 +456,55 @@ function Today() {
     </div>
   );
 }
+
+/** Desktop: a future day from the week plan. Change its run type and the plan updates. */
+function PlannedDay({
+  day,
+  onBack,
+  onSetType,
+  history,
+}: {
+  day: PlanDay;
+  onBack: () => void;
+  onSetType: (t: RunType) => void;
+  history: LiftLog[];
+}) {
+  const w = day.workout;
+  return (
+    <div className="mt-5 hidden space-y-4 lg:block">
+      <div className="rounded-3xl border border-line bg-card p-5 shadow-sm">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wider text-accent">Planned · {formatDay(day.date)}</p>
+          <button type="button" className="text-xs font-medium text-muted hover:text-ink" onClick={onBack}>
+            Back to today
+          </button>
+        </div>
+        <p className="mt-3 text-sm font-medium">
+          Run: {RUN_TYPE_LABEL[day.type]}
+          <span className="font-normal text-muted">
+            {" "}
+            · {PLAN_SOURCE_LABEL[day.source]}
+            {day.label && day.label !== "workout" ? ` (${day.label})` : ""}
+          </span>
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {TYPES.map((t) => (
+            <Chip key={t} active={day.type === t} onClick={() => onSetType(t)}>
+              {RUN_TYPE_LABEL[t]}
+            </Chip>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-muted">Changing the run here saves it for that day, and the rest of the week re-plans.</p>
+      </div>
+      {w.decision.session === "none" ? (
+        <div className="rounded-3xl border border-line bg-card p-5">
+          <h2 className="text-2xl font-bold tracking-tight">{day.type === "race" ? "Race day" : "No lift"}</h2>
+          <p className="mt-2 text-sm text-muted">{w.decision.why}</p>
+        </div>
+      ) : (
+        <WorkoutCard workout={w} done={new Set()} onToggle={() => {}} history={history} />
+      )}
+    </div>
+  );
+}
+

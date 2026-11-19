@@ -301,7 +301,7 @@ export function LiveWorkout({
 
   return (
     <div className="player fixed inset-0 z-50 flex flex-col bg-bg pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-      <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4 lg:max-w-5xl lg:px-10 lg:py-4">
+      <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col px-4">
         {/* Top: close, segmented progress, clock */}
         <div className="flex items-center gap-3">
           <button type="button" onClick={exit} aria-label="End workout" className="-ml-2 flex h-10 w-10 items-center justify-center rounded-full text-2xl text-muted">
@@ -326,7 +326,7 @@ export function LiveWorkout({
             bests={newBests(history, weights).map((b) => ({ name: getExercise(b.id)?.name ?? b.id, weight: b.weight }))}
           />
         ) : step?.kind === "warmup" ? (
-          <div key={index} className="animate-rise mx-auto flex min-h-0 w-full flex-1 flex-col overflow-y-auto pt-8 lg:max-w-xl">
+          <div key={index} className="animate-rise flex min-h-0 flex-1 flex-col overflow-y-auto pt-8">
             <h1 className="text-3xl font-bold leading-tight tracking-tight">{workout.title}</h1>
             <p className="mt-1 text-sm font-medium text-muted">
               {workout.estMinutes > 0 && `~${workout.estMinutes} min · `}
@@ -389,7 +389,7 @@ export function LiveWorkout({
         ) : null}
 
         {/* Bottom controls */}
-        <div className="mx-auto mt-4 w-full lg:max-w-md">
+        <div className="mt-4">
           {finished ? (
             <div className="space-y-2">
               <button type="button" onClick={() => onFinish([...done], weights)} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
@@ -456,9 +456,9 @@ function WorkView({
   const timing = step.seconds !== null && timer.phase !== "idle";
   const holdish = /hold|iso/i.test(`${p.reps} ${p.exercise.name}`);
   return (
-    <div className="animate-rise flex min-h-0 flex-1 flex-col pt-3 lg:flex-row lg:items-center lg:gap-12 lg:pt-6">
+    <div className="animate-rise flex min-h-0 flex-1 flex-col pt-3">
       {/* The move fills the top half */}
-      <div className="relative h-[45dvh] shrink-0 overflow-hidden rounded-3xl bg-card lg:h-[68dvh] lg:w-[55%]">
+      <div className="relative h-[45dvh] shrink-0 overflow-hidden rounded-3xl bg-card">
         <div className="absolute inset-0">
           <ExerciseDemo exercise={p.exercise} size="lg" />
         </div>
@@ -475,7 +475,7 @@ function WorkView({
         )}
       </div>
 
-      <div className="mt-4 flex min-h-0 flex-1 flex-col lg:mt-0 lg:justify-center">
+      <div className="mt-4 flex min-h-0 flex-1 flex-col">
         <p className="text-sm font-semibold uppercase tracking-wider text-muted">
           Move {step.item + 1} of {workout.items.length} · Set {step.set} of {step.sets}
           {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"}</span>}
@@ -524,7 +524,7 @@ function RestView({
   const upItem = up ? workout.items[up.item] : null;
   const upLast = upItem && isLoaded(upItem.exercise) ? lastTime(history, upItem.exercise.id) : null;
   return (
-    <div className="animate-rise mx-auto flex min-h-0 w-full flex-1 flex-col items-center justify-center gap-5 lg:max-w-md">
+    <div className="animate-rise flex min-h-0 flex-1 flex-col items-center justify-center gap-5">
       <Ring value={remaining} total={total} label={paused ? "Paused" : step.label} big />
       <button type="button" onClick={onAdd} className="rounded-full border border-line bg-card px-5 py-2 text-sm font-semibold">
         +15 s
@@ -563,7 +563,7 @@ function FinishView({
   bests: { name: string; weight: number }[];
 }) {
   return (
-    <div className="animate-rise mx-auto flex w-full flex-1 flex-col items-center justify-center text-center lg:max-w-md">
+    <div className="animate-rise flex flex-1 flex-col items-center justify-center text-center">
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-ink">
         <CheckIcon />
       </div>
