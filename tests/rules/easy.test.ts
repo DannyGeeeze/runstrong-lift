@@ -114,6 +114,27 @@ describe("easy-day sessions", () => {
     expect(id("close-grip-push-up")).toBe("push-up");
   });
 
+  it("upper-body days are dumbbell-only when you have dumbbells: 4 moves each, every body part", () => {
+    for (const equipment of ["gym", "home"] as const) {
+      const profile = { ...minimal, equipment, experience: "some" } as Profile;
+      for (const focus of UPPER_FOCUSES) {
+        for (let attempt = 0; attempt < 5; attempt++) {
+          const w = generateWorkout(input({ upperFocus: focus, profile, attempt }));
+          expect(w.items.length, `${equipment} ${focus} #${attempt}`).toBe(4);
+          for (const i of w.items) expect(i.exercise.equipment ?? "", `${focus}: ${i.exercise.id}`).toMatch(/dumbbell/i);
+        }
+      }
+    }
+  });
+
+  it("without dumbbells (bodyweight), upper-body days still fill with what you have", () => {
+    for (const focus of UPPER_FOCUSES) {
+      const w = generateWorkout(input({ upperFocus: focus, profile: minimal }));
+      expect(w.items.length, focus).toBeGreaterThanOrEqual(3);
+      for (const i of w.items) expect(i.exercise.equipment ?? "").not.toMatch(/dumbbell|barbell|cable/i);
+    }
+  });
+
   it("no core or hip-mobility sessions (done at practice)", () => {
     expect(ALL_EXERCISES.some((e) => (e.slot as string) === "CORE")).toBe(false);
   });

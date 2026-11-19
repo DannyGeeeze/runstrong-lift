@@ -15,7 +15,7 @@
    "UPPER": "upper body/postural (optional, max 1 per session)"
   },
   "plyo_tiers": "From his library: light < medium < ping (fast, reactive) / deep (big landings). Intensity mapping is an assumption.",
-  "app_added": "Entries with source \"app\" were added by the app for easy-day Upper body sessions (push-ups, band moves, curls, triceps extensions, lateral raises) so each body-part day works with minimal equipment; they are standard moves, not from the coach."
+  "app_added": "Entries with source \"app\" were added by the app for easy-day Upper body sessions (push-ups, band moves, curls, triceps extensions, lateral raises, and dumbbell pullovers, rear-delt flys and serratus punches so upper body can be dumbbell-only) so each body-part day works with minimal equipment; they are standard moves, not from the coach."
  },
  "featured": [
   {
@@ -6828,6 +6828,54 @@
    "sets": 2,
    "reps": "10-12",
    "cue": "Stand on the band, hands at your shoulders. Press straight up, ribs down."
+  },
+  {
+   "id": "dumbbell-pullover",
+   "name": "Dumbbell pullover",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells, bench",
+   "unilateral": false,
+   "sets": 3,
+   "reps": "8-10",
+   "cue": "Upper back on a bench, one dumbbell held over your chest with both hands. Lower it behind your head with soft elbows, then pull it back over your chest with your lats."
+  },
+  {
+   "id": "dumbbell-rear-delt-fly",
+   "name": "Dumbbell rear-delt fly",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": false,
+   "sets": 2,
+   "reps": "10-12",
+   "cue": "Light weights. Hinge forward with a flat back, raise your arms out to the sides and squeeze your shoulder blades together. No swinging."
+  },
+  {
+   "id": "lying-dumbbell-serratus-punch",
+   "name": "Lying dumbbell serratus punch",
+   "slot": "UPPER",
+   "session_types": [
+    "upper"
+   ],
+   "featured": false,
+   "source": "app",
+   "intensity": "low",
+   "equipment": "dumbbells",
+   "unilateral": true,
+   "sets": 2,
+   "reps": "10",
+   "cue": "On your back, dumbbell straight up over your shoulder. Keep the elbow locked and punch the weight toward the ceiling by reaching your shoulder blade forward, then let it settle back."
   }
  ]
 }

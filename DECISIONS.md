@@ -158,3 +158,5 @@ These are choices I made where the brief left room. Each one says where it lives
 80. **Where the mileage comes from:** the last 7 days of runs (Strava or demo) when there are any, otherwise the setup answer. Unknown mileage means full sessions, as before.
 81. **Event emphasis.** 800/mile runners get 2 plyos in every Full session (like the "faster kick" goal). Cross country and road runners: the calf move in Full sessions prefers an Achilles/calf hold, for tendon capacity under high volume. 1600/3200 is the default. The coach's caps (6 moves in season, 45 min, 2 strength a week) are unchanged.
 
+
+82. **Upper-body days are dumbbell-only** (the runner's rule) whenever the runner has dumbbells (Gym or Home in setup). Three dumbbell moves were added so every slot has one: dumbbell pullover (vertical pull), dumbbell rear-delt fly (shoulder blades) and lying dumbbell serratus punch (serratus). With Bodyweight only, upper-body days keep using bodyweight and band moves.

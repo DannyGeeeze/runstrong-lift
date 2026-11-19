@@ -17,7 +17,8 @@
  *  Touch-up: 2-3 low-intensity foot/calf/hip-flexor moves, ~10 min.
  *  Long-run isos (long-run days, optional): 3 easy holds, 2 x 30 s, calf/ankle first.
  *  Race days: never a lift.
- *  Upper body (easy days; no leg loading): one body part per day, rotating so the
+ *  Upper body (easy days; no leg loading): dumbbell moves only (unless the runner has
+ *    no dumbbells), one body part per day, rotating so the
  *    one done longest ago is next (see nextUpperFocus in rules.ts):
  *      Back & biceps: vertical pull, row, curl, shoulder-blade move.
  *      Chest & triceps: 2 presses or push-ups, triceps, serratus.
@@ -407,12 +408,12 @@ interface UpperGroup {
   main?: boolean;
 }
 
-const SHOULDER_BLADE = /pull-apart|atyt|iyt|^wy$|w-on-bench|snow-angel/;
+const SHOULDER_BLADE = /pull-apart|atyt|iyt|^wy$|w-on-bench|snow-angel|rear-delt-fly/;
 
 /** One template per body part. Each is 4 moves, about 20 minutes. */
 const UPPER_DAYS: Record<UpperFocus, UpperGroup[]> = {
   back: [
-    { key: "vertical", match: /^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down)$/, sets: 3, reps: "6-10", rest: "60-90 s", main: true },
+    { key: "vertical", match: /^(pull-up|pull-up-eccentric-only|chin-up|cable-lat-pull-down|band-lat-pull-down|dumbbell-pullover)$/, sets: 3, reps: "6-10", rest: "60-90 s", main: true },
     { key: "row", match: /row/, sets: 3, reps: "8-10", rest: "60-90 s", main: true },
     { key: "biceps", match: /curl/, sets: 2, reps: "10-12", rest: "45 s" },
     { key: "rear", match: SHOULDER_BLADE, sets: 2, reps: "10", rest: "30 s" },
@@ -437,8 +438,15 @@ function perSide(e: Exercise, reps: string) {
   return e.unilateral || /single-arm|single arm|contralateral|offset/.test(`${e.id} ${e.name}`.toLowerCase()) ? `${reps}/side` : reps;
 }
 
+/** Upper-body days are dumbbell-only for anyone with dumbbells (gym or home). */
+const usesDumbbells = (e: Exercise) => /dumbbell/i.test(e.equipment ?? "");
+function hasDumbbells(profile: Profile | null | undefined) {
+  return !profile || profile.equipment !== "minimal";
+}
+
 function buildUpper(ctx: Ctx, focus: UpperFocus): Prescription[] {
-  const upper = ctx.pool.filter((e) => e.slot === "UPPER" && !isoKind(e) && !/med-ball/.test(e.id));
+  const all = ctx.pool.filter((e) => e.slot === "UPPER" && !isoKind(e) && !/med-ball/.test(e.id));
+  const upper = hasDumbbells(ctx.profile) ? all.filter(usesDumbbells) : all;
   const out: Prescription[] = [];
   for (const g of UPPER_DAYS[focus]) {
     const key = `upper-${focus}:${g.key}`;
