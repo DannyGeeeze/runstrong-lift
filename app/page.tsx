@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { RecoveryCard } from "@/components/RecoveryCard";
 import { RunRow } from "@/components/RunList";
 import { LiveWorkout } from "@/components/LiveWorkout";
+import { RunTypePicker } from "@/components/RunTypePicker";
 import { WeekPlan } from "@/components/WeekPlan";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { PLAN_SOURCE_LABEL, planDays, type PlanDay } from "@/lib/plan";
@@ -36,7 +37,6 @@ import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
 import type { EasyFocus, LiftLog, RunType, UpperFocus } from "@/lib/types";
 
-const TYPES: RunType[] = ["easy", "long", "workout", "race", "rest"];
 
 const EASY_OPTIONS: { value: EasyFocus; label: string }[] = [
   { value: "upper", label: "Upper body" },
@@ -503,25 +503,3 @@ function PlannedDay({
     </div>
   );
 }
-
-/** The five run types as one row of equal buttons (no wrapping). */
-function RunTypePicker({ value, onPick }: { value: RunType; onPick: (t: RunType) => void }) {
-  return (
-    <div className="mt-3 grid grid-cols-5 gap-1 rounded-xl bg-card-2 p-1" role="group" aria-label="Kind of run">
-      {TYPES.map((t) => (
-        <button
-          key={t}
-          type="button"
-          aria-pressed={value === t}
-          onClick={() => onPick(t)}
-          className={`min-h-10 rounded-lg px-0.5 text-[13px] font-semibold transition-colors ${
-            value === t ? "bg-accent text-accent-ink shadow-sm" : "text-muted hover:text-ink"
-          }`}
-        >
-          {RUN_TYPE_LABEL[t]}
-        </button>
-      ))}
-    </div>
-  );
-}
-

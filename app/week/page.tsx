@@ -2,10 +2,11 @@
 
 import { useState, type ReactNode } from "react";
 import { RunRow } from "@/components/RunList";
+import { RunTypePicker } from "@/components/RunTypePicker";
 import { LiftsChart, MilesChart, type LiftWeek, type MilesDay } from "@/components/WeekCharts";
 import { Card, SectionTitle } from "@/components/ui";
 import { addDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
-import { dayType, RUN_TYPE_LABEL } from "@/lib/day";
+import { dayType, RUN_TYPE_LABEL, type DaySource } from "@/lib/day";
 import { EASY_SESSIONS, RECOVERY_LABEL, ROTATION_TYPES, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
 import { METERS_PER_MILE, miles } from "@/lib/strava";
 import { storage } from "@/lib/storage";
@@ -75,6 +76,92 @@ function Week() {
   });
 
   const [showOlder, setShowOlder] = useState(false);
+  // The day whose run type is being changed (tap its tag).
+  const [editing, setEditing] = useState<string | null>(null);
+  const olderDays = Array.from({ length: 7 }, (_, i) => addDays(today, -7 - i));
+
+  const dayRow = (date: string) => {
+    const d = dayType(date, runs, overrides, races);
+    const lifts = history.filter((h) => h.date === date);
+    const recs = recovery.filter((r) => r.date === date);
+    const isToday = date === today;
+    const open = editing === date;
+    return (
+      <div key={date} className="flex gap-3 py-3">
+        <div className="w-11 shrink-0 pt-0.5 text-center">
+          <p className={`text-[11px] font-semibold uppercase tracking-wide ${isToday ? "text-accent" : "text-muted"}`}>
+            {isToday ? "Today" : weekday(date)}
+          </p>
+          <p className={`text-lg font-bold leading-tight tabular-nums ${isToday ? "text-accent" : ""}`}>{dayNum(date)}</p>
+        </div>
+        <div className="min-w-0 flex-1">
+          <button
+            type="button"
+            onClick={() => setEditing(open ? null : date)}
+            aria-expanded={open}
+            aria-label={`${RUN_TYPE_LABEL[d.type]} on ${formatDay(date)}. Change the kind of run`}
+            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${TYPE_STYLE[d.type]} ${open ? "ring-2 ring-accent/40" : ""}`}
+          >
+            {RUN_TYPE_LABEL[d.type]}
+            <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden>
+              <path d={open ? "M3 7.5 6 4.5l3 3" : "M3 4.5 6 7.5l3-3"} />
+            </svg>
+          </button>
+          {open && (
+            <div className="mt-2">
+              <RunTypePicker
+                value={d.type}
+                className=""
+                onPick={(t) => {
+                  storage.setOverride(date, overrides[date] === t ? null : t);
+                  setEditing(null);
+                }}
+              />
+              <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-xs text-muted">
+                {SOURCE_LABEL[d.source]}
+                {d.source === "override" && (
+                  <button
+                    type="button"
+                    className="font-semibold text-accent"
+                    onClick={() => {
+                      storage.setOverride(date, null);
+                      setEditing(null);
+                    }}
+                  >
+                    {d.runs.length ? "Use Strava's" : "Clear"}
+                  </button>
+                )}
+              </p>
+            </div>
+          )}
+          {d.runs.map((r) => (
+            <RunRow key={r.id} run={r} compact />
+          ))}
+          {(lifts.length > 0 || recs.length > 0) && (
+            <div className="mt-1.5 flex flex-wrap gap-1.5">
+              {lifts.map((l) => (
+                <LogChip
+                  key={l.id}
+                  tone="lift"
+                  label={`${l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : SESSION_LABEL[l.session]}${l.volume === "half" ? " (half)" : ""}${l.exerciseIds.length ? ` · ${l.exerciseIds.length} moves` : ""}`}
+                  onDelete={() => confirm("Delete this lift from history?") && storage.deleteLift(l.id)}
+                />
+              ))}
+              {recs.map((r) => (
+                <LogChip
+                  key={r.id}
+                  tone="recovery"
+                  label={RECOVERY_LABEL[r.kind]}
+                  onDelete={() => confirm(`Delete this ${RECOVERY_LABEL[r.kind].toLowerCase()} session?`) && storage.deleteRecovery(r.id)}
+                />
+              ))}
+            </div>
+          )}
+          {d.runs.length === 0 && lifts.length === 0 && recs.length === 0 && <p className="mt-0.5 text-xs text-muted">Nothing logged</p>}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -119,85 +206,29 @@ function Week() {
         <LiftsChart weeks={liftWeeks} />
       </div>
       <SectionTitle>Day by day</SectionTitle>
-      <Card className="divide-y divide-line py-0">
-        {days.map((date) => {
-          const d = dayType(date, runs, overrides, races);
-          const lifts = history.filter((h) => h.date === date);
-          const recs = recovery.filter((r) => r.date === date);
-          const isToday = date === today;
-          return (
-            <div key={date} className="flex gap-3 py-3">
-              <div className="w-11 shrink-0 pt-0.5 text-center">
-                <p className={`text-[11px] font-semibold uppercase tracking-wide ${isToday ? "text-accent" : "text-muted"}`}>
-                  {isToday ? "Today" : weekday(date)}
-                </p>
-                <p className={`text-lg font-bold leading-tight tabular-nums ${isToday ? "text-accent" : ""}`}>{dayNum(date)}</p>
-              </div>
-              <div className="min-w-0 flex-1">
-                <span className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold ${TYPE_STYLE[d.type]}`}>
-                  {RUN_TYPE_LABEL[d.type]}
-                </span>
-                {d.runs.map((r) => (
-                  <RunRow key={r.id} run={r} compact />
-                ))}
-                {(lifts.length > 0 || recs.length > 0) && (
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {lifts.map((l) => (
-                      <LogChip
-                        key={l.id}
-                        tone="lift"
-                        label={`${l.upperFocus ? UPPER_FOCUS_LABEL[l.upperFocus] : SESSION_LABEL[l.session]}${l.volume === "half" ? " (half)" : ""}${l.exerciseIds.length ? ` · ${l.exerciseIds.length} moves` : ""}`}
-                        onDelete={() => confirm("Delete this lift from history?") && storage.deleteLift(l.id)}
-                      />
-                    ))}
-                    {recs.map((r) => (
-                      <LogChip
-                        key={r.id}
-                        tone="recovery"
-                        label={RECOVERY_LABEL[r.kind]}
-                        onDelete={() => confirm(`Delete this ${RECOVERY_LABEL[r.kind].toLowerCase()} session?`) && storage.deleteRecovery(r.id)}
-                      />
-                    ))}
-                  </div>
-                )}
-                {d.runs.length === 0 && lifts.length === 0 && recs.length === 0 && (
-                  <p className="mt-0.5 text-xs text-muted">Nothing logged</p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </Card>
+      <Card className="divide-y divide-line py-0">{days.map(dayRow)}</Card>
 
-      {older.length > 0 && (
-        <>
-          <button
-            type="button"
-            onClick={() => setShowOlder((v) => !v)}
-            aria-expanded={showOlder}
-            className="mt-4 min-h-11 w-full rounded-xl text-sm font-medium text-muted"
-          >
-            {showOlder ? "Hide days 8–14" : `Show days 8–14 · ${older.length} runs`}
-          </button>
-          {showOlder && (
-            <Card className="divide-y divide-line py-1">
-              {older.map((r) => (
-                <div key={r.id} className="flex gap-3 py-1.5">
-                  <p className="w-14 shrink-0 pt-2.5 text-xs text-muted">{weekday(r.date)} {dayNum(r.date)}</p>
-                  <div className="min-w-0 flex-1">
-                    <RunRow run={r} />
-                  </div>
-                </div>
-              ))}
-            </Card>
-          )}
-        </>
-      )}
+      <button
+        type="button"
+        onClick={() => setShowOlder((v) => !v)}
+        aria-expanded={showOlder}
+        className="mt-4 min-h-11 w-full rounded-xl text-sm font-medium text-muted"
+      >
+        {showOlder ? "Hide days 8–14" : `Show days 8–14${older.length ? ` · ${older.length} runs` : ""}`}
+      </button>
+      {showOlder && <Card className="divide-y divide-line py-0">{olderDays.map(dayRow)}</Card>}
       </div>
       </div>
     </div>
   );
 }
+
+const SOURCE_LABEL: Record<DaySource, string> = {
+  override: "Set by you.",
+  "race-schedule": "From your race schedule.",
+  strava: "From Strava.",
+  none: "No run logged.",
+};
 
 const UPPER_SHORT: Record<UpperFocus, string> = { back: "Back", chest: "Chest", shoulders: "Shoulders" };
 
