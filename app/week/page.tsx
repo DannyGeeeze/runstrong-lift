@@ -2,11 +2,12 @@
 
 import { useState, type ReactNode } from "react";
 import { RunRow } from "@/components/RunList";
+import { LiftsChart, MilesChart, type LiftWeek, type MilesDay } from "@/components/WeekCharts";
 import { Card, SectionTitle } from "@/components/ui";
-import { addDays, formatDay, todayLocal } from "@/lib/dates";
+import { addDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
 import { dayType, RUN_TYPE_LABEL } from "@/lib/day";
-import { RECOVERY_LABEL, ROTATION_TYPES, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
-import { miles } from "@/lib/strava";
+import { EASY_SESSIONS, RECOVERY_LABEL, ROTATION_TYPES, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
+import { METERS_PER_MILE, miles } from "@/lib/strava";
 import { storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
@@ -52,6 +53,27 @@ function Week() {
     .reduce((s, r) => s + r.distanceM, 0);
   const older = runs.filter((r) => r.date <= addDays(today, -7)).sort((a, b) => b.startLocal.localeCompare(a.startLocal));
 
+  // Chart data: the last 14 days (all the runs we have) and the last 8 calendar weeks of lifts.
+  const milesDays: MilesDay[] = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13)).map((date) => {
+    const d = dayType(date, runs, overrides, races);
+    const lifts = history.filter((h) => h.date === date && h.session !== "none");
+    const main = lifts.find((l) => !EASY_SESSIONS.includes(l.session)) ?? lifts[0];
+    return {
+      date,
+      miles: d.runs.reduce((sum, r) => sum + r.distanceM, 0) / METERS_PER_MILE,
+      type: d.type,
+      runNames: d.runs.map((r) => r.name),
+      lift: main
+        ? { label: main.upperFocus ? UPPER_FOCUS_LABEL[main.upperFocus] : SESSION_LABEL[main.session], light: EASY_SESSIONS.includes(main.session) }
+        : null,
+    };
+  });
+  const thisMonday = mondayOf(today);
+  const liftWeeks: LiftWeek[] = Array.from({ length: 8 }, (_, i) => addDays(thisMonday, (i - 7) * 7)).map((monday) => {
+    const inWeek = history.filter((h) => h.date >= monday && h.date <= addDays(monday, 6));
+    return { monday, strength: inWeek.filter((h) => h.hadStrength).length, plyo: inWeek.filter((h) => h.hadPlyo).length };
+  });
+
   const [showOlder, setShowOlder] = useState(false);
 
   return (
@@ -91,6 +113,11 @@ function Week() {
       </div>
 
       <div className="min-w-0">
+      {/* Desktop: charts above the day-by-day list. */}
+      <div className="mt-4 hidden space-y-4 lg:block">
+        <MilesChart days={milesDays} />
+        <LiftsChart weeks={liftWeeks} />
+      </div>
       <SectionTitle>Day by day</SectionTitle>
       <Card className="divide-y divide-line py-0">
         {days.map((date) => {

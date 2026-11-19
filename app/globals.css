@@ -14,6 +14,11 @@
   --good-soft: #dff3e6;
   --warn: #9a5b00;
   --warn-soft: #fff1d6;
+  /* Chart series (validated categorical slots; see components/WeekCharts.tsx) */
+  --viz-easy: #2a78d6;
+  --viz-hard: #eb6834;
+  --viz-strength: #1baf7a;
+  --viz-plyo: #6250d6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,6 +36,10 @@
     --good-soft: #17301f;
     --warn: #f3b552;
     --warn-soft: #33270f;
+    --viz-easy: #3987e5;
+    --viz-hard: #d95926;
+    --viz-strength: #199e70;
+    --viz-plyo: #9085e9;
   }
 }
 
