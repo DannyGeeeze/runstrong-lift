@@ -29,6 +29,7 @@ import {
   type GenerateInput,
   type Workout,
 } from "@/lib/rules";
+import { isSampleRace } from "@/lib/mock";
 import { newId, storage } from "@/lib/storage";
 import { METERS_PER_MILE } from "@/lib/strava";
 import { useHydrated, useStore } from "@/lib/useStore";
@@ -199,7 +200,10 @@ function Today() {
         </div>
         {nextRace && (
           <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line">
-            <span className="block font-semibold">{nextRace.name}</span>
+            <span className="block font-semibold">
+              {nextRace.name}
+              {isSampleRace(nextRace) && <span className="ml-1.5 font-medium text-warn">Sample</span>}
+            </span>
             <span className="text-muted">
               {diffDays(today, nextRace.date) === 0 ? "today" : `in ${diffDays(today, nextRace.date)} days`} · {nextRace.priority}
             </span>

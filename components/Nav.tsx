@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { diffDays, formatDay, todayLocal } from "@/lib/dates";
+import { isSampleRace } from "@/lib/mock";
 import { BREAK_STAGE_LABEL, PHASE_LABEL } from "@/lib/rules";
 import { useHydrated, useStore } from "@/lib/useStore";
 
@@ -95,7 +96,10 @@ function SidebarStatus() {
       {next && (
         <Link href="/races" className="block rounded-xl bg-card-2 px-3 py-3 hover:ring-1 hover:ring-line">
           <span className="block text-[11px] font-semibold uppercase tracking-wider text-accent">Next race</span>
-          <span className="mt-0.5 block truncate text-sm font-semibold">{next.name}</span>
+          <span className="mt-0.5 block truncate text-sm font-semibold">
+            {next.name}
+            {isSampleRace(next) && <span className="ml-1.5 text-xs font-medium text-warn">Sample</span>}
+          </span>
           <span className="block text-xs text-muted">
             {formatDay(next.date)} · {days === 0 ? "today" : days === 1 ? "tomorrow" : `${days} days`}
           </span>

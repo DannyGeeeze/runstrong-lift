@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LiftsBeforeRaces, SeasonMap } from "@/components/RaceCharts";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { addDays, dayInWeek, diffDays, formatDay, todayLocal } from "@/lib/dates";
-import { sampleRaces } from "@/lib/mock";
+import { isSampleRace, sampleRaces } from "@/lib/mock";
 import { newId, storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import type { Race, RacePriority, Weekday } from "@/lib/types";
@@ -50,8 +50,17 @@ function Races() {
 
   function save(race: Race) {
     const exists = races.some((r) => r.id === race.id);
-    storage.saveRaces(exists ? races.map((r) => (r.id === race.id ? race : r)) : [...races, race]);
+    // Saving a sample race makes it yours: no Sample tag, and "Remove sample races" leaves it alone.
+    const kept: Race = isSampleRace(race) ? { ...race, id: newId(), sample: undefined } : race;
+    storage.saveRaces(exists ? races.map((r) => (r.id === race.id ? kept : r)) : [...races, kept]);
     setEditing(null);
+  }
+
+  const samples = races.filter(isSampleRace);
+  function removeSamples() {
+    if (confirm(`Remove ${samples.length} sample race${samples.length === 1 ? "" : "s"}? Your own races stay.`)) {
+      storage.saveRaces(races.filter((r) => !isSampleRace(r)));
+    }
   }
 
   function remove(id: string) {
@@ -91,6 +100,17 @@ function Races() {
         )}
       </div>
 
+      {samples.length > 0 && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-warn-soft px-3 py-2.5 text-sm text-warn">
+          <span>
+            {samples.length} sample race{samples.length === 1 ? " is" : "s are"} on your schedule and count{samples.length === 1 ? "s" : ""} like real ones.
+          </span>
+          <button type="button" className="shrink-0 font-semibold underline" onClick={removeSamples}>
+            Remove sample races
+          </button>
+        </div>
+      )}
+
       {/* Desktop: the season at a glance. */}
       <div className="mt-6 hidden gap-6 lg:grid lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
         <SeasonMap races={races} today={today} phase={settings.phase} />
@@ -106,7 +126,10 @@ function Races() {
           <section className="rounded-3xl border border-line bg-card p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-wider text-accent">Next race</p>
-              <PriorityTag priority={next.priority} />
+              <span className="flex items-center gap-1.5">
+                {isSampleRace(next) && <SampleTag />}
+                <PriorityTag priority={next.priority} />
+              </span>
             </div>
             <p className="mt-2 text-4xl font-bold tracking-tight text-accent">{countdown(diffDays(today, next.date))}</p>
             <p className="mt-2 text-lg font-semibold leading-tight">{next.name}</p>
@@ -156,6 +179,10 @@ function Races() {
   );
 }
 
+function SampleTag() {
+  return <span className="shrink-0 rounded-full bg-warn-soft px-2 py-0.5 text-[11px] font-semibold text-warn">Sample</span>;
+}
+
 function PriorityTag({ priority }: { priority: RacePriority }) {
   return (
     <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${PRIORITY_STYLE[priority]}`}>
@@ -173,7 +200,10 @@ function RaceRow({ race: r, today, onEdit }: { race: Race; today: string; onEdit
         <p className="text-lg font-bold leading-tight tabular-nums">{Number(r.date.slice(8, 10))}</p>
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{r.name || "Untitled race"}</p>
+        <p className="flex items-center gap-1.5 font-medium">
+          <span className="truncate">{r.name || "Untitled race"}</span>
+          {isSampleRace(r) && <SampleTag />}
+        </p>
         <p className="text-xs text-muted">
           {formatDay(r.date).split(",")[0]}
           {r.distance ? ` · ${r.distance}` : ""}
@@ -203,6 +233,7 @@ function RaceForm({
   return (
     <div className="space-y-3">
       <h2 className="font-semibold">{isNew ? "New race" : "Edit race"}</h2>
+      {isSampleRace(race) && <p className="text-xs text-muted">This is a sample race. Saving it makes it one of your own.</p>}
       <label className="block text-sm font-medium">
         Name
         <input className={input} placeholder="League meet" value={r.name} autoFocus={isNew} onChange={(e) => setR({ ...r, name: e.target.value })} />

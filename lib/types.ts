@@ -86,6 +86,8 @@ export interface Race {
   /** Optional; nothing in the rules uses it. */
   distance?: string;
   priority: RacePriority;
+  /** Added by "Add a sample season". Shown with a Sample tag; editing and saving makes it a real race. */
+  sample?: boolean;
 }
 
 export interface Settings {

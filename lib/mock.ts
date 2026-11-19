@@ -66,7 +66,13 @@ export function sampleRaces(today: string): Race[] {
     name,
     distance: "5K",
     priority: i === 3 ? "A" : i === 1 ? "B" : "C",
+    sample: true,
   }));
+}
+
+/** Sample races: the flag, or the id older sample seasons used. */
+export function isSampleRace(r: Race): boolean {
+  return !!r.sample || r.id.startsWith("sample-");
 }
 
 // ---------------------------------------------------------------------------
