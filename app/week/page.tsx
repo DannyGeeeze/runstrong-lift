@@ -113,8 +113,8 @@ function Week() {
       </div>
 
       <div className="min-w-0">
-      {/* Desktop: charts above the day-by-day list. */}
-      <div className="mt-4 hidden space-y-4 lg:block">
+      {/* Charts above the day-by-day list (phone: below the summary). */}
+      <div className="mt-4 space-y-4">
         <MilesChart days={milesDays} />
         <LiftsChart weeks={liftWeeks} />
       </div>

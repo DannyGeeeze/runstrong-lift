@@ -1,10 +1,12 @@
 "use client";
 
-// Desktop Week page charts. Plain SVG, no chart library.
-// Colors are the validated categorical slots in globals.css (--viz-*); text always
-// uses the text tokens, never a series color. Each chart has hover details and a table view.
+// Week page charts (phone and desktop). Plain SVG, no chart library.
+// Each chart measures its container and draws at that width, so text stays 10-11px on a
+// phone instead of being shrunk. Colors are the validated categorical slots in globals.css
+// (--viz-*); text always uses the text tokens. Hover (mouse) or tap (touch) for details;
+// every chart also has a table view.
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from "react";
 import { formatDay } from "@/lib/dates";
 import { RUN_TYPE_LABEL } from "@/lib/day";
 import type { RunType } from "@/lib/types";
@@ -24,9 +26,33 @@ export interface LiftWeek {
   plyo: number;
 }
 
-export const W = 640;
-export const BAR = 18;
 const isHard = (t: RunType) => t === "workout" || t === "race";
+
+/** The rendered width of a chart's box, so the SVG can be drawn at 1:1. */
+export function useChartWidth(fallback = 640) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(fallback);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setWidth(Math.max(260, Math.round(el.clientWidth)));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return [ref, width] as const;
+}
+
+/** Hover with a mouse, tap with a finger (tap again to close). */
+export function hoverProps(i: number, set: (fn: (h: number | null) => number | null) => void) {
+  return {
+    onPointerEnter: (e: PointerEvent) => {
+      if (e.pointerType === "mouse") set(() => i);
+    },
+    onClick: () => set((h) => (h === i ? null : i)),
+  };
+}
 
 /** An even axis top (so the halfway gridline is a whole number). */
 export function niceMax(v: number, steps = [4, 6, 8, 10, 12, 14, 16, 20, 24, 30, 40, 50]) {
@@ -55,7 +81,7 @@ export function ChartCard({
 }) {
   const [asTable, setAsTable] = useState(false);
   return (
-    <section className="rounded-2xl border border-line bg-card p-5">
+    <section className="rounded-2xl border border-line bg-card p-4 lg:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="text-sm font-semibold">{title}</h3>
@@ -105,13 +131,17 @@ export function Tooltip({ x, children }: { x: number; children: ReactNode }) {
 // ---------------------------------------------------------------------------
 
 /** Miles each day for the last 14 days, hard days highlighted, with a marker on days you lifted. */
-export function MilesChart({ days }: { days: MilesDay[] }) {
+export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width (tests/previews); otherwise measured. */ width?: number }) {
   const [hover, setHover] = useState<number | null>(null);
+  const [box, measured] = useChartWidth();
+  const W = width ?? measured;
   const H = 220;
   const top = 12;
   const plotH = 140;
   const left = 34;
   const band = (W - left) / days.length;
+  const bar = Math.max(8, Math.min(18, band * 0.55));
+  const narrow = band < 30;
   const max = niceMax(Math.max(4, ...days.map((d) => d.miles)));
   const y = (m: number) => top + plotH - (m / max) * plotH;
   const ticks = [0, max / 2, max];
@@ -151,6 +181,7 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
   const h = hover !== null ? days[hover] : null;
   return (
     <ChartCard title="Miles per day" subtitle={`Last 14 days · ${total.toFixed(1)} mi`} legend={legend} table={table}>
+      <div ref={box}>
       <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label={`Miles per day for the last 14 days, ${total.toFixed(1)} miles in total`} onMouseLeave={() => setHover(null)}>
         {ticks.map((t) => (
           <g key={t}>
@@ -168,7 +199,7 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
           return (
             <g key={d.date}>
               {hover === i && <rect x={left + band * i + 1} y={top} width={band - 2} height={plotH} rx="6" fill="var(--card-2)" />}
-              <path d={barPath(cx - BAR / 2, y(d.miles), BAR, bh)} fill={isHard(d.type) ? "var(--viz-hard)" : "var(--viz-easy)"} />
+              <path d={barPath(cx - bar / 2, y(d.miles), bar, bh)} fill={isHard(d.type) ? "var(--viz-hard)" : "var(--viz-easy)"} />
               {/* Lift marker row */}
               {d.lift &&
                 (d.lift.light ? (
@@ -177,7 +208,7 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
                   <circle cx={cx} cy={top + plotH + 16} r="5" fill="var(--text)" />
                 ))}
               <text x={cx} y={top + plotH + 38} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} fontWeight={isToday ? 700 : 500}>
-                {weekday.slice(0, 2)}
+                {weekday.slice(0, narrow ? 1 : 2)}
               </text>
               <text x={cx} y={top + plotH + 52} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} className="tabular-nums">
                 {dayNum}
@@ -189,7 +220,7 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
                 width={band}
                 height={H}
                 fill="transparent"
-                onMouseEnter={() => setHover(i)}
+                {...hoverProps(i, setHover)}
                 onFocus={() => setHover(i)}
                 onBlur={() => setHover(null)}
                 tabIndex={0}
@@ -203,10 +234,11 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
         </text>
         {total === 0 && (
           <text x={(W + left) / 2} y={top + plotH / 2} textAnchor="middle" fontSize="12" fill="var(--muted)">
-            No runs in the last 14 days. Connect Strava or turn on demo runs in Settings.
+            {narrow ? "No runs in the last 14 days." : "No runs in the last 14 days. Connect Strava or turn on demo runs in Settings."}
           </text>
         )}
       </svg>
+      </div>
       {h && hover !== null && (
         <Tooltip x={(left + band * hover + band / 2) / W}>
           <p className="font-semibold">{formatDay(h.date)}</p>
@@ -225,13 +257,18 @@ export function MilesChart({ days }: { days: MilesDay[] }) {
 // ---------------------------------------------------------------------------
 
 /** Strength and plyo sessions per calendar week, against the 2-a-week cap. */
-export function LiftsChart({ weeks, cap = 2 }: { weeks: LiftWeek[]; cap?: number }) {
+export function LiftsChart({ weeks, cap = 2, width }: { weeks: LiftWeek[]; cap?: number; width?: number }) {
   const [hover, setHover] = useState<number | null>(null);
+  const [box, measured] = useChartWidth();
+  const W = width ?? measured;
   const H = 200;
   const top = 12;
   const plotH = 140;
   const left = 34;
   const band = (W - left) / weeks.length;
+  const bar = Math.max(8, Math.min(18, band * 0.3));
+  // Narrow screens: label every other week (always this week).
+  const sparse = band < 52;
   const max = Math.max(3, ...weeks.flatMap((w) => [w.strength, w.plyo]));
   const y = (n: number) => top + plotH - (n / max) * plotH;
   const ticks = Array.from({ length: max + 1 }, (_, i) => i);
@@ -269,6 +306,7 @@ export function LiftsChart({ weeks, cap = 2 }: { weeks: LiftWeek[]; cap?: number
   const empty = weeks.every((w) => w.strength === 0 && w.plyo === 0);
   return (
     <ChartCard title="Lifting per week" subtitle={`Last ${weeks.length} weeks, Mon–Sun`} legend={legend} table={table}>
+      <div ref={box}>
       <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label="Strength and plyo sessions per week" onMouseLeave={() => setHover(null)}>
         {ticks.map((t) => (
           <g key={t}>
@@ -286,10 +324,17 @@ export function LiftsChart({ weeks, cap = 2 }: { weeks: LiftWeek[]; cap?: number
             <g key={w.monday}>
               {hover === i && <rect x={left + band * i + 2} y={top} width={band - 4} height={plotH} rx="6" fill="var(--card-2)" />}
               {/* Two touching bars with a 2px surface gap */}
-              <path d={barPath(cx - BAR - 1, y(w.strength), BAR, y(0) - y(w.strength))} fill="var(--viz-strength)" />
-              <path d={barPath(cx + 1, y(w.plyo), BAR, y(0) - y(w.plyo))} fill="var(--viz-plyo)" />
-              <text x={cx} y={top + plotH + 18} textAnchor="middle" fontSize="10" fill={isThis ? "var(--text)" : "var(--muted)"} fontWeight={isThis ? 700 : 500}>
-                {isThis ? "This wk" : label(w.monday)}
+              <path d={barPath(cx - bar - 1, y(w.strength), bar, y(0) - y(w.strength))} fill="var(--viz-strength)" />
+              <path d={barPath(cx + 1, y(w.plyo), bar, y(0) - y(w.plyo))} fill="var(--viz-plyo)" />
+              <text
+                x={isThis && cx + 22 > W ? W - 1 : cx}
+                y={top + plotH + 18}
+                textAnchor={isThis && cx + 22 > W ? "end" : "middle"}
+                fontSize="10"
+                fill={isThis ? "var(--text)" : "var(--muted)"}
+                fontWeight={isThis ? 700 : 500}
+              >
+                {isThis ? "This wk" : sparse && (weeks.length - 1 - i) % 2 === 1 ? "" : label(w.monday)}
               </text>
               <rect
                 x={left + band * i}
@@ -298,7 +343,7 @@ export function LiftsChart({ weeks, cap = 2 }: { weeks: LiftWeek[]; cap?: number
                 height={H}
                 fill="transparent"
                 tabIndex={0}
-                onMouseEnter={() => setHover(i)}
+                {...hoverProps(i, setHover)}
                 onFocus={() => setHover(i)}
                 onBlur={() => setHover(null)}
                 aria-label={`Week of ${label(w.monday)}: ${w.strength} strength, ${w.plyo} plyo`}
@@ -308,10 +353,11 @@ export function LiftsChart({ weeks, cap = 2 }: { weeks: LiftWeek[]; cap?: number
         })}
         {empty && (
           <text x={(W + left) / 2} y={top + plotH / 2} textAnchor="middle" fontSize="12" fill="var(--muted)">
-            No lifts logged yet. Mark a workout complete and it shows up here.
+            {sparse ? "No lifts logged yet." : "No lifts logged yet. Mark a workout complete and it shows up here."}
           </text>
         )}
       </svg>
+      </div>
       {h && hover !== null && (
         <Tooltip x={(left + band * hover + band / 2) / W}>
           <p className="font-semibold">Week of {label(h.monday)}</p>
