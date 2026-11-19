@@ -78,7 +78,7 @@ function Races() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold tracking-tight">Races</h1>
+        <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">Races</h1>
         {!isNew && (
           <Button
             variant="primary"
@@ -90,6 +90,8 @@ function Races() {
         )}
       </div>
 
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:items-start lg:gap-8">
+      <div className="min-w-0 lg:sticky lg:top-0">
       {isNew && editing && <Card className="mt-4">{form(editing)}</Card>}
 
       {next && editing?.id !== next.id ? (
@@ -118,6 +120,9 @@ function Races() {
         )
       )}
 
+      </div>
+
+      <div className="min-w-0">
       {later.length > 0 && (
         <>
           <SectionTitle>Coming up</SectionTitle>
@@ -138,6 +143,8 @@ function Races() {
           {showPast && list(past)}
         </>
       )}
+      </div>
+      </div>
     </div>
   );
 }

@@ -90,8 +90,10 @@ function SettingsView() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+      <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">Settings</h1>
 
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div className="min-w-0">
       <SectionTitle right={<Link href="/welcome" className="text-xs font-semibold text-accent">Redo setup</Link>}>
         You
       </SectionTitle>
@@ -216,6 +218,9 @@ function SettingsView() {
         </div>
       </Card>
 
+      </div>
+
+      <div className="min-w-0">
       <SectionTitle>Recovery</SectionTitle>
       <Card className="py-2">
         <Toggle checked={settings.hasBoots} onChange={(v) => set("hasBoots", v)} label="Compression boots" hint="I have them" />
@@ -311,6 +316,8 @@ function SettingsView() {
           <Notice tone={importMsg.ok ? "good" : "warn"}>{importMsg.text}</Notice>
         </div>
       )}
+      </div>
+      </div>
     </div>
   );
 }

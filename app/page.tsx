@@ -21,6 +21,7 @@ import {
   suggestBreakStage,
   toLiftLog,
   UPPER_FOCUS_LABEL,
+  weekCounts,
   UPPER_FOCUSES,
   type GenerateInput,
   type Workout,
@@ -111,6 +112,7 @@ function Today() {
   const loggedToday = history.filter((h) => h.date === today);
 
   const nextRace = races.find((r) => r.date >= today);
+  const week = weekCounts(history, today);
 
   // The hero card: what today's lift is, before you generate it.
   const active = mode === "catchup" && catchUp && "session" in catchUp ? catchUp : preview;
@@ -180,7 +182,7 @@ function Today() {
       <header className="flex items-end justify-between gap-3">
         <div>
           <p className="text-sm text-muted">{formatDay(today)}</p>
-          <h1 className="text-2xl font-bold tracking-tight">{profile?.name ? `Hey, ${profile.name}` : "RunStrong Lift"}</h1>
+          <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">{profile?.name ? `Hey, ${profile.name}` : "RunStrong Lift"}</h1>
         </div>
         {nextRace && (
           <Link href="/races" className="rounded-xl bg-card px-3 py-2 text-right text-xs shadow-sm ring-1 ring-line">
@@ -226,6 +228,8 @@ function Today() {
         </div>
       )}
 
+      <div className="lg:mt-2 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-8">
+      <div className="min-w-0">
       {breakNext && !current && (
         <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-accent-soft px-3 py-2.5 text-sm">
           <span>{breakNext.message}</span>
@@ -241,7 +245,7 @@ function Today() {
         </div>
       )}
 
-      {!current && runCard}
+      {!current && <div className="lg:hidden">{runCard}</div>}
 
       {!current && (
         <section className="mt-5 rounded-3xl border border-line bg-card p-5 shadow-sm">
@@ -396,21 +400,42 @@ function Today() {
         )}
       </div>
 
-      {current && runCard}
+      {current && <div className="lg:hidden">{runCard}</div>}
+      </div>
 
+      {/* Desktop: a side column with the run, recovery and the week so far. On phones it stacks below. */}
+      <aside className="min-w-0 lg:sticky lg:top-0">
+        <div className="hidden lg:block">{runCard}</div>
 
-      {/* Recovery is suggested with the workout: once it's generated or saved, or on a no-lift day. */}
-      {!loading && (current || saved || (mode === "today" && preview.session === "none")) && (
-        <RecoveryCard
-          key={day.type}
-          today={today}
-          todayType={day.type}
-          yesterdayType={yesterday.type}
-          races={races}
-          recovery={recovery}
-          settings={settings}
-        />
-      )}
+        {/* Recovery is suggested with the workout: once it's generated or saved, or on a no-lift day. */}
+        {!loading && (current || saved || (mode === "today" && preview.session === "none")) && (
+          <RecoveryCard
+            key={day.type}
+            today={today}
+            todayType={day.type}
+            yesterdayType={yesterday.type}
+            races={races}
+            recovery={recovery}
+            settings={settings}
+          />
+        )}
+
+        <Link
+          href="/week"
+          className="mt-4 hidden grid-cols-2 gap-2 rounded-2xl border border-line bg-card p-4 hover:ring-1 hover:ring-line lg:grid"
+        >
+          <span className="col-span-2 text-xs font-semibold uppercase tracking-wider text-muted">Last 7 days</span>
+          <span>
+            <span className={`block text-2xl font-bold tabular-nums ${week.strength >= 2 ? "text-accent" : ""}`}>{week.strength}/2</span>
+            <span className="text-xs text-muted">Strength</span>
+          </span>
+          <span>
+            <span className={`block text-2xl font-bold tabular-nums ${week.plyo >= 2 ? "text-accent" : ""}`}>{week.plyo}/2</span>
+            <span className="text-xs text-muted">Plyo</span>
+          </span>
+        </Link>
+      </aside>
+      </div>
     </div>
   );
 }

@@ -56,11 +56,13 @@ function Week() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">This week</h1>
+      <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">This week</h1>
       <p className="mt-0.5 text-sm text-muted">
         Last 7 days{source === "mock" ? " · demo runs" : ""}
       </p>
 
+      <div className="lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-8">
+      <div className="lg:sticky lg:top-0">
       <div className="mt-4 grid grid-cols-3 gap-2">
         <Stat label="Strength" value={`${counts.strength}/2`} full={counts.strength >= 2} />
         <Stat label="Plyo" value={`${counts.plyo}/2`} full={counts.plyo >= 2} />
@@ -86,6 +88,9 @@ function Week() {
         )}
       </Card>
 
+      </div>
+
+      <div className="min-w-0">
       <SectionTitle>Day by day</SectionTitle>
       <Card className="divide-y divide-line py-0">
         {days.map((date) => {
@@ -161,6 +166,8 @@ function Week() {
           )}
         </>
       )}
+      </div>
+      </div>
     </div>
   );
 }

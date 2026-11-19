@@ -210,7 +210,7 @@ function Onboarding() {
 
   if (building) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-5">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-center justify-center gap-5">
         <div className="h-12 w-12 animate-spin rounded-full border-4 border-accent-soft border-t-accent" />
         <p className="animate-rise text-lg font-semibold">Building your plan…</p>
       </div>
@@ -218,7 +218,7 @@ function Onboarding() {
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
       <div className="sticky top-0 z-10 -mx-4 bg-bg/95 px-4 pb-3 pt-1 backdrop-blur">
         <div className="flex items-center gap-3">
           <button
