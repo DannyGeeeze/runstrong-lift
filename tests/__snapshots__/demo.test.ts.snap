@@ -2,7 +2,7 @@
 
 exports[`exercise demos > which animation each exercise gets is locked in (update the snapshot on purpose) 1`] = `
 {
-  "90-90": "knee-drive",
+  "90-90": "hip-switch",
   "abduction-in-side-plank": "copenhagen",
   "abductor-oscillations-on-band": "band-walk",
   "abductor-plate-push": "band-walk",
@@ -41,7 +41,7 @@ exports[`exercise demos > which animation each exercise gets is locked in (updat
   "banded-adductor-slide": "copenhagen",
   "banded-chain-abductor-drag": "band-walk",
   "banded-chain-adductor-drag": "copenhagen",
-  "banded-external-rotation": "knee-drive",
+  "banded-external-rotation": "hip-switch",
   "banded-external-rotation-upper": "row",
   "banded-hamstring-oscillation": "ham-curl",
   "banded-hf-iso": "knee-drive",
@@ -49,8 +49,8 @@ exports[`exercise demos > which animation each exercise gets is locked in (updat
   "banded-hip-flexor-in-front-plank": "knee-drive",
   "banded-hip-flexor-in-side-plank": "copenhagen",
   "banded-hip-flexor-march": "knee-drive",
-  "banded-hurdler-cars": "knee-drive",
-  "banded-internal-rotation": "knee-drive",
+  "banded-hurdler-cars": "hip-car",
+  "banded-internal-rotation": "hip-switch",
   "banded-kneeling-hip-extension": "hinge",
   "banded-overcoming-banded-abductor-iso": "band-walk",
   "banded-overcoming-hip-flexor-iso": "knee-drive",
@@ -159,7 +159,7 @@ exports[`exercise demos > which animation each exercise gets is locked in (updat
   "ffess": "squat",
   "ffess-oscillation": "split-pogo",
   "field-goal-on-bench": "prone-raise",
-  "figure-4-contours": "knee-drive",
+  "figure-4-contours": "figure-4",
   "foam-roller-hamstring-iso": "bridge",
   "foot-plank": "foot-work",
   "foot-tso": "foot-work",

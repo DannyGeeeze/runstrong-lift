@@ -525,8 +525,48 @@ const slam: Pattern = {
   ],
 };
 
+
+// Hip mobility ------------------------------------------------------------------
+
+// Front view, sitting on the floor: knees drop to one side, come up, drop to the other (90:90 switches).
+const hipSwitch: Pattern = {
+  id: "hip-switch",
+  view: "front",
+  holdFrame: 1,
+  frames: [
+    { pose: P([60, 72], 0, L(50, F, 270, "u"), L(70, F, 90, "u"), [200, 175], [160, 185]), move: 0.7, hold: 0.2 },
+    { pose: P([59, 72], -6, L(54, F, 270, "l"), L(72, F, 90, "u"), [205, 180], [165, 190]), move: 0.8, hold: 0.5 },
+    { pose: P([60, 72], 0, L(50, F, 270, "u"), L(70, F, 90, "u"), [200, 175], [160, 185]), move: 0.8, hold: 0.2 },
+    { pose: P([61, 72], 6, L(48, F, 270, "u"), L(66, F, 90, "r"), [195, 170], [155, 180]), move: 0.8, hold: 0.5 },
+  ],
+};
+
+// Lying on the back, one ankle crossed over the other knee; draw the legs toward the chest and back.
+const figure4: Pattern = {
+  id: "figure-4",
+  view: "side",
+  holdFrame: 1,
+  frames: [
+    { pose: P([58, 74], 270, L(71, 60, 60, "f"), L(74, F, 70, "u"), [60, 120], [60, 120]), move: 0.9, hold: 0.3 },
+    { pose: P([58, 74], 272, L(56, 54, 60, "f"), L(70, 62, 40, "u"), [45, 100], [45, 100]), move: 0.9, hold: 0.6 },
+  ],
+};
+
+// Front view, standing on one leg: the free knee lifts in front, circles out to the side, and comes down.
+const hipCar: Pattern = {
+  id: "hip-car",
+  view: "front",
+  holdFrame: 2,
+  frames: [
+    { pose: P([58, 44.6], 0, L(53, F, 270, "l"), L(64, 75, 90, "r"), [215, 190], [145, 170]), move: 0.6, hold: 0.2 },
+    { pose: P([57, 44.6], -3, L(53, F, 270, "l"), L(66, 60, 90, "u"), [225, 200], [135, 160]), move: 0.8, hold: 0.2 },
+    { pose: P([56, 44.6], -8, L(53, F, 270, "l"), L(84, 56, 60, "u"), [235, 210], [125, 150]), move: 0.9, hold: 0.4 },
+    { pose: P([57, 44.6], -4, L(53, F, 270, "l"), L(76, 70, 80, "r"), [225, 200], [135, 160]), move: 0.8 },
+  ],
+};
+
 export const PATTERNS: Record<string, Pattern> = Object.fromEntries(
-  [hamCurl, splitPogo, bss, lunge, stepUp, slRdl, soleusRaise, footWork, slCalf, balance, carry, proneRaise, backExtension, slam, squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, curl, tricepsExtension, lateralRaise, pullDown].map(
+  [hipSwitch, figure4, hipCar, hamCurl, splitPogo, bss, lunge, stepUp, slRdl, soleusRaise, footWork, slCalf, balance, carry, proneRaise, backExtension, slam, squat, hinge, splitSquat, calfRaise, tibRaise, pogo, hop, skip, jump, dropJump, lateralBound, bandWalk, kneeDrive, bridge, nordic, copenhagen, row, press, pushUp, plank, curl, tricepsExtension, lateralRaise, pullDown].map(
     (p) => [p.id, p],
   ),
 );

@@ -53,6 +53,12 @@ describe("exercise demos", () => {
       "dumbbell-reverse-lunge": "lunge",
       "hip-flexor-flutter-oscillations": "knee-drive",
       deadhang: "pull-down",
+      "90-90": "hip-switch",
+      "banded-external-rotation": "hip-switch",
+      "banded-internal-rotation": "hip-switch",
+      "figure-4-contours": "figure-4",
+      "banded-hurdler-cars": "hip-car",
+      "banded-external-rotation-upper": "row",
     };
     for (const [ex, pattern] of Object.entries(expected)) expect(id(ex), ex).toBe(pattern);
   });

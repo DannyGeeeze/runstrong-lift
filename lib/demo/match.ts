@@ -26,7 +26,11 @@ const RULES: [RegExp, string][] = [
   [/single-leg.*rdl|single leg.*rdl|(^|\s)sl-.*rdl|landmine-single-leg|hip-airplane/, "sl-rdl"],
   [/hamstring-curl|ham-curl|physioball|slider-hamstring|hamstring-slider|hamstring-impulse|hamstring-tantrum|walkout|hamstring-oscillation/, "ham-curl"],
   [/bridge|thrust|hip-lift|hamstring-iso|hamstring-overcoming/, "bridge"],
-  [/hip-flexor|knee-drive|march|psoas|-hf|hf-|knee-up|hurdler|90-90|figure-4|external-rotation|internal-rotation|sit-up/, "knee-drive"],
+  // Hip mobility
+  [/90-90|external-rotation|internal-rotation/, "hip-switch"],
+  [/figure-4|pigeon/, "figure-4"],
+  [/hurdler|cars(\s|$)|hip-circle/, "hip-car"],
+  [/hip-flexor|knee-drive|march|psoas|-hf|hf-|knee-up|sit-up/, "knee-drive"],
   // Balance, throws, carries
   [/balance|bosu/, "balance"],
   [/slam|scoop-toss|jackhammer|wall-ball/, "slam"],
