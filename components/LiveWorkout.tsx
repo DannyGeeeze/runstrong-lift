@@ -393,7 +393,7 @@ export function LiveWorkout({
           {finished ? (
             <div className="space-y-2">
               <button type="button" onClick={() => onFinish([...done], weights)} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
-                Save workout
+                {done.size >= workout.items.length ? "Save workout" : "Save what I did"}
               </button>
               <button type="button" onClick={onClose} className="w-full py-2 text-sm text-muted">
                 Close without saving
@@ -432,6 +432,16 @@ export function LiveWorkout({
 
 // ---------------------------------------------------------------------------
 
+/** "3-5" → 3-5 reps; "20 contacts" → 20 + contacts; "50-60 m" → 50-60 + m; "8/side" → 8 + reps/side. */
+function splitReps(reps: string): { big: string; unit: string } {
+  const m = reps.match(/^(\d+(?:[–-]\d+)?)\s*(.*)$/);
+  if (!m) return { big: reps, unit: "" };
+  const rest = m[2].trim();
+  if (!rest) return { big: m[1], unit: "reps" };
+  if (rest.startsWith("/")) return { big: m[1], unit: `reps${rest}` };
+  return { big: m[1], unit: rest };
+}
+
 function WorkView({
   workout,
   step,
@@ -457,8 +467,8 @@ function WorkView({
   const holdish = /hold|iso/i.test(`${p.reps} ${p.exercise.name}`);
   return (
     <div className="animate-rise flex min-h-0 flex-1 flex-col pt-3">
-      {/* The move fills the top half */}
-      <div className="relative h-[45dvh] shrink-0 overflow-hidden rounded-3xl bg-card">
+      {/* The move fills what's left (up to ~half the screen), so the info and controls never collide on short phones. */}
+      <div className="relative min-h-[22dvh] flex-1 overflow-hidden rounded-3xl bg-card lg:max-h-none" style={{ maxHeight: "45dvh" }}>
         <div className="absolute inset-0">
           <ExerciseDemo exercise={p.exercise} size="lg" />
         </div>
@@ -475,18 +485,22 @@ function WorkView({
         )}
       </div>
 
-      <div className="mt-4 flex min-h-0 flex-1 flex-col">
+      <div className="mt-4 flex shrink-0 flex-col">
         <p className="text-sm font-semibold uppercase tracking-wider text-muted">
           Move {step.item + 1} of {workout.items.length} · Set {step.set} of {step.sets}
           {step.side && <span className="text-accent"> · {step.side === "left" ? "Left" : "Right"}</span>}
         </p>
         <h1 className="mt-0.5 text-2xl font-bold leading-tight">{p.exercise.name}</h1>
-        <p className={`mt-2 flex items-baseline gap-2 font-bold leading-none tracking-tight tabular-nums ${loaded ? "text-6xl" : "text-7xl"}`}>
-          {step.seconds !== null ? `${step.seconds}s` : step.reps}
-          {step.seconds === null && /^[\d\s–-]+$/.test(step.reps) && (
-            <span className="text-xl font-semibold tracking-normal text-muted">reps</span>
-          )}
-        </p>
+        {(() => {
+          // Big number, small unit: "3-5" reps, "20 contacts", "50-60 m", "8/side".
+          const { big, unit } = step.seconds !== null ? { big: `${step.seconds}s`, unit: "" } : splitReps(step.reps);
+          return (
+            <p className={`mt-2 flex flex-wrap items-baseline gap-x-2 font-bold leading-none tracking-tight tabular-nums ${loaded ? "text-6xl" : "text-7xl"}`}>
+              <span className={big.length > 7 ? "text-5xl" : ""}>{big}</span>
+              {unit && <span className="text-xl font-semibold tracking-normal text-muted">{unit}</span>}
+            </p>
+          );
+        })()}
         {p.note && <p className="mt-2 text-sm font-medium text-accent">{p.note}</p>}
         {loaded ? (
           <div className="mt-3">
@@ -567,7 +581,12 @@ function FinishView({
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-accent text-accent-ink">
         <CheckIcon />
       </div>
-      <h1 className="mt-5 text-3xl font-bold">Workout complete</h1>
+      <h1 className="mt-5 text-3xl font-bold">{exercisesDone >= exercises ? "Workout done" : "Partly done"}</h1>
+      {exercisesDone < exercises && (
+        <p className="mt-1 text-sm text-muted">
+          {exercisesDone} of {exercises} moves. Only what you did gets saved.
+        </p>
+      )}
       <div className="mt-8 grid w-full grid-cols-3 gap-2">
         <Stat value={formatClock(elapsed)} label="time" />
         <Stat value={String(setsDone)} label="sets" />
@@ -600,13 +619,13 @@ function WeightStepper({ value, onChange }: { value: number | null; onChange: (w
           inputMode="decimal"
           min={0}
           step={2.5}
-          placeholder="Weight"
+          placeholder="Add weight"
           value={value ?? ""}
           onChange={(e) => onChange(e.target.value === "" ? null : Math.max(0, Number(e.target.value)))}
-          className="w-20 bg-transparent text-center text-2xl font-bold tabular-nums outline-none placeholder:text-base placeholder:font-medium placeholder:text-muted"
+          className={`bg-transparent text-center text-2xl font-bold tabular-nums outline-none placeholder:text-base placeholder:font-medium placeholder:text-muted ${value === null ? "w-28" : "w-20"}`}
           aria-label="Weight in pounds"
         />
-        <span className="text-sm font-semibold text-muted">lb</span>
+        {value !== null && <span className="text-sm font-semibold text-muted">lb</span>}
       </label>
       <button type="button" onClick={() => step(5)} aria-label="5 pounds more" className="h-12 w-14 rounded-2xl border border-line bg-card text-xl font-bold active:scale-95">
         +
