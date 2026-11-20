@@ -211,13 +211,20 @@ function Week() {
         )}
       </Card>
 
+      {/* Desktop: the weekly lifting chart sits under the summary. */}
+      <div className="mt-4 hidden lg:block">
+        <LiftsChart weeks={liftWeeks} />
+      </div>
+
       </div>
 
       <div className="min-w-0">
       {/* Charts above the day-by-day list (phone: below the summary). */}
       <div className="mt-4 space-y-4">
         <MilesChart days={milesDays} today={today} />
-        <LiftsChart weeks={liftWeeks} />
+        <div className="lg:hidden">
+          <LiftsChart weeks={liftWeeks} />
+        </div>
       </div>
       <SectionTitle>Day by day</SectionTitle>
       <Card className="divide-y divide-line py-0">{days.map(dayRow)}</Card>

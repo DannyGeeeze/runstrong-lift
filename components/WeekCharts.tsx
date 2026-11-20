@@ -145,8 +145,10 @@ export function MilesChart({
   const [hover, setHover] = useState<number | null>(null);
   const [box, measured] = useChartWidth();
   const W = width ?? measured;
-  const H = 220;
-  const top = 12;
+  // Two calendar weeks (when `today` is given): label each and mark where this week starts.
+  const twoWeeks = !!today && days.length === 14;
+  const H = twoWeeks ? 236 : 220;
+  const top = twoWeeks ? 28 : 12;
   const plotH = 140;
   const left = 34;
   const band = (W - left) / days.length;
@@ -206,9 +208,21 @@ export function MilesChart({
             </text>
           </g>
         ))}
+        {twoWeeks && (
+          <g>
+            <text x={left + band * 3.5} y={12} textAnchor="middle" fontSize="10" fontWeight="600" fill="var(--muted)">
+              Last week
+            </text>
+            <text x={left + band * 10.5} y={12} textAnchor="middle" fontSize="10" fontWeight="600" fill="var(--text)">
+              This week
+            </text>
+            <line x1={left + band * 7} x2={left + band * 7} y1={4} y2={top + plotH + 56} stroke="var(--border)" strokeWidth="1" strokeDasharray="3 3" />
+          </g>
+        )}
         {days.map((d, i) => {
           const cx = left + band * i + band / 2;
           const bh = y(0) - y(d.miles);
+          const ahead = !!today && d.date > today;
           const isToday = today ? d.date === today : i === days.length - 1;
           const [weekday, , dayNum] = formatDay(d.date).replace(",", "").split(" ");
           return (
@@ -222,10 +236,10 @@ export function MilesChart({
                 ) : (
                   <circle cx={cx} cy={top + plotH + 16} r="5" fill="var(--text)" />
                 ))}
-              <text x={cx} y={top + plotH + 38} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} fontWeight={isToday ? 700 : 500}>
+              <text x={cx} y={top + plotH + 38} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} fontWeight={isToday ? 700 : 500} opacity={ahead ? 0.45 : 1}>
                 {weekday.slice(0, narrow ? 1 : 2)}
               </text>
-              <text x={cx} y={top + plotH + 52} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} className="tabular-nums">
+              <text x={cx} y={top + plotH + 52} textAnchor="middle" fontSize="10" fill={isToday ? "var(--text)" : "var(--muted)"} className="tabular-nums" opacity={ahead ? 0.45 : 1}>
                 {dayNum}
               </text>
               {/* Hit target: the whole column */}
