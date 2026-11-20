@@ -65,7 +65,8 @@ function Week() {
   const older = runs.filter((r) => r.date >= lastMonday && r.date < monday);
 
   // Chart data: the last 14 days (all the runs we have) and the last 8 calendar weeks of lifts.
-  const milesDays: MilesDay[] = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13)).map((date) => {
+  // Last week and this week, Monday to Sunday (days still to come are blank).
+  const milesDays: MilesDay[] = Array.from({ length: 14 }, (_, i) => addDays(mondayOf(today), i - 7)).map((date) => {
     const d = dayType(date, runs, overrides, races);
     const lifts = history.filter((h) => h.date === date && h.session !== "none");
     const main = lifts.find((l) => !EASY_SESSIONS.includes(l.session)) ?? lifts[0];
@@ -215,7 +216,7 @@ function Week() {
       <div className="min-w-0">
       {/* Charts above the day-by-day list (phone: below the summary). */}
       <div className="mt-4 space-y-4">
-        <MilesChart days={milesDays} />
+        <MilesChart days={milesDays} today={today} />
         <LiftsChart weeks={liftWeeks} />
       </div>
       <SectionTitle>Day by day</SectionTitle>

@@ -131,7 +131,17 @@ export function Tooltip({ x, children }: { x: number; children: ReactNode }) {
 // ---------------------------------------------------------------------------
 
 /** Miles each day for the last 14 days, hard days highlighted, with a marker on days you lifted. */
-export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width (tests/previews); otherwise measured. */ width?: number }) {
+export function MilesChart({
+  days,
+  width,
+  today,
+}: {
+  days: MilesDay[];
+  /** Fixed width (tests/previews); otherwise measured. */
+  width?: number;
+  /** Highlights today; days after it are "coming up". Defaults to the last day. */
+  today?: string;
+}) {
   const [hover, setHover] = useState<number | null>(null);
   const [box, measured] = useChartWidth();
   const W = width ?? measured;
@@ -180,7 +190,12 @@ export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width 
 
   const h = hover !== null ? days[hover] : null;
   return (
-    <ChartCard title="Miles per day" subtitle={`Last 14 days · ${total.toFixed(1)} mi`} legend={legend} table={table}>
+    <ChartCard
+      title="Miles per day"
+      subtitle={today ? `Last week and this week · ${total.toFixed(1)} mi` : `Last 14 days · ${total.toFixed(1)} mi`}
+      legend={legend}
+      table={table}
+    >
       <div ref={box}>
       <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label={`Miles per day for the last 14 days, ${total.toFixed(1)} miles in total`} onMouseLeave={() => setHover(null)}>
         {ticks.map((t) => (
@@ -194,7 +209,7 @@ export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width 
         {days.map((d, i) => {
           const cx = left + band * i + band / 2;
           const bh = y(0) - y(d.miles);
-          const isToday = i === days.length - 1;
+          const isToday = today ? d.date === today : i === days.length - 1;
           const [weekday, , dayNum] = formatDay(d.date).replace(",", "").split(" ");
           return (
             <g key={d.date}>
@@ -234,7 +249,7 @@ export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width 
         </text>
         {total === 0 && (
           <text x={(W + left) / 2} y={top + plotH / 2} textAnchor="middle" fontSize="12" fill="var(--muted)">
-            {narrow ? "No runs in the last 14 days." : "No runs in the last 14 days. Connect Strava or turn on demo runs in Settings."}
+            {narrow ? "No runs these two weeks." : "No runs these two weeks. Connect Strava or turn on demo runs in Settings."}
           </text>
         )}
       </svg>
@@ -247,7 +262,7 @@ export function MilesChart({ days, width }: { days: MilesDay[]; /** Fixed width 
             {h.miles ? ` · ${h.miles.toFixed(1)} mi` : ""}
           </p>
           {h.runNames.length > 0 && <p className="truncate text-muted">{h.runNames.join(", ")}</p>}
-          <p className="mt-1">{h.lift ? `Lift: ${h.lift.label}` : "No lift"}</p>
+          <p className="mt-1">{today && h.date > today ? "Coming up" : h.lift ? `Lift: ${h.lift.label}` : "No lift"}</p>
         </Tooltip>
       )}
     </ChartCard>

@@ -38,6 +38,14 @@ export function WorkoutCard({
 }) {
   const [showWarmup, setShowWarmup] = useState(false);
   const [demo, setDemo] = useState<string | null>(null);
+  const [openCue, setOpenCue] = useState<Set<string>>(new Set());
+  const toggleCue = (key: string) =>
+    setOpenCue((s) => {
+      const n = new Set(s);
+      if (n.has(key)) n.delete(key);
+      else n.add(key);
+      return n;
+    });
   const { decision, items } = workout;
 
   // A note on two or more moves (e.g. "Easy day: leave 2-3 reps in the tank") is shown once, up top.
@@ -169,7 +177,18 @@ export function WorkoutCard({
                       <span className="text-muted"> · rest {p.rest}</span>
                     </p>
                     {last && <p className="mt-0.5 text-xs font-semibold text-accent">Last time: {formatWeights(last.weights)}</p>}
-                    <p className="mt-1 text-sm leading-snug text-muted">{p.cue}</p>
+                    {/* Phones: cues stop at 2 lines; tap to read the rest. Desktop: always in full. */}
+                    <p
+                      className={`mt-1 text-sm leading-snug text-muted lg:line-clamp-none ${openCue.has(p.key) ? "" : "line-clamp-2"}`}
+                      onClick={() => toggleCue(p.key)}
+                    >
+                      {p.cue}
+                    </p>
+                    {p.cue.length > 90 && !openCue.has(p.key) && (
+                      <button type="button" className="text-xs font-semibold text-muted underline lg:hidden" onClick={() => toggleCue(p.key)}>
+                        More
+                      </button>
+                    )}
                     {note && <p className="mt-1 text-xs font-medium text-ink">{note}</p>}
                   </div>
                   <p className="hidden pt-0.5 text-sm font-semibold tabular-nums lg:block">

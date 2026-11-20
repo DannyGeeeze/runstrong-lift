@@ -42,6 +42,9 @@ const EASY_OPTIONS: { value: EasyFocus; label: string }[] = [
   { value: "touch-up", label: "Touch-up" },
 ];
 
+/** Short names for the body-part picker (the full names wrap on a phone). */
+const UPPER_FOCUS_SHORT: Record<UpperFocus, string> = { back: "Back", chest: "Chest", shoulders: "Shoulders" };
+
 const LOGGED_LABEL: Record<string, string> = {
   full: "Full strength",
   short: "Short strength",
@@ -349,7 +352,7 @@ function Today() {
                         preview.upperFocus === f ? "bg-card text-ink shadow-sm ring-1 ring-line" : "text-muted"
                       }`}
                     >
-                      {UPPER_FOCUS_LABEL[f]}
+                      {UPPER_FOCUS_SHORT[f]}
                     </button>
                   ))}
                 </div>
