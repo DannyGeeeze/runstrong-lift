@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
+import { PlanCalendar } from "@/components/PlanCalendar";
 import { RunRow } from "@/components/RunList";
 import { RunTypePicker } from "@/components/RunTypePicker";
 import { LiftsChart, MilesChart, type LiftWeek, type MilesDay } from "@/components/WeekCharts";
 import { Card, SectionTitle } from "@/components/ui";
-import { addDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
-import { dayType, RUN_TYPE_LABEL, type DaySource } from "@/lib/day";
-import { EASY_SESSIONS, PLYO_FAMILY_LABEL, plyoFamily, type PlyoFamily, RECOVERY_LABEL, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES } from "@/lib/rules";
+import { addDays, diffDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
+import { dayType, futureHardOverrides, RUN_TYPE_LABEL, type DaySource } from "@/lib/day";
+import { planDays } from "@/lib/plan";
+import { EASY_SESSIONS, PLYO_FAMILY_LABEL, plyoFamily, type PlyoFamily, RECOVERY_LABEL, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weeklyMilesFor } from "@/lib/rules";
 import { METERS_PER_MILE, miles } from "@/lib/strava";
 import { getExercise } from "@/lib/exercises";
 import { storage } from "@/lib/storage";
@@ -36,7 +38,7 @@ export default function WeekPage() {
 }
 
 function Week() {
-  const { settings, history, overrides, races, recovery } = useStore();
+  const { settings, history, overrides, races, recovery, notes, block, profile } = useStore();
   const { runs, loading, source } = useRuns(settings.mockMode);
   const today = todayLocal();
   // "This week" is the calendar week, Monday to Sunday. (The lifting caps in the rules still
@@ -87,6 +89,40 @@ function Week() {
   });
 
   const [showOlder, setShowOlder] = useState(false);
+  const [horizon, setHorizon] = useState<"month" | "season">("month");
+
+  // The plan: from today to the end of the 4th week, or the week after your last race (up to 26 weeks).
+  const lastRace = races.filter((r) => r.date >= today).reduce((m, r) => (r.date > m ? r.date : m), today);
+  const planEnd =
+    horizon === "season" && lastRace > addDays(mondayOf(today), 27)
+      ? addDays(mondayOf(addDays(lastRace, 7)), 6)
+      : addDays(mondayOf(today), 27);
+  const planLength = Math.min(26 * 7, diffDays(today, planEnd) + 1);
+  const todayType = dayType(today, runs, overrides, races).type;
+  const last7 = runs.filter((r) => r.date > addDays(today, -7) && r.date <= today);
+  const weeklyMilesKey = `${last7.length}:${last7.reduce((sum, r) => sum + r.distanceM, 0).toFixed(0)}`;
+  const plan = useMemo(
+    () =>
+      planDays(
+        {
+          today,
+          dayType: todayType,
+          phase: settings.phase,
+          races,
+          settings,
+          history,
+          block,
+          profile,
+          weeklyMiles: weeklyMilesFor(last7.reduce((sum, r) => sum + r.distanceM, 0) / METERS_PER_MILE, last7.length, profile?.weeklyMiles),
+          extraHardDays: futureHardOverrides(today, overrides),
+        },
+        overrides,
+        planLength,
+        { followSuggestedPhase: horizon === "season" },
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [today, todayType, settings, races, history, block, profile, overrides, planLength, horizon, weeklyMilesKey],
+  );
   // The day whose run type is being changed (tap its tag).
   const [editing, setEditing] = useState<string | null>(null);
   const olderDays = Array.from({ length: 7 }, (_, i) => addDays(lastMonday, i));
@@ -240,6 +276,43 @@ function Week() {
       {showOlder && <Card className="divide-y divide-line py-0">{olderDays.map(dayRow)}</Card>}
       </div>
       </div>
+
+      {/* The plan: the next 4 weeks or the season, day by day. */}
+      <section className="mt-10" aria-labelledby="plan-title">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 id="plan-title" className="text-xl font-bold tracking-tight lg:text-2xl">
+              Plan
+            </h2>
+            <p className="text-sm text-muted">
+              {horizon === "season" ? "Through your last race, phases as the app suggests them." : "The next four weeks."} Tap a day to change it or
+              add a note.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-card-2 p-1" role="group" aria-label="How far ahead">
+            {(["month", "season"] as const).map((h) => (
+              <button
+                key={h}
+                type="button"
+                aria-pressed={horizon === h}
+                onClick={() => setHorizon(h)}
+                className={`min-h-9 rounded-lg px-3 text-sm font-semibold transition-colors ${
+                  horizon === h ? "bg-card text-ink shadow-sm ring-1 ring-line" : "text-muted"
+                }`}
+              >
+                {h === "month" ? "4 weeks" : "Season"}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="mt-4">
+          {loading ? (
+            <p className="text-sm text-muted">Loading…</p>
+          ) : (
+            <PlanCalendar plan={plan} today={today} races={races} notes={notes} overrides={overrides} history={history} />
+          )}
+        </div>
+      </section>
     </div>
   );
 }

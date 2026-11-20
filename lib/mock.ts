@@ -122,6 +122,7 @@ export function trackSeasonScenario(today: string, real: AppData): AppData {
     recovery: [],
     block: null,
     overrides: {},
+    notes: {},
     profile: base
       ? { ...base, events: ["distance"], raceDay: "thu" }
       : {

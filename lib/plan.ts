@@ -1,9 +1,9 @@
 // The week ahead, as the rules see it: what run each day probably is and which lift
 // that gives. Used by the desktop planning view. Nothing here is saved.
 
-import { addDays } from "./dates";
-import { generateWorkout, hardDays, toLiftLog, type GenerateInput, type Workout } from "./rules";
-import type { RunType } from "./types";
+import { addDays, diffDays, mondayOf } from "./dates";
+import { generateWorkout, hardDays, suggestPhase, toLiftLog, type GenerateInput, type Workout } from "./rules";
+import type { BreakStage, Phase, RunType, Settings } from "./types";
 
 /** Where a day's run type came from. */
 export type PlanSource = "today" | "override" | "race" | "planned" | "assumed";
@@ -15,6 +15,26 @@ export interface PlanDay {
   /** For planned hard days: "tune-up workout", "workout", ... */
   label?: string;
   workout: Workout;
+  /** Phase used for this day (your setting this week; later weeks may follow the suggestion). */
+  phase: Phase;
+  /** True when `phase` is the app's suggestion rather than your setting. */
+  phaseSuggested: boolean;
+  /** Break / return stage on this day, played forward (Week off → Ramp week → Normal, 7 days each). */
+  stage: BreakStage;
+}
+
+export interface PlanOptions {
+  /** Weeks after this one use the phase the app suggests for that week (season view). */
+  followSuggestedPhase?: boolean;
+}
+
+/** The break stage on a future date, assuming you move on after 7 days in each stage. */
+export function stageOn(settings: Pick<Settings, "breakStage" | "breakStageSince">, date: string): BreakStage {
+  const { breakStage, breakStageSince } = settings;
+  if (breakStage === "normal" || !breakStageSince) return breakStage;
+  const d = diffDays(breakStageSince, date);
+  if (breakStage === "off") return d < 7 ? "off" : d < 14 ? "ramp" : "normal";
+  return d < 7 ? "ramp" : "normal";
 }
 
 export const PLAN_SOURCE_LABEL: Record<PlanSource, string> = {
@@ -38,8 +58,11 @@ export function planDays(
   input: Omit<GenerateInput, "attempt" | "decision">,
   overrides: Record<string, RunType>,
   days = 7,
+  opts: PlanOptions = {},
 ): PlanDay[] {
-  const hard = new Map(hardDays(input.today, input.races, input.settings, input.extraHardDays).map((h) => [h.date, h.label]));
+  const weeks = Math.ceil(days / 7) + 1;
+  const hard = new Map(hardDays(input.today, input.races, input.settings, input.extraHardDays, weeks).map((h) => [h.date, h.label]));
+  const thisMonday = mondayOf(input.today);
   let history = [...input.history];
   const out: PlanDay[] = [];
 
@@ -66,13 +89,20 @@ export function planDays(
       source = "assumed";
     }
 
+    // This week: your phase. Later weeks (season view): the phase the app suggests for that week.
+    const later = mondayOf(date) > thisMonday;
+    const phaseSuggested = !!opts.followSuggestedPhase && later;
+    const phase = phaseSuggested ? suggestPhase(input.races, mondayOf(date)).phase : input.phase;
+    const stage = stageOn({ breakStage: input.settings.breakStage, breakStageSince: input.settings.breakStageSince ?? "" }, date);
+    const settings = { ...input.settings, breakStage: stage };
+
     // Today's picks (easy-day choice, body part, short on time) only apply to today.
     const day: GenerateInput =
       i === 0
-        ? { ...input, history }
-        : { ...input, today: date, dayType: type, history, easyFocus: undefined, upperFocus: undefined };
+        ? { ...input, phase, settings, history }
+        : { ...input, today: date, dayType: type, phase, settings, history, easyFocus: undefined, upperFocus: undefined };
     const workout = generateWorkout(day);
-    out.push({ date, type, source, label, workout });
+    out.push({ date, type, source, label, workout, phase, phaseSuggested, stage });
 
     // Assume each planned lift gets done (unless one is already logged that day).
     if (workout.decision.session !== "none" && !history.some((h) => h.date === date)) {

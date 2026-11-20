@@ -9,7 +9,7 @@ import { useHydrated, useStore } from "@/lib/useStore";
 
 const TABS = [
   { href: "/", label: "Today", icon: "M4 12h4l3-8 4 16 3-8h2" },
-  { href: "/week", label: "Week", icon: "M4 6h16M4 12h16M4 18h10" },
+  { href: "/week", label: "Plan", icon: "M4 6h16M4 12h16M4 18h10" },
   { href: "/races", label: "Races", icon: "M5 21V4m0 0h11l-2 4 2 4H5" },
   { href: "/settings", label: "Settings", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7.4-3a7.4 7.4 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7.3 7.3 0 0 0-2-1.2L14.5 3h-4l-.4 2.6a7.3 7.3 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6a7.4 7.4 0 0 0 0 2.4l-2 1.6 2 3.4 2.4-1a7.3 7.3 0 0 0 2 1.2l.4 2.6h4l.4-2.6a7.3 7.3 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" },
 ];

@@ -29,6 +29,8 @@ export interface AppData {
   block: BlockPicks | null;
   /** Manual run-type overrides keyed by date. */
   overrides: Record<string, RunType>;
+  /** The runner's own notes, keyed by date (the plan's "log"). */
+  notes: Record<string, string>;
   /** Onboarding answers; null until onboarding is finished. */
   profile: Profile | null;
   /** True while a test scenario is loaded (read-only flag, set by the storage mode). */
@@ -54,7 +56,7 @@ export function activeKey(): string {
 }
 
 function empty(): AppData {
-  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], recovery: [], block: null, overrides: {}, profile: null, testMode: false };
+  return { version: 1, settings: DEFAULT_SETTINGS, races: [], history: [], recovery: [], block: null, overrides: {}, notes: {}, profile: null, testMode: false };
 }
 
 function read(): AppData {
@@ -94,6 +96,7 @@ function normalize(input: Partial<AppData>): AppData {
     recovery: Array.isArray(input.recovery) ? input.recovery : [],
     block: input.block ?? null,
     overrides: input.overrides ?? {},
+    notes: input.notes && typeof input.notes === "object" ? input.notes : {},
     profile: normalizeProfile(input.profile),
     testMode: false,
   };
@@ -160,6 +163,16 @@ export const storage = {
 
   saveBlock(block: BlockPicks | null) {
     update((d) => ({ ...d, block }));
+  },
+
+  /** Save (or clear, when empty) the note for a date. */
+  setNote(date: string, text: string) {
+    update((d) => {
+      const notes = { ...d.notes };
+      if (text.trim()) notes[date] = text;
+      else delete notes[date];
+      return { ...d, notes };
+    });
   },
 
   setOverride(date: string, type: RunType | null) {

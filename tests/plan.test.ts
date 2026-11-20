@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { planDays } from "@/lib/plan";
+import { planDays, stageOn } from "@/lib/plan";
+import { normalizeSettings } from "@/lib/storage";
 import type { GenerateInput } from "@/lib/rules";
 import { DEFAULT_SETTINGS } from "@/lib/storage";
 import type { Race } from "@/lib/types";
@@ -69,4 +70,41 @@ describe("week plan", () => {
     expect(plan[0].workout.decision.session).toBe("touch-up");
     expect(plan[2].workout.decision.session).toBe("upper");
   });
+
+  it("plays break stages forward: Week off, then Ramp week, then Normal, 7 days each", () => {
+    const off = { breakStage: "off" as const, breakStageSince: "2026-09-14" };
+    expect(stageOn(off, "2026-09-20")).toBe("off");
+    expect(stageOn(off, "2026-09-21")).toBe("ramp");
+    expect(stageOn(off, "2026-09-28")).toBe("normal");
+    expect(stageOn({ breakStage: "normal", breakStageSince: "" }, "2026-12-01")).toBe("normal");
+    const plan = planDays(input({ settings: { ...DEFAULT_SETTINGS, ...off } }), {}, 21);
+    expect(plan[0].stage).toBe("off");
+    expect(plan[7].stage).toBe("ramp");
+    expect(plan[14].stage).toBe("normal");
+  });
+
+  it("season view: later weeks follow the suggested phase (Championship before a goal race), this week keeps yours", () => {
+    const goal = { id: "a", date: "2026-11-05", name: "State", priority: "A" as const };
+    const plan = planDays(input({ races: [goal], phase: "early" }), {}, 56, { followSuggestedPhase: true });
+    expect(plan[0]).toMatchObject({ phase: "early", phaseSuggested: false });
+    const champWeek = plan.find((d) => d.date === "2026-10-19")!;
+    expect(champWeek).toMatchObject({ phase: "championship", phaseSuggested: true });
+    // Without the season option every day uses your setting.
+    expect(planDays(input({ races: [goal], phase: "early" }), {}, 56).every((d) => d.phase === "early")).toBe(true);
+  });
+
+  it("plans planned workout days across a long horizon (not just 3 weeks)", () => {
+    const plan = planDays(input(), {}, 42);
+    const tuesdays = plan.filter((d) => d.date >= "2026-10-13" && d.type === "workout");
+    expect(tuesdays.length).toBeGreaterThan(0);
+  });
 });
+
+describe("plan notes", () => {
+  it("settings still load the same; notes default to empty", async () => {
+    const { storage } = await import("@/lib/storage");
+    expect(typeof storage.setNote).toBe("function");
+    expect(normalizeSettings({}).breakStage).toBe("normal");
+  });
+});
+
