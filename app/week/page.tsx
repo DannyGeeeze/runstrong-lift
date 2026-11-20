@@ -7,8 +7,9 @@ import { LiftsChart, MilesChart, type LiftWeek, type MilesDay } from "@/componen
 import { Card, SectionTitle } from "@/components/ui";
 import { addDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
 import { dayType, RUN_TYPE_LABEL, type DaySource } from "@/lib/day";
-import { EASY_SESSIONS, RECOVERY_LABEL, ROTATION_TYPES, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES, weekCounts } from "@/lib/rules";
+import { EASY_SESSIONS, PLYO_FAMILY_LABEL, plyoFamily, type PlyoFamily, RECOVERY_LABEL, SAUNA_PER_WEEK, UPPER_FOCUS_LABEL, UPPER_FOCUSES } from "@/lib/rules";
 import { METERS_PER_MILE, miles } from "@/lib/strava";
+import { getExercise } from "@/lib/exercises";
 import { storage } from "@/lib/storage";
 import { useHydrated, useStore } from "@/lib/useStore";
 import { useRuns } from "@/lib/useRuns";
@@ -26,12 +27,7 @@ const SESSION_LABEL: Record<LiftLog["session"], string> = {
   none: "None",
 };
 
-const PLYO_LABEL: Record<string, string> = {
-  deep: "Deep",
-  pogo: "Pogo",
-  "single-leg-hop": "SL hop",
-  lateral: "Lateral",
-};
+const PLYO_FAMILIES: PlyoFamily[] = ["updown", "skip", "single", "lateral"];
 
 export default function WeekPage() {
   const hydrated = useHydrated();
@@ -43,16 +39,30 @@ function Week() {
   const { settings, history, overrides, races, recovery } = useStore();
   const { runs, loading, source } = useRuns(settings.mockMode);
   const today = todayLocal();
-  const counts = weekCounts(history, today);
-  const recent = recovery.filter((r) => r.date > addDays(today, -7) && r.date <= today);
+  // "This week" is the calendar week, Monday to Sunday. (The lifting caps in the rules still
+  // count the last 7 days, so a session last weekend can still matter on Monday.)
+  const monday = mondayOf(today);
+  const thisWeek = (date: string) => date >= monday && date <= today;
+  const weekLifts = history.filter((h) => thisWeek(h.date));
+  const counts = { strength: weekLifts.filter((h) => h.hadStrength).length, plyo: weekLifts.filter((h) => h.hadPlyo).length };
+  const recent = recovery.filter((r) => thisWeek(r.date));
   const boots = recent.filter((r) => r.kind === "boots").length;
   const saunas = recent.filter((r) => r.kind === "sauna").length;
-  const upperDone = new Set(history.filter((h) => h.date > addDays(today, -7) && h.date <= today).map((h) => h.upperFocus));
-  const days = Array.from({ length: 7 }, (_, i) => addDays(today, -i));
+  // The coach's plyo template: which of its four kinds of move you did in the last 7 days.
+  const plyoDone = new Set(
+    history
+      .filter((h) => thisWeek(h.date))
+      .flatMap((h) => h.exerciseIds)
+      .map((id) => getExercise(id))
+      .flatMap((e) => (e ? [plyoFamily(e)] : [])),
+  );
+  const upperDone = new Set(weekLifts.map((h) => h.upperFocus));
+  const days = Array.from({ length: 7 }, (_, i) => addDays(monday, i));
   const weekMiles = runs
-    .filter((r) => r.date > addDays(today, -7))
+    .filter((r) => thisWeek(r.date))
     .reduce((s, r) => s + r.distanceM, 0);
-  const older = runs.filter((r) => r.date <= addDays(today, -7)).sort((a, b) => b.startLocal.localeCompare(a.startLocal));
+  const lastMonday = addDays(monday, -7);
+  const older = runs.filter((r) => r.date >= lastMonday && r.date < monday);
 
   // Chart data: the last 14 days (all the runs we have) and the last 8 calendar weeks of lifts.
   const milesDays: MilesDay[] = Array.from({ length: 14 }, (_, i) => addDays(today, i - 13)).map((date) => {
@@ -78,7 +88,7 @@ function Week() {
   const [showOlder, setShowOlder] = useState(false);
   // The day whose run type is being changed (tap its tag).
   const [editing, setEditing] = useState<string | null>(null);
-  const olderDays = Array.from({ length: 7 }, (_, i) => addDays(today, -7 - i));
+  const olderDays = Array.from({ length: 7 }, (_, i) => addDays(lastMonday, i));
 
   const dayRow = (date: string) => {
     const d = dayType(date, runs, overrides, races);
@@ -157,7 +167,9 @@ function Week() {
               ))}
             </div>
           )}
-          {d.runs.length === 0 && lifts.length === 0 && recs.length === 0 && <p className="mt-0.5 text-xs text-muted">Nothing logged</p>}
+          {d.runs.length === 0 && lifts.length === 0 && recs.length === 0 && (
+            <p className="mt-0.5 text-xs text-muted">{date > today ? "Coming up" : "Nothing logged"}</p>
+          )}
         </div>
       </div>
     );
@@ -167,7 +179,8 @@ function Week() {
     <div>
       <h1 className="text-2xl font-bold tracking-tight lg:text-3xl">This week</h1>
       <p className="mt-0.5 text-sm text-muted">
-        Last 7 days{source === "mock" ? " · demo runs" : ""}
+        {formatDay(monday)} – {formatDay(addDays(monday, 6))}
+        {source === "mock" ? " · demo runs" : ""}
       </p>
 
       <div className="lg:grid lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start lg:gap-8">
@@ -179,9 +192,9 @@ function Week() {
       </div>
 
       <Card className="mt-2 space-y-3 py-3.5">
-        <CheckRow label="Plyo types">
-          {ROTATION_TYPES.map((t) => (
-            <Check key={t} done={counts.plyoTypes.includes(t)} label={PLYO_LABEL[t]} />
+        <CheckRow label="Plyo moves">
+          {PLYO_FAMILIES.map((f) => (
+            <Check key={f} done={plyoDone.has(f)} label={PLYO_FAMILY_LABEL[f]} />
           ))}
         </CheckRow>
         <CheckRow label="Upper body">
@@ -214,7 +227,7 @@ function Week() {
         aria-expanded={showOlder}
         className="mt-4 min-h-11 w-full rounded-xl text-sm font-medium text-muted"
       >
-        {showOlder ? "Hide days 8–14" : `Show days 8–14${older.length ? ` · ${older.length} runs` : ""}`}
+        {showOlder ? "Hide last week" : `Show last week${older.length ? ` · ${older.length} runs` : ""}`}
       </button>
       {showOlder && <Card className="divide-y divide-line py-0">{olderDays.map(dayRow)}</Card>}
       </div>

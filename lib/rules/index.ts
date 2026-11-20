@@ -5,6 +5,7 @@ import type { Profile } from "../profile";
 import type { BlockPicks, LiftLog, Settings } from "../types";
 import { decideSession, UPPER_FOCUS_LABEL, weekCounts, type Decision, type RuleContext } from "./rules";
 import { currentBlock } from "./select";
+import { nextPlyoDay } from "./plyo";
 import { VOLUME_NOTE, volumeTier, type VolumeTier, type WeeklyMiles } from "./volume";
 import {
   buildItems,
@@ -19,6 +20,7 @@ export * from "./rules";
 export * from "./select";
 export * from "./sessions";
 export * from "./volume";
+export * from "./plyo";
 
 export interface Workout {
   date: string;
@@ -75,6 +77,7 @@ export function generateWorkout(input: GenerateInput): Workout {
     plyoTypesThisWeek: plyoTypes,
     profile: input.profile,
     volume: tier,
+    plyoDay: nextPlyoDay(input.history, input.decision?.catchUpFor ?? input.today),
   });
 
   // Full sessions are ~45 min max: trim a set from the accessory slots until it fits.

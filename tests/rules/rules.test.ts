@@ -231,9 +231,11 @@ describe("modifiers", () => {
   it("short on time → Short session template", () => {
     const w = generateWorkout({ ...input({ today: TUE, dayType: "workout", phase: "early", races: [] }), shortOnTime: true });
     expect(w.decision.session).toBe("short");
-    expect(w.items.map((i) => i.slot)).toEqual(["A1", "B1", "C2", "C1"]);
-    expect(w.items[0]).toMatchObject({ sets: 3, reps: "5" });
-    expect(w.items[1].supersetWith).toBe(w.items[2].exercise.id);
+    // The 2-move plyo template at 2 sets, then the coach's Short strength: squat + calf superset, RDL.
+    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A1", "B1", "C2", "C1"]);
+    expect(w.items[0].sets).toBe(2);
+    expect(w.items[1].sets).toBe(2);
+    expect(w.items[2].supersetWith).toBe(w.items[3].exercise.id);
   });
 });
 

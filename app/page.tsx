@@ -11,7 +11,7 @@ import { WeekPlan } from "@/components/WeekPlan";
 import { WorkoutCard } from "@/components/WorkoutCard";
 import { PLAN_SOURCE_LABEL, planDays, type PlanDay } from "@/lib/plan";
 import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
-import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
+import { addDays, diffDays, formatDay, mondayOf, todayLocal } from "@/lib/dates";
 import { dayType, futureHardOverrides, RUN_TYPE_LABEL } from "@/lib/day";
 import {
   addToBlock,
@@ -24,7 +24,6 @@ import {
   suggestBreakStage,
   toLiftLog,
   UPPER_FOCUS_LABEL,
-  weekCounts,
   weeklyMilesFor,
   UPPER_FOCUSES,
   type GenerateInput,
@@ -124,7 +123,9 @@ function Today() {
   const loggedToday = history.filter((h) => h.date === today);
 
   const nextRace = races.find((r) => r.date >= today);
-  const week = weekCounts(history, today);
+  // "This week" = Monday to today (the caps in the rules still count the last 7 days).
+  const weekLifts = history.filter((h) => h.date >= mondayOf(today) && h.date <= today);
+  const week = { strength: weekLifts.filter((h) => h.hadStrength).length, plyo: weekLifts.filter((h) => h.hadPlyo).length };
   const plan = useMemo(() => planDays(ctx, overrides), [ctx, overrides]);
   const planned = planDate !== today ? plan.find((d) => d.date === planDate) : undefined;
 
@@ -443,7 +444,7 @@ function Today() {
           href="/week"
           className="mt-4 hidden grid-cols-2 gap-2 rounded-2xl border border-line bg-card p-4 hover:ring-1 hover:ring-line lg:grid"
         >
-          <span className="col-span-2 text-xs font-semibold uppercase tracking-wider text-muted">Last 7 days</span>
+          <span className="col-span-2 text-xs font-semibold uppercase tracking-wider text-muted">This week</span>
           <span>
             <span className={`block text-2xl font-bold tabular-nums ${week.strength >= 2 ? "text-accent" : ""}`}>{week.strength}/2</span>
             <span className="text-xs text-muted">Strength</span>

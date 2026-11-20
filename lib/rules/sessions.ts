@@ -2,7 +2,9 @@
  * ============================================================================
  *  SESSION TEMPLATES + DOSING — what goes into each session type.
  * ============================================================================
- *  Full (~45 min max): A1 vertical plyo, A2 lateral plyo, B1 compound (3x3-5 @ RPE 7),
+ *  Plyos, every session that has them: the coach's 2-move template (see plyo.ts):
+ *    Day 1 up-and-down + skipping, Day 2 single-leg + lateral, alternating; 2-3 sets each.
+ *  Full (~45 min max): the 2 plyos, B1 compound (3x3-5 @ RPE 7),
  *    C1 posterior chain, C2 calf/foot, D1 hip flexor, D2 abduction/adduction.
  *    In-season: 1-2 plyos + 4-5 strength moves, never more than 6 total.
  *    Off-season: all 7 slots + 1 UPPER.
@@ -42,11 +44,12 @@ import {
   restFor,
   videoFor,
 } from "../exercises";
-import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsPlyoEmphasis, wantsTendonEmphasis, type Profile } from "../profile";
+import { fitProfile, hasEquipment, matchesFocus, suitsExperience, wantsTendonEmphasis, type Profile } from "../profile";
 import type { BlockPicks, Exercise, Phase, Slot, UpperFocus } from "../types";
 import type { Decision } from "./rules";
 import { pick } from "./select";
 import type { VolumeTier } from "./volume";
+import { PLYO_DAY, plyoFamily, plyoReps, type PlyoDay } from "./plyo";
 
 /** Plyo categories that must each appear at least once per week. */
 export const ROTATION_TYPES = ["deep", "pogo", "single-leg-hop", "lateral"] as const;
@@ -82,6 +85,8 @@ export interface BuildOptions {
   profile?: Profile | null;
   /** Full-session volume from weekly mileage (see volume.ts). Defaults to full. */
   volume?: VolumeTier;
+  /** Which day of the coach's plyo template this session is (see plyo.ts). Defaults to Day 1. */
+  plyoDay?: PlyoDay;
   pool?: Exercise[];
 }
 
@@ -189,6 +194,30 @@ function preferMissing(ctx: Ctx) {
 }
 
 /**
+ * The coach's plyo template: exactly 2 movements, from this session's day (Day 1: up-and-down +
+ * skipping; Day 2: single-leg + lateral), 2-3 sets each, counted in contacts or meters.
+ * `easyOnly` keeps both to low/medium intensity (Plyos + Isos sessions).
+ */
+function buildPlyos(ctx: Ctx, prefix: string, session: string, easyOnly: boolean): Prescription[] {
+  const day = ctx.plyoDay ?? 1;
+  const out: Prescription[] = [];
+  PLYO_DAY[day].forEach((family, n) => {
+    const fits = (tag: string) =>
+      [...bySlot(ctx, "A1", tag), ...bySlot(ctx, "A2", tag)].filter(
+        (e) => plyoFamily(e) === family && (!easyOnly || e.intensity !== "high"),
+      );
+    // Prefer moves tagged for this session; any plyo of the right kind otherwise.
+    const pool = fits(session).length ? fits(session) : fits("full");
+    const key = `${prefix}:day${day}-${n + 1}`;
+    const e = choose(ctx, key, pool, preferMissing(ctx));
+    if (!e) return;
+    const p = applyCaps(baseDose(e, key));
+    out.push({ ...p, sets: Math.min(3, Math.max(2, p.sets)), reps: plyoReps(p.reps) });
+  });
+  return out;
+}
+
+/**
  * Lower mileage, smaller sessions; it only ever grows. Base: 2 sets of everything.
  * Build: the main lift keeps 3, the rest 2. Full: the coach's dosing. Isos keep their own dosing.
  */
@@ -200,14 +229,10 @@ function volumeDose(p: Prescription, tier: VolumeTier): Prescription {
 
 function buildFull(ctx: Ctx, d: Decision): Prescription[] {
   const offSeason = ctx.phase === "off";
-  const lateralDue = missingPlyoTypes(ctx).includes("lateral");
 
+  // Plyos first (fresh, right after the run): the coach's 2-move template.
+  const plyos = d.plyos ? buildPlyos(ctx, "full", "full", false) : [];
   const slots: Slot[] = [];
-  if (d.plyos) {
-    slots.push("A1");
-    // Goals "faster kick" / "run more efficiently" → always 2 plyos.
-    if (offSeason || lateralDue || wantsPlyoEmphasis(ctx.profile)) slots.push("A2");
-  }
   if (d.strength) {
     if (ctx.enablePower) slots.push("POWER");
     slots.push("B1", "C1", "C2", "D1", "D2");
@@ -215,16 +240,16 @@ function buildFull(ctx: Ctx, d: Decision): Prescription[] {
     if (offSeason) slots.push("UPPER"); // max 1 UPPER, Full only
   }
 
-  // In-season: never more than 6 exercises. Drop in this order.
+  // In-season: never more than 6 exercises (the 2 plyos included). Drop in this order.
   if (!offSeason) {
     for (const drop of ["D2", "MOBILITY", "D1", "POWER"] as Slot[]) {
-      if (slots.length <= IN_SEASON_MAX_EXERCISES) break;
+      if (slots.length + plyos.length <= IN_SEASON_MAX_EXERCISES) break;
       const i = slots.indexOf(drop);
       if (i >= 0) slots.splice(i, 1);
     }
   }
 
-  const out: Prescription[] = [];
+  const out: Prescription[] = plyos.map((p) => volumeDose(d.half ? { ...p, sets: Math.max(1, Math.round(p.sets / 2)) } : p, ctx.volume ?? "full"));
   for (const slot of slots) {
     const key = `full:${slot}`;
     const prefer = isPlyo({ slot } as Exercise)
@@ -256,10 +281,8 @@ function buildShort(ctx: Ctx, d: Decision): Prescription[] {
       : short;
     return fits.length ? fits : bySlot(ctx, slot, "full");
   };
-  if (d.plyos) {
-    const dj = choose(ctx, "short:A1", firstOf("A1"));
-    if (dj) out.push(applyCaps({ ...baseDose(dj, "short:A1"), sets: 3, reps: "5" }));
-  }
+  // Short on time: the same 2-move plyo template, 2 sets each.
+  if (d.plyos) out.push(...buildPlyos(ctx, "short", "full", false).map((p) => ({ ...p, sets: 2 })));
   const squat = choose(ctx, "short:B1", firstOf("B1"));
   const calf = choose(ctx, "short:C2", firstOf("C2"));
   const rdl = choose(ctx, "short:C1", firstOf("C1"));
@@ -313,16 +336,8 @@ function pickIsos(
 
 function buildPlyosIsos(ctx: Ctx, d: Decision): Prescription[] {
   const out: Prescription[] = [];
-  if (d.plyos) {
-    const lowMed = (slot: Slot) =>
-      bySlot(ctx, slot, "plyos-isos").filter((e) => e.intensity === "low" || e.intensity === "med");
-    const a1 = choose(ctx, "plyos-isos:A1", lowMed("A1"), preferMissing(ctx));
-    if (a1) out.push(baseDose(a1, "plyos-isos:A1"));
-    if (missingPlyoTypes(ctx).includes("lateral")) {
-      const a2 = choose(ctx, "plyos-isos:A2", lowMed("A2"));
-      if (a2) out.push(baseDose(a2, "plyos-isos:A2"));
-    }
-  }
+  // The coach's 2-move plyo template, kept to low/medium intensity here.
+  if (d.plyos) out.push(...buildPlyos(ctx, "plyos-isos", "plyos-isos", true));
   const isoCount = d.plyos ? 3 : 4;
   const isos = pickIsos(ctx, "plyos-isos", isoCount, ["overcoming", "hold"]);
   isos.forEach((e, i) => out.push(isoDose(baseDose(e, `plyos-isos:iso${i + 1}`))));

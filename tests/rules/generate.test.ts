@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { plyoFamily } from "@/lib/rules/plyo";
 import { addToBlock, generateWorkout, type GenerateInput, type Workout } from "@/lib/rules";
 import { ALL_EXERCISES, isoKind, isCalfAnkle } from "@/lib/exercises";
 import { DEFAULT_SETTINGS } from "@/lib/storage";
@@ -23,7 +24,9 @@ function checkRules(w: Workout, phase: Phase, opts = { enablePower: false, enabl
   const ids = w.items.map((i) => i.exercise.id);
   expect(new Set(ids).size).toBe(ids.length); // no duplicates
   for (const i of w.items) {
-    expect(i.exercise.session_types).toContain(session);
+    // Short sessions take their 2 plyos from the Full list (the coach's template).
+    const tags = i.exercise.session_types;
+    expect(tags.includes(session) || (session === "short" && tags.includes("full")), `${session}: ${i.exercise.id}`).toBe(true);
     expect(i.videoUrl).toMatch(/^https:\/\//);
     if (!opts.enablePower) expect(i.slot).not.toBe("POWER");
     if (!opts.enableMobility) expect(i.slot).not.toBe("MOBILITY");
@@ -69,7 +72,8 @@ describe("generated workouts", () => {
 
   it("off-season Full: all 7 slots + 1 UPPER", () => {
     const w = generateWorkout(input({ today: TUE, dayType: "workout", phase: "off" }));
-    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A2", "B1", "C1", "C2", "D1", "D2", "UPPER"]);
+    // Day 1 plyos (up-and-down + skipping, both A1 moves), then every strength slot + 1 UPPER.
+    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A1", "B1", "C1", "C2", "D1", "D2", "UPPER"]);
     checkRules(w, "off");
   });
 
@@ -114,12 +118,13 @@ describe("generated workouts", () => {
     expect(share).toBeLessThan(0.9);
   });
 
-  it("rotates plyo categories: prefers ones not done this week", () => {
+  it("plyos follow the coach's template: after a Day 1 session comes Day 2 (single-leg + lateral)", () => {
     const history = [
-      { id: "x", date: MON, session: "full" as const, volume: "full" as const, exerciseIds: [], hadStrength: false, hadPlyo: true, plyoTypes: ["deep", "pogo", "lateral"] },
+      { id: "x", date: MON, session: "full" as const, volume: "full" as const, exerciseIds: ["drop-jump", "skips-light-tier"], hadStrength: false, hadPlyo: true, plyoTypes: ["deep", "rhythm"] },
     ];
-    const w = generateWorkout(input({ today: TUE, dayType: "workout", phase: "early", history }));
-    expect(w.items.find((i) => i.slot === "A1")!.exercise.plyo_type).toBe("single-leg-hop");
+    const w = generateWorkout(input({ today: "2026-09-16", dayType: "workout", phase: "early", history }));
+    const plyos = w.items.filter((i) => i.slot === "A1" || i.slot === "A2");
+    expect(plyos.map((p) => plyoFamily(p.exercise))).toEqual(["single", "lateral"]);
   });
 });
 

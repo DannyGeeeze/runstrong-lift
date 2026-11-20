@@ -58,7 +58,7 @@ describe("equipment", () => {
 
   it("still fills every slot with only bodyweight", () => {
     const w = generateWorkout(input({ equipment: "minimal" }, { phase: "off" }));
-    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A2", "B1", "C1", "C2", "D1", "D2", "UPPER"]);
+    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A1", "B1", "C1", "C2", "D1", "D2", "UPPER"]);
   });
 });
 
@@ -74,7 +74,7 @@ describe("experience", () => {
   it("new lifters get a gentler Short session", () => {
     const w = generateWorkout({ ...input({ experience: "new" }), shortOnTime: true });
     expect(w.decision.session).toBe("short");
-    expect(w.items.map((i) => i.slot)).toEqual(["A1", "B1", "C2", "C1"]);
+    expect(w.items.map((i) => i.slot)).toEqual(["A1", "A1", "B1", "C2", "C1"]);
     for (const i of w.items) expect(i.exercise.intensity).not.toBe("high");
   });
 
@@ -85,21 +85,12 @@ describe("experience", () => {
 });
 
 describe("goals", () => {
-  it("faster kick / efficiency → 2 plyos in-season, still max 6 moves", () => {
-    for (const goal of ["kick", "economy"] as const) {
-      // Lateral already done this week, so A2 is only there because of the goal.
-      const history = [{ id: "h", date: "2026-09-14", session: "full" as const, volume: "full" as const, exerciseIds: [], hadStrength: false, hadPlyo: true, plyoTypes: ["lateral"] }];
-      const w = generateWorkout(input({ goals: [goal] }, { history }));
-      const slots = w.items.map((i) => i.slot);
-      expect(slots.slice(0, 2)).toEqual(["A1", "A2"]);
-      expect(slots.length).toBeLessThanOrEqual(6);
+  it("every goal gets the coach's 2-plyo template in-season, still max 6 moves", () => {
+    for (const goal of ["kick", "economy", "healthy", "strength"] as const) {
+      const w = generateWorkout(input({ goals: [goal] }));
+      expect(w.items.filter((i) => i.slot === "A1" || i.slot === "A2"), goal).toHaveLength(2);
+      expect(w.items.length).toBeLessThanOrEqual(6);
     }
-  });
-
-  it("without a plyo goal, one plyo when lateral is already done", () => {
-    const history = [{ id: "h", date: "2026-09-14", session: "full" as const, volume: "full" as const, exerciseIds: [], hadStrength: false, hadPlyo: true, plyoTypes: ["lateral"] }];
-    const w = generateWorkout(input({ goals: ["healthy"] }, { history }));
-    expect(w.items.filter((i) => i.slot === "A1" || i.slot === "A2")).toHaveLength(1);
   });
 });
 

@@ -112,8 +112,8 @@ describe("event emphasis", () => {
     }
   });
 
-  it("1600 / 3200 keeps the default", () => {
+  it("1600 / 3200 gets the same 2-plyo template as everyone", () => {
     const w = generateWorkout(input({ history: lateralDone, profile: profile({ events: ["distance"] }) }));
-    expect(w.items.filter((i) => isPlyo(i.exercise)).length).toBe(1);
+    expect(w.items.filter((i) => isPlyo(i.exercise)).length).toBe(2);
   });
 });

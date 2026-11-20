@@ -6,7 +6,7 @@ import { EQUIPMENT_OPTIONS, EVENT_OPTIONS, EXPERIENCE_OPTIONS, GOAL_OPTIONS, SPO
 import { Button, Card, Notice, SectionTitle, Toggle } from "@/components/ui";
 import { addDays, diffDays, formatDay, todayLocal } from "@/lib/dates";
 import { blockEnds, BREAK_STAGE_LABEL, PHASE_HINT, PHASE_LABEL, suggestBreakStage, suggestPhase, VOLUME_MILES, volumeTier, weeklyMilesFor } from "@/lib/rules";
-import { wantsPlyoEmphasis, wantsTendonEmphasis } from "@/lib/profile";
+import { wantsTendonEmphasis } from "@/lib/profile";
 import { METERS_PER_MILE } from "@/lib/strava";
 import { storage } from "@/lib/storage";
 import { trackSeasonScenario } from "@/lib/mock";
@@ -128,7 +128,6 @@ function SettingsView() {
         {profile ? (
           <p className="mt-3 border-t border-line pt-3 text-xs leading-relaxed text-muted">
             {volumeLine(runs, today, profile.weeklyMiles)}
-            {wantsPlyoEmphasis(profile) && " Full sessions always get 2 plyos."}
             {wantsTendonEmphasis(profile) && " XC/road: the calf move favors Achilles holds."}
           </p>
         ) : (

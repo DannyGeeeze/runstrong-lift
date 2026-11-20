@@ -160,3 +160,8 @@ These are choices I made where the brief left room. Each one says where it lives
 
 
 82. **Upper-body days are dumbbell-only** (the runner's rule) whenever the runner has dumbbells (Gym or Home in setup). Three dumbbell moves were added so every slot has one: dumbbell pullover (vertical pull), dumbbell rear-delt fly (shoulder blades) and lying dumbbell serratus punch (serratus). With Bodyweight only, upper-body days keep using bodyweight and band moves.
+
+## Plyos: the coach's template (`lib/rules/plyo.ts`)
+
+83. **Every session with plyos follows the coach's "easy plyo template":** exactly 2 movements, 2-3 sets each, counted in contacts or meters. **Day 1:** a bilateral in-place up-and-down move (drop jump, pogo, jumps) + a skipping variation. **Day 2:** a single-leg move (in place or travelling) + a lateral move. Days alternate: the next plyo session is the other day from the last one logged (Day 1 to start). Applies to Full, Short (2 sets each) and Plyos + Isos (low/medium intensity only). The template's "2 sessions a week, 48 hours between" were already the weekly cap and the 48h rule.
+84. **Where plyos go:** first in the lift, right after the run, on hard days (fresh legs, and easy days stay easy). In season a Full session is still at most 6 moves, so with 2 plyos the strength part is 4 moves; the adductor/abductor move drops first. This replaces "1 plyo, plus a 2nd for off-season, a lateral that's due, or a kick/economy/800-mile goal".
