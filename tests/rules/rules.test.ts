@@ -182,6 +182,31 @@ describe("weekly caps (2 strength + 2 plyo per rolling 7 days)", () => {
     expect(d).toMatchObject({ strength: true, plyos: true });
   });
 
+  it("the race-week lift isn't cut by the cap: the Monday tune-up before a Thursday race keeps its Full lift", () => {
+    // Workouts on the Tuesday and Friday before (2 strength + 2 plyo in the last 7 days).
+    const history = [lift("2026-09-08", true, true), lift("2026-09-11", true, true)];
+    const d = decideSession(
+      ctx({ today: MON, dayType: "workout", phase: "early", history, settings: { ...DEFAULT_SETTINGS, tuneUpDay: "mon" } }),
+    );
+    expect(d.role).toBe("thu-tuneup");
+    expect(d).toMatchObject({ session: "full", strength: true, plyos: true });
+    expect(d.why).toMatch(/race-week lift/);
+  });
+
+  it("…and the same for the 1st hard day before a Saturday race", () => {
+    const history = [lift("2026-09-10", true, true), lift("2026-09-12", true, true)];
+    const d = decideSession(ctx({ today: TUE, dayType: "workout", phase: "early", history, races: [satRace] }));
+    expect(d.role).toBe("other-1st");
+    expect(d).toMatchObject({ session: "full", strength: true });
+  });
+
+  it("the 2nd hard day before a race is still capped", () => {
+    const history = [lift("2026-09-11", true, true), lift("2026-09-15", true, true)];
+    const d = decideSession(ctx({ today: "2026-09-17", dayType: "workout", phase: "early", history, races: [satRace] }));
+    expect(d.role).toBe("other-2nd");
+    expect(d.strength).toBe(false);
+  });
+
   it("both capped → isos only", () => {
     const history = [lift("2026-09-10", true, true), lift("2026-09-12", true, true)];
     const w = generateWorkout(input({ today: TUE, dayType: "workout", phase: "early", history, ...raceFree }));

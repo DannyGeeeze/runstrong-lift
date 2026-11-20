@@ -16,7 +16,8 @@
  *    3. Phase table → base session (Full, Full at half volume, Plyos + Isos, taper).
  *    4. 48h guard: next hard run/race < 48h away → no strength (Plyos + Isos).
  *       Exactly 48h (two calendar days) → allowed with a warning.
- *    5. Weekly caps: max 2 strength + 2 plyo sessions per rolling 7 days.
+ *    5. Weekly caps: max 2 strength + 2 plyo sessions per rolling 7 days. The race week's
+ *       lift (Thursday tune-up / 1st hard day before another race) is exempt.
  *    6. Modifiers: Ramp week → Full sessions at lighter loads (2-3 x 8-12 @ RPE 5-6,
  *       low/medium plyos). Short on time → Short session.
  *
@@ -493,16 +494,26 @@ export function decideSession(ctx: RuleContext, guardFrom: string = ctx.today): 
   }
 
   // --- Step 5: weekly caps (2 strength + 2 plyo per rolling 7 days) ----------
+  // The race week's lift (the tune-up before a Thursday race, or the 1st hard day before
+  // another race) is never cut by the cap: it's the one session the week is built around.
+  // The 48h rule above still applies.
   const counts = weekCounts(ctx.history, ctx.today);
-  if (strength && counts.strength >= 2) {
-    strength = false;
-    session = "plyos-isos";
-    half = false;
-    rules.push("already 2 strength sessions in the last 7 days");
-  }
-  if (plyos && counts.plyo >= 2) {
-    plyos = false;
-    rules.push("already 2 plyo sessions in the last 7 days");
+  const raceWeekLift = role === "thu-tuneup" || role === "other-1st";
+  const overStrength = strength && counts.strength >= 2;
+  const overPlyo = plyos && counts.plyo >= 2;
+  if (raceWeekLift && (overStrength || overPlyo)) {
+    rules.push("race-week lift, so it stays even past the weekly cap");
+  } else {
+    if (overStrength) {
+      strength = false;
+      session = "plyos-isos";
+      half = false;
+      rules.push("already 2 strength sessions in the last 7 days");
+    }
+    if (overPlyo) {
+      plyos = false;
+      rules.push("already 2 plyo sessions in the last 7 days");
+    }
   }
 
   // --- Step 6: modifiers -----------------------------------------------------
