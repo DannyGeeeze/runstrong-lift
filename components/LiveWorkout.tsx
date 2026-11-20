@@ -392,12 +392,21 @@ export function LiveWorkout({
         <div className="mt-4">
           {finished ? (
             <div className="space-y-2">
-              <button type="button" onClick={() => onFinish([...done], weights)} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
-                {done.size >= workout.items.length ? "Save workout" : "Save what I did"}
-              </button>
-              <button type="button" onClick={onClose} className="w-full py-2 text-sm text-muted">
-                Close without saving
-              </button>
+              {done.size > 0 ? (
+                <>
+                  <button type="button" onClick={() => onFinish([...done], weights)} className="w-full rounded-full bg-accent py-4 text-lg font-semibold text-accent-ink active:scale-[0.99]">
+                    {done.size >= workout.items.length ? "Save workout" : "Save what I did"}
+                  </button>
+                  <button type="button" onClick={onClose} className="w-full py-2 text-sm text-muted">
+                    Close without saving
+                  </button>
+                </>
+              ) : (
+                // Nothing done: nothing to save (an empty save would log the whole workout).
+                <button type="button" onClick={onClose} className="w-full rounded-full border border-line bg-card py-4 text-lg font-semibold active:scale-[0.99]">
+                  Close
+                </button>
+              )}
             </div>
           ) : (
             <div className="flex items-start justify-between px-2">
@@ -584,7 +593,7 @@ function FinishView({
       <h1 className="mt-5 text-3xl font-bold">{exercisesDone >= exercises ? "Workout done" : "Partly done"}</h1>
       {exercisesDone < exercises && (
         <p className="mt-1 text-sm text-muted">
-          {exercisesDone} of {exercises} moves. Only what you did gets saved.
+          {exercisesDone === 0 ? "No moves done, so there's nothing to save." : `${exercisesDone} of ${exercises} moves. Only what you did gets saved.`}
         </p>
       )}
       <div className="mt-8 grid w-full grid-cols-3 gap-2">
